@@ -1,0 +1,235 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>VRCosme | VRChat向け写真レタッチツール</title>
+  <meta name="description" content="VRCosmeの公式ドキュメント。ダウンロード、主な機能、使い方、ショートカット、設定情報をまとめています。">
+  <link rel="icon" href="./assets/icons/VRCosme_Icon.ico">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Kiwi+Maru:wght@400;500&family=M+PLUS+Rounded+1c:wght@400;500;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./css/style.css">
+</head>
+<body>
+  <div class="bg-blobs" aria-hidden="true">
+    <span class="blob blob-a"></span>
+    <span class="blob blob-b"></span>
+    <span class="blob blob-c"></span>
+  </div>
+
+  <div class="topbar">
+    <div class="wrap">
+      <div class="brand">
+        <img src="./assets/icons/VRCosme_Icon.svg" alt="" class="brand-icon">
+        <span>VRCosme Docs</span>
+      </div>
+      <nav class="topnav" aria-label="ページ内ナビゲーション">
+        <a href="#download">ダウンロード</a>
+        <a href="#features">機能</a>
+        <a href="#guide">使い方</a>
+        <a href="#tips">ショートカット</a>
+      </nav>
+    </div>
+  </div>
+
+  <header class="hero" id="download">
+    <div class="wrap hero-grid">
+      <section class="panel hero-main" aria-labelledby="title">
+        <span class="kicker">
+          <img src="./assets/icons/VRCosme_Icon.svg" alt="">
+          VRChat Photo Retouch Tool
+        </span>
+        <h1 id="title">かわいく、手早く。<br>VRCosmeで写真を<br>簡単にレタッチ</h1>
+        <p class="hero-desc">
+          VRCosmeは、VRChat向け写真レタッチに特化したWindowsアプリです。
+          読み込み、補正、比較、書き出しまでを1画面で完結できます。
+        </p>
+        <div class="cta-row">
+          <a class="btn btn-primary" href="https://github.com/natuki53/VRCosme/releases/latest/download/VRCosme_Setup.exe">
+            <span class="btn-icon">⬇</span>最新版をダウンロード
+          </a>
+          <a class="btn btn-ghost" href="https://github.com/natuki53/VRCosme/releases">リリース一覧</a>
+          <a class="btn btn-ghost" href="https://github.com/natuki53/VRCosme">
+            <img src="./assets/icons/icon_github.svg" alt="" class="inline-icon">GitHub
+          </a>
+        </div>
+      </section>
+      <aside class="panel hero-side" aria-label="環境情報">
+        <div class="metric">
+          <strong><span class="dot"></span>対応OS</strong>
+          <span>Windows 10 / 11</span>
+        </div>
+        <div class="metric">
+          <strong>アーキテクチャ</strong>
+          <span>x64 (64bit)</span>
+        </div>
+        <div class="metric">
+          <strong>入力形式</strong>
+          <span>PNG / JPG / BMP / TIFF / WEBP</span>
+        </div>
+        <div class="metric">
+          <strong>出力形式</strong>
+          <span>PNG / JPEG（品質指定）</span>
+        </div>
+      </aside>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <section class="section" id="features">
+      <div class="section-card">
+        <h2>主な機能</h2>
+        <p>実装済みの主要機能を用途別に整理しています。</p>
+        <div class="feature-grid">
+          <article class="feature">
+            <h3><span class="feature-chip">Base</span>基本補正</h3>
+            <p>明るさ、コントラスト、ガンマ、露出、彩度、色温度、色かぶりを調整。</p>
+          </article>
+          <article class="feature">
+            <h3><span class="feature-chip">Fine</span>詳細補正</h3>
+            <p>シャドウ、ハイライト、明瞭度、シャープ、周辺減光で質感を仕上げ。</p>
+          </article>
+          <article class="feature">
+            <h3><span class="feature-chip">Crop</span>構図調整</h3>
+            <p>アスペクト比トリミング、左右・上下反転、90度回転に対応。</p>
+          </article>
+          <article class="feature">
+            <h3><span class="feature-chip">Compare</span>比較表示</h3>
+            <p>補正後、補正前、分割比較を切り替え。分割ラインはドラッグ可能。</p>
+          </article>
+          <article class="feature">
+            <h3><span class="feature-chip">Assist</span>作業支援</h3>
+            <p>Undo/Redo、三分割グリッド、ルーラー、ドラッグ&ドロップ読み込み。</p>
+          </article>
+          <article class="feature">
+            <h3><span class="feature-chip">Export</span>書き出し</h3>
+            <p>PNG/JPEGへ出力。JPEGは品質を1〜100で指定できます。</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="guide">
+      <div class="section-card">
+        <h2>解説セクション（使い方）</h2>
+        <p>初回利用時の流れに沿って、基本操作を8ステップでまとめています。</p>
+        <div class="guide-grid">
+          <article class="step">
+            <h3><span class="idx">1</span>画像を読み込む</h3>
+            <ul>
+              <li><code>ファイル &gt; 画像を開く</code> または <kbd>Ctrl + O</kbd></li>
+              <li>プレビューへドラッグ&ドロップでも読み込み可能</li>
+              <li><code>最近使った画像</code> から再オープン可能</li>
+            </ul>
+          </article>
+          <article class="step">
+            <h3><span class="idx">2</span>基本補正を行う</h3>
+            <ul>
+              <li>明るさ、コントラスト、露出、ガンマで全体を整える</li>
+              <li>彩度、色温度、色かぶりで色味を調整</li>
+              <li>各項目のリセットボタンで個別初期化</li>
+            </ul>
+          </article>
+          <article class="step">
+            <h3><span class="idx">3</span>詳細補正で仕上げる</h3>
+            <ul>
+              <li>シャドウ/ハイライトで階調を調整</li>
+              <li>明瞭度、シャープで輪郭の見え方を調整</li>
+              <li>周辺減光で視線誘導を作る</li>
+            </ul>
+          </article>
+          <article class="step">
+            <h3><span class="idx">4</span>トリミングと構図調整</h3>
+            <ul>
+              <li>1:1、16:9、3:4などの比率を選択</li>
+              <li>トリミング枠をドラッグして位置とサイズを調整</li>
+              <li>90度回転、左右/上下反転に対応</li>
+            </ul>
+          </article>
+          <article class="step">
+            <h3><span class="idx">5</span>補正前後を比較</h3>
+            <ul>
+              <li><code>補正後</code> と <code>補正前</code> を切り替え</li>
+              <li><code>分割</code> モードで左右同時比較</li>
+              <li>中央ラインをドラッグして比較位置を変更</li>
+            </ul>
+          </article>
+          <article class="step">
+            <h3><span class="idx">6</span>ズームとパン</h3>
+            <ul>
+              <li>マウスホイールでズーム</li>
+              <li>左ドラッグまたは中ドラッグでパン移動</li>
+              <li>下部ツールバーの <code>＋ / −</code> でも操作可能</li>
+            </ul>
+          </article>
+          <article class="step">
+            <h3><span class="idx">7</span>書き出し</h3>
+            <ul>
+              <li><code>書き出し</code> または <kbd>Ctrl + Shift + S</kbd></li>
+              <li>PNG/JPEGを選択</li>
+              <li>JPEGは品質（1〜100）を指定</li>
+            </ul>
+          </article>
+          <article class="step">
+            <h3><span class="idx">8</span>設定を保存する</h3>
+            <ul>
+              <li><code>設定 &gt; アプリ設定...</code> で環境を最適化</li>
+              <li>テーマ、初期保存先、初期形式、初期品質を設定</li>
+              <li>グリッド表示もここで変更可能</li>
+            </ul>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="tips">
+      <div class="section-card">
+        <h2>ショートカットと補足</h2>
+        <div class="split-grid">
+          <article class="tile">
+            <h3>よく使うショートカット</h3>
+            <ul class="kbd-list">
+              <li><span>画像を開く</span><kbd>Ctrl + O</kbd></li>
+              <li><span>書き出し</span><kbd>Ctrl + Shift + S</kbd></li>
+              <li><span>元に戻す</span><kbd>Ctrl + Z</kbd></li>
+              <li><span>やり直す</span><kbd>Ctrl + Y</kbd></li>
+              <li><span>やり直す（代替）</span><kbd>Ctrl + Shift + Z</kbd></li>
+            </ul>
+          </article>
+          <article class="tile">
+            <h3>トラブル時</h3>
+            <ul>
+              <li><code>ヘルプ &gt; ログの書き出し...</code> でログをZIP保存</li>
+              <li>不具合報告時はログ添付で調査が速くなります</li>
+            </ul>
+            <p>
+              参考:
+              <a href="https://github.com/natuki53/VRCosme/issues">Issues</a> /
+              <a href="https://github.com/natuki53/VRCosme/releases">Releases</a>
+            </p>
+          </article>
+        </div>
+        <div class="status-note">
+          AIツール、マスク、プリセットUIの一部は準備中です。最新の進捗はGitHubのReleasesとIssuesで確認できます。
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="wrap footer-row">
+      <span>© VRCosme Documentation</span>
+      <span class="social-links">
+        <a href="https://github.com/natuki53/VRCosme" aria-label="GitHub">
+          <img src="./assets/icons/icon_github.svg" alt="">
+        </a>
+        <a href="https://x.com/mu_natuki" aria-label="X">
+          <img src="./assets/icons/icon_x.svg" alt="">
+        </a>
+      </span>
+    </div>
+  </footer>
+  <script src="./js/main.js" defer></script>
+</body>
+</html>
