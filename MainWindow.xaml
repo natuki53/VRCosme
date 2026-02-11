@@ -1,12 +1,904 @@
-﻿<Window x:Class="VRCosme.MainWindow"
+<Window x:Class="VRCosme.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:VRCosme"
+        xmlns:converters="clr-namespace:VRCosme.Converters"
+        xmlns:vm="clr-namespace:VRCosme.ViewModels"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
-    <Grid>
+        Title="{Binding WindowTitle}" Height="800" Width="1280"
+        MinHeight="560" MinWidth="900"
+        WindowStartupLocation="CenterScreen"
+        Background="{DynamicResource WindowBackgroundBrush}" Foreground="{DynamicResource WindowForegroundBrush}"
+        FontFamily="Segoe UI, Meiryo UI" FontSize="12"
+        Icon="pack://application:,,,/VRCosme;component/Resources/VRCosme_Icon.ico">
 
-    </Grid>
+    <Window.DataContext>
+        <vm:MainViewModel/>
+    </Window.DataContext>
+
+    <Window.InputBindings>
+        <KeyBinding Key="O"      Modifiers="Ctrl"       Command="{Binding OpenImageCommand}"/>
+        <KeyBinding Key="S"      Modifiers="Ctrl+Shift" Command="{Binding ExportCommand}"/>
+        <KeyBinding Key="Z"      Modifiers="Ctrl"       Command="{Binding UndoCommand}"/>
+        <KeyBinding Key="Y"      Modifiers="Ctrl"       Command="{Binding RedoCommand}"/>
+        <KeyBinding Key="Z"      Modifiers="Ctrl+Shift" Command="{Binding RedoCommand}"/>
+    </Window.InputBindings>
+
+    <Window.Resources>
+        <!-- ═══ コンバーター ═══ -->
+        <converters:InverseBoolToVisibilityConverter x:Key="InverseBoolToVis"/>
+        <BooleanToVisibilityConverter x:Key="BoolToVis"/>
+        <converters:SliderValueConverter x:Key="SliderValueBrightness"/>
+        <converters:SliderValueConverter x:Key="SliderValueContrast"/>
+        <converters:SliderValueConverter x:Key="SliderValueGamma"/>
+        <converters:SliderValueConverter x:Key="SliderValueExposure"/>
+        <converters:SliderValueConverter x:Key="SliderValueSaturation"/>
+        <converters:SliderValueConverter x:Key="SliderValueTemperature"/>
+        <converters:SliderValueConverter x:Key="SliderValueTint"/>
+        <converters:SliderValueConverter x:Key="SliderValueShadows"/>
+        <converters:SliderValueConverter x:Key="SliderValueHighlights"/>
+        <converters:SliderValueConverter x:Key="SliderValueClarity"/>
+        <converters:SliderValueConverter x:Key="SliderValueSharpen"/>
+        <converters:SliderValueConverter x:Key="SliderValueVignette"/>
+        <converters:SliderValueConverter x:Key="SliderValueJpegQuality"/>
+
+        <!-- ═══ ラベルスタイル ═══ -->
+        <Style x:Key="ParamLabel" TargetType="TextBlock">
+            <Setter Property="Foreground" Value="{DynamicResource LabelForegroundBrush}"/>
+            <Setter Property="FontSize" Value="11.5"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+        </Style>
+        <Style x:Key="ValueLabel" TargetType="TextBlock">
+            <Setter Property="Foreground" Value="{DynamicResource ValueLabelForegroundBrush}"/>
+            <Setter Property="FontSize" Value="11"/>
+            <Setter Property="MinWidth" Value="34"/>
+            <Setter Property="TextAlignment" Value="Right"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+        </Style>
+        <Style x:Key="ValueTextBox" TargetType="TextBox" BasedOn="{x:Null}">
+            <Setter Property="Foreground" Value="{DynamicResource ValueLabelForegroundBrush}"/>
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Padding" Value="2,1"/>
+            <Setter Property="FontSize" Value="11"/>
+            <Setter Property="MinWidth" Value="34"/>
+            <Setter Property="TextAlignment" Value="Right"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <EventSetter Event="PreviewKeyDown" Handler="ValueTextBox_PreviewKeyDown"/>
+        </Style>
+
+        <!-- ═══ MenuItem — 全ロール統一テンプレート ═══ -->
+        <Style TargetType="MenuItem">
+            <Setter Property="Foreground" Value="{DynamicResource WindowForegroundBrush}"/>
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="OverridesDefaultStyle" Value="True"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="MenuItem">
+                        <Grid>
+                            <Border x:Name="Bd" Background="{TemplateBinding Background}" Padding="8,5"
+                                    TextElement.Foreground="{TemplateBinding Foreground}"
+                                    SnapsToDevicePixels="True">
+                                <DockPanel>
+                                    <Path x:Name="Arrow" DockPanel.Dock="Right"
+                                          Data="M 0 0 L 4 3.5 L 0 7" Stroke="{DynamicResource TextSecondaryBrush}"
+                                          StrokeThickness="1" Stretch="Uniform" Width="5" Height="7"
+                                          VerticalAlignment="Center" Margin="16,0,0,0"
+                                          Visibility="Collapsed"/>
+                                    <TextBlock x:Name="Gesture" DockPanel.Dock="Right"
+                                               Text="{TemplateBinding InputGestureText}"
+                                               Foreground="{DynamicResource TextSecondaryBrush}" FontSize="11" Margin="24,0,0,0"
+                                               VerticalAlignment="Center" Visibility="Collapsed"/>
+                                    <!-- サブメニューでチェック用の幅を常に確保し、文字位置を揃える -->
+                                    <Grid x:Name="CheckArea" DockPanel.Dock="Left" Width="20" Visibility="Collapsed">
+                                        <Path x:Name="CheckMark"
+                                              Data="M 0 5 L 2.5 8 L 7 0" Stroke="{DynamicResource WindowForegroundBrush}"
+                                              StrokeThickness="1.8" Stretch="Uniform" Width="10" Height="10"
+                                              HorizontalAlignment="Left" VerticalAlignment="Center"
+                                              Visibility="Collapsed"/>
+                                    </Grid>
+                                    <ContentPresenter ContentSource="Header"
+                                                      RecognizesAccessKey="True"
+                                                      VerticalAlignment="Center"/>
+                                </DockPanel>
+                            </Border>
+                            <Popup x:Name="PART_Popup"
+                                   IsOpen="{Binding IsSubmenuOpen, RelativeSource={RelativeSource TemplatedParent}}"
+                                   AllowsTransparency="True" Focusable="False"
+                                   PopupAnimation="Fade" Placement="Bottom">
+                                <Border Background="{DynamicResource MenuPopupBackgroundBrush}" BorderBrush="{DynamicResource MenuPopupBorderBrush}"
+                                        BorderThickness="1" CornerRadius="6"
+                                        Padding="0,4" Margin="0,0,8,8">
+                                    <Border.Effect>
+                                        <DropShadowEffect Color="Black" BlurRadius="10" Opacity="0.4" ShadowDepth="2"/>
+                                    </Border.Effect>
+                                    <ScrollViewer VerticalScrollBarVisibility="Auto">
+                                        <StackPanel IsItemsHost="True"
+                                                    KeyboardNavigation.DirectionalNavigation="Cycle"/>
+                                    </ScrollViewer>
+                                </Border>
+                            </Popup>
+                        </Grid>
+                        <ControlTemplate.Triggers>
+                            <!-- SubmenuItem: チェック用の幅を確保＋ジェスチャーテキスト表示、パディング調整 -->
+                            <Trigger Property="Role" Value="SubmenuItem">
+                                <Setter TargetName="CheckArea" Property="Visibility" Value="Visible"/>
+                                <Setter TargetName="Gesture" Property="Visibility" Value="Visible"/>
+                                <Setter TargetName="Bd" Property="Padding" Value="28,6,12,6"/>
+                            </Trigger>
+                            <!-- チェック可能な項目でオン時はチェックマークを表示（CheckArea で幅は固定済みなので文字は動かない） -->
+                            <MultiTrigger>
+                                <MultiTrigger.Conditions>
+                                    <Condition Property="Role" Value="SubmenuItem"/>
+                                    <Condition Property="IsChecked" Value="True"/>
+                                </MultiTrigger.Conditions>
+                                <MultiTrigger.Setters>
+                                    <Setter TargetName="CheckMark" Property="Visibility" Value="Visible"/>
+                                </MultiTrigger.Setters>
+                            </MultiTrigger>
+                            <!-- SubmenuHeader: チェック用幅を確保（テキスト揃え）、矢印表示、Popup を右に配置 -->
+                            <Trigger Property="Role" Value="SubmenuHeader">
+                                <Setter TargetName="CheckArea" Property="Visibility" Value="Visible"/>
+                                <Setter TargetName="Arrow" Property="Visibility" Value="Visible"/>
+                                <Setter TargetName="Bd" Property="Padding" Value="28,6,12,6"/>
+                                <Setter TargetName="PART_Popup" Property="Placement" Value="Right"/>
+                                <Setter TargetName="PART_Popup" Property="HorizontalOffset" Value="-4"/>
+                            </Trigger>
+                            <!-- ハイライト (サブメニュー内) -->
+                            <Trigger Property="IsHighlighted" Value="True">
+                                <Setter TargetName="Bd" Property="Background" Value="{DynamicResource AccentBrush}"/>
+                                <Setter Property="Foreground" Value="White"/>
+                            </Trigger>
+                            <!-- トップレベルのハイライトは控えめに (上書き) -->
+                            <MultiTrigger>
+                                <MultiTrigger.Conditions>
+                                    <Condition Property="Role" Value="TopLevelHeader"/>
+                                    <Condition Property="IsHighlighted" Value="True"/>
+                                </MultiTrigger.Conditions>
+                                <MultiTrigger.Setters>
+                                    <Setter TargetName="Bd" Property="Background" Value="{DynamicResource ControlBackgroundBrush}"/>
+                                    <Setter Property="Foreground" Value="{DynamicResource WindowForegroundBrush}"/>
+                                </MultiTrigger.Setters>
+                            </MultiTrigger>
+                            <MultiTrigger>
+                                <MultiTrigger.Conditions>
+                                    <Condition Property="Role" Value="TopLevelHeader"/>
+                                    <Condition Property="IsSubmenuOpen" Value="True"/>
+                                </MultiTrigger.Conditions>
+                                <MultiTrigger.Setters>
+                                    <Setter TargetName="Bd" Property="Background" Value="{DynamicResource ControlBackgroundBrush}"/>
+                                </MultiTrigger.Setters>
+                            </MultiTrigger>
+                            <!-- 無効状態 -->
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter Property="Foreground" Value="{DynamicResource TextSecondaryBrush}"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- ═══ Separator ═══ -->
+        <Style TargetType="Separator">
+            <Setter Property="OverridesDefaultStyle" Value="True"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Separator">
+                        <Border Background="{DynamicResource SeparatorBrush}" Height="1" Margin="0,4"
+                                HorizontalAlignment="Stretch" SnapsToDevicePixels="True"/>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <Style x:Key="{x:Static MenuItem.SeparatorStyleKey}" TargetType="Separator"
+               BasedOn="{StaticResource {x:Type Separator}}"/>
+
+        <!-- ═══ スライダー ═══ -->
+        <Style TargetType="Slider">
+            <Setter Property="Focusable" Value="True"/>
+            <Setter Property="MinHeight" Value="24"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="Margin" Value="6,0"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Slider">
+                        <Border Background="Transparent" SnapsToDevicePixels="True" ClipToBounds="False" Padding="0,7">
+                            <Track x:Name="PART_Track">
+                                <Track.DecreaseRepeatButton>
+                                    <RepeatButton Command="Slider.DecreaseLarge" OverridesDefaultStyle="True" Focusable="False">
+                                        <RepeatButton.Template>
+                                            <ControlTemplate TargetType="RepeatButton">
+                                                <Border Height="3" CornerRadius="1.5" Background="{DynamicResource SliderTrackActiveBrush}"/>
+                                            </ControlTemplate>
+                                        </RepeatButton.Template>
+                                    </RepeatButton>
+                                </Track.DecreaseRepeatButton>
+                                <Track.IncreaseRepeatButton>
+                                    <RepeatButton Command="Slider.IncreaseLarge" OverridesDefaultStyle="True" Focusable="False">
+                                        <RepeatButton.Template>
+                                            <ControlTemplate TargetType="RepeatButton">
+                                                <Border Height="3" CornerRadius="1.5" Background="{DynamicResource SliderTrackInactiveBrush}"/>
+                                            </ControlTemplate>
+                                        </RepeatButton.Template>
+                                    </RepeatButton>
+                                </Track.IncreaseRepeatButton>
+                                <Track.Thumb>
+                                    <Thumb OverridesDefaultStyle="True" Focusable="False" Cursor="Hand">
+                                        <Thumb.Template>
+                                            <ControlTemplate TargetType="Thumb">
+                                                <Ellipse x:Name="Knob" Width="13" Height="13"
+                                                         Fill="{DynamicResource SliderThumbBrush}" Stroke="{DynamicResource AccentBrush}" StrokeThickness="2"/>
+                                                <ControlTemplate.Triggers>
+                                                    <Trigger Property="IsMouseOver" Value="True">
+                                                        <Setter TargetName="Knob" Property="Fill" Value="{DynamicResource SliderThumbHoverBrush}"/>
+                                                    </Trigger>
+                                                </ControlTemplate.Triggers>
+                                            </ControlTemplate>
+                                        </Thumb.Template>
+                                    </Thumb>
+                                </Track.Thumb>
+                            </Track>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- ═══ Expander (折りたたみセクション) ═══ -->
+        <Style TargetType="Expander">
+            <Setter Property="Foreground" Value="{DynamicResource ExpanderForegroundBrush}"/>
+            <Setter Property="IsExpanded" Value="True"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Expander">
+                        <StackPanel>
+                            <ToggleButton IsChecked="{Binding IsExpanded, RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay}"
+                                          Cursor="Hand" Focusable="False">
+                                <ToggleButton.Template>
+                                    <ControlTemplate TargetType="ToggleButton">
+                                        <Border Background="Transparent" Padding="0,10,0,6">
+                                            <DockPanel>
+                                                <Path x:Name="Arrow" DockPanel.Dock="Left"
+                                                      Data="M 0 0 L 5 4.5 L 0 9" Stroke="{DynamicResource ExpanderArrowBrush}"
+                                                      StrokeThickness="1.5" Width="9" Height="9"
+                                                      Stretch="Uniform" VerticalAlignment="Center"
+                                                      RenderTransformOrigin="0.5,0.5" Margin="0,1,8,0">
+                                                    <Path.RenderTransform>
+                                                        <RotateTransform x:Name="ArrowRotate" Angle="0"/>
+                                                    </Path.RenderTransform>
+                                                </Path>
+                                                <ContentPresenter Content="{Binding Header, RelativeSource={RelativeSource AncestorType=Expander}}"
+                                                                  TextElement.FontSize="12" TextElement.FontWeight="SemiBold"
+                                                                  TextElement.Foreground="{DynamicResource ExpanderHeaderForegroundBrush}" VerticalAlignment="Center"/>
+                                            </DockPanel>
+                                        </Border>
+                                        <ControlTemplate.Triggers>
+                                            <Trigger Property="IsChecked" Value="True">
+                                                <Setter TargetName="Arrow" Property="RenderTransform">
+                                                    <Setter.Value>
+                                                        <RotateTransform Angle="90"/>
+                                                    </Setter.Value>
+                                                </Setter>
+                                                <Setter TargetName="Arrow" Property="Stroke" Value="{DynamicResource LabelForegroundBrush}"/>
+                                            </Trigger>
+                                            <Trigger Property="IsMouseOver" Value="True">
+                                                <Setter TargetName="Arrow" Property="Stroke" Value="{DynamicResource ExpanderArrowHoverBrush}"/>
+                                            </Trigger>
+                                        </ControlTemplate.Triggers>
+                                    </ControlTemplate>
+                                </ToggleButton.Template>
+                            </ToggleButton>
+                            <ContentPresenter x:Name="Body" Visibility="Visible"
+                                              Content="{TemplateBinding Content}" Margin="17,2,0,10"/>
+                        </StackPanel>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsExpanded" Value="False">
+                                <Setter TargetName="Body" Property="Visibility" Value="Collapsed"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- ═══ パラメータリセットボタン ═══ -->
+        <Style x:Key="BtnParamReset" TargetType="Button">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="Padding" Value="0"/>
+            <Setter Property="MinWidth" Value="16"/>
+            <Setter Property="MinHeight" Value="16"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="Transparent" MinWidth="16" MinHeight="16">
+                            <TextBlock x:Name="Icon" Text="&#x21BA;" FontSize="12" Foreground="{DynamicResource ResetButtonForegroundBrush}"
+                                       HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Icon" Property="Foreground" Value="{DynamicResource ResetButtonHoverForegroundBrush}"/>
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter TargetName="Icon" Property="Visibility" Value="Hidden"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- ═══ ボタン: プライマリ ═══ -->
+        <Style x:Key="Btn" TargetType="Button">
+            <Setter Property="Background" Value="{DynamicResource ButtonBackgroundBrush}"/>
+            <Setter Property="Foreground" Value="{DynamicResource ButtonForegroundBrush}"/>
+            <Setter Property="BorderBrush" Value="{DynamicResource ControlBorderBrush}"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Padding" Value="10,5"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="FontSize" Value="11.5"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="Bd" Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="4" Padding="{TemplateBinding Padding}"
+                                SnapsToDevicePixels="True">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Bd" Property="Background" Value="{DynamicResource ButtonHoverBackgroundBrush}"/>
+                                <Setter TargetName="Bd" Property="BorderBrush" Value="{DynamicResource ControlBorderBrush}"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="Bd" Property="Background" Value="{DynamicResource ButtonPressedBackgroundBrush}"/>
+                                <Setter TargetName="Bd" Property="BorderBrush" Value="{DynamicResource ControlBorderBrush}"/>
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter TargetName="Bd" Property="Background" Value="{DynamicResource ButtonDisabledBackgroundBrush}"/>
+                                <Setter TargetName="Bd" Property="BorderBrush" Value="{DynamicResource ControlBorderBrush}"/>
+                                <Setter Property="Foreground" Value="{DynamicResource ButtonDisabledForegroundBrush}"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="BtnAccent" TargetType="Button" BasedOn="{StaticResource Btn}">
+            <Setter Property="Background" Value="{DynamicResource AccentBrush}"/>
+            <Setter Property="Foreground" Value="White"/>
+        </Style>
+
+        <!-- ═══ プリセットボタン ═══ -->
+        <Style x:Key="BtnPreset" TargetType="Button" BasedOn="{StaticResource Btn}">
+            <Setter Property="Padding" Value="8,5"/>
+            <Setter Property="Margin" Value="0,0,4,4"/>
+            <Setter Property="FontSize" Value="11"/>
+            <Setter Property="Background" Value="{DynamicResource PresetButtonBackgroundBrush}"/>
+        </Style>
+
+        <!-- ═══ ツールバーミニボタン ═══ -->
+        <Style x:Key="BtnTool" TargetType="Button" BasedOn="{StaticResource Btn}">
+            <Setter Property="Padding" Value="8,4"/>
+            <Setter Property="FontSize" Value="11"/>
+            <Setter Property="Background" Value="{DynamicResource ToolButtonBackgroundBrush}"/>
+        </Style>
+
+        <!-- ═══ トグル風ボタン ═══ -->
+        <Style x:Key="BtnToggle" TargetType="RadioButton">
+            <Setter Property="Foreground" Value="{DynamicResource LabelForegroundBrush}"/>
+            <Setter Property="FontSize" Value="11"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="RadioButton">
+                        <Border x:Name="Bd" Background="{DynamicResource ToggleButtonBackgroundBrush}" CornerRadius="3"
+                                Padding="9,4" Margin="0,0,2,0" BorderThickness="1" BorderBrush="{DynamicResource ToggleButtonBorderBrush}"
+                                SnapsToDevicePixels="True">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsChecked" Value="True">
+                                <Setter TargetName="Bd" Property="Background" Value="{DynamicResource AccentBrush}"/>
+                                <Setter TargetName="Bd" Property="BorderBrush" Value="{DynamicResource AccentBrush}"/>
+                                <Setter Property="Foreground" Value="White"/>
+                            </Trigger>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Bd" Property="Background" Value="{DynamicResource ToggleButtonHoverBackgroundBrush}"/>
+                                <Setter TargetName="Bd" Property="BorderBrush" Value="{DynamicResource ToggleButtonBorderBrush}"/>
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter TargetName="Bd" Property="BorderBrush" Value="{DynamicResource ToggleButtonBorderBrush}"/>
+                                <Setter TargetName="Bd" Property="Opacity" Value="0.6"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Window.Resources>
+
+    <DockPanel>
+        <!-- ╔════════════ メニューバー ════════════╗ -->
+        <Menu DockPanel.Dock="Top" Background="{DynamicResource MenuBarBackgroundBrush}" Padding="4,2">
+            <MenuItem Header="{DynamicResource Menu.File}">
+                <MenuItem Header="{DynamicResource Menu.File.OpenImage}" Command="{Binding OpenImageCommand}" InputGestureText="Ctrl+O"/>
+                <MenuItem Header="{DynamicResource Menu.File.RecentFiles}" x:Name="RecentFilesMenu" ItemsSource="{Binding RecentFiles}">
+                    <MenuItem.ItemContainerStyle>
+                        <Style TargetType="MenuItem" BasedOn="{StaticResource {x:Type MenuItem}}">
+                            <Setter Property="Header" Value="{Binding}"/>
+                            <Setter Property="Command" Value="{Binding DataContext.OpenRecentCommand, RelativeSource={RelativeSource AncestorType=Window}}"/>
+                            <Setter Property="CommandParameter" Value="{Binding}"/>
+                        </Style>
+                    </MenuItem.ItemContainerStyle>
+                </MenuItem>
+                <Separator/>
+                <MenuItem Header="{DynamicResource Menu.File.Export}" Command="{Binding ExportCommand}" InputGestureText="Ctrl+Shift+S"/>
+                <Separator/>
+                <MenuItem Header="{DynamicResource Menu.File.Exit}" Click="MenuExit_Click"/>
+            </MenuItem>
+            <MenuItem Header="{DynamicResource Menu.Edit}">
+                <MenuItem Header="{DynamicResource Menu.Edit.Undo}" Command="{Binding UndoCommand}" InputGestureText="Ctrl+Z"/>
+                <MenuItem Header="{DynamicResource Menu.Edit.Redo}" Command="{Binding RedoCommand}" InputGestureText="Ctrl+Y"/>
+                <Separator/>
+                <MenuItem Header="{DynamicResource Menu.Edit.PresetWip}" IsEnabled="False"/>
+                <Separator/>
+                <MenuItem Header="{DynamicResource Menu.Edit.ResetAdjustments}" Command="{Binding ResetAdjustmentsCommand}"/>
+                <MenuItem Header="{DynamicResource Menu.Edit.ResetAll}" Command="{Binding ResetAllCommand}"/>
+            </MenuItem>
+            <MenuItem Header="{DynamicResource Menu.View}">
+                <MenuItem Header="{DynamicResource Menu.View.Grid}" IsCheckable="True"
+                          IsChecked="{Binding ShowRuleOfThirdsGrid, Mode=TwoWay}"/>
+                <MenuItem Header="{DynamicResource Menu.View.Ruler}" IsCheckable="True"
+                          IsChecked="{Binding ShowRuler, Mode=TwoWay}"/>
+            </MenuItem>
+            <MenuItem Header="{DynamicResource Menu.AI}">
+                <MenuItem Header="{DynamicResource Menu.AI.AutoAdjustWip}" IsEnabled="False"/>
+                <MenuItem Header="{DynamicResource Menu.AI.DenoiseWip}" IsEnabled="False"/>
+                <MenuItem Header="{DynamicResource Menu.AI.UpscaleWip}" IsEnabled="False"/>
+                <MenuItem Header="{DynamicResource Menu.AI.AutoExposureWip}" IsEnabled="False"/>
+                <MenuItem Header="{DynamicResource Menu.AI.AutoWhiteBalanceWip}" IsEnabled="False"/>
+            </MenuItem>
+            <MenuItem Header="{DynamicResource Menu.Settings}">
+                <MenuItem Header="{DynamicResource Menu.Settings.AppSettings}" Click="Settings_Click"/>
+                <Separator/>
+                <MenuItem Header="{DynamicResource Menu.Settings.Theme}">
+                    <MenuItem Header="{DynamicResource Theme.System}" x:Name="ThemeSystemMenuItem" Click="ThemeMenuItem_Click" Tag="System" IsCheckable="True"/>
+                    <MenuItem Header="{DynamicResource Theme.Light}" x:Name="ThemeLightMenuItem" Click="ThemeMenuItem_Click" Tag="Light" IsCheckable="True"/>
+                    <MenuItem Header="{DynamicResource Theme.Dark}" x:Name="ThemeDarkMenuItem" Click="ThemeMenuItem_Click" Tag="Dark" IsCheckable="True"/>
+                </MenuItem>
+            </MenuItem>
+            <MenuItem Header="{DynamicResource Menu.Help}">
+                <MenuItem Header="{DynamicResource Menu.Help.ExportLogs}" Click="ExportLog_Click"/>
+                <Separator/>
+                <MenuItem Header="{DynamicResource Menu.Help.About}" Click="About_Click"/>
+            </MenuItem>
+        </Menu>
+
+        <!-- ╔════════════ ステータスバー ════════════╗ -->
+        <Border DockPanel.Dock="Bottom" Background="{DynamicResource StatusBarBackgroundBrush}" BorderBrush="{DynamicResource StatusBarBorderBrush}" BorderThickness="0,1,0,0"
+                Padding="12,4">
+            <DockPanel>
+                <TextBlock DockPanel.Dock="Right" Foreground="{DynamicResource TextSecondaryBrush}" FontSize="11"
+                           Text="{Binding StatusMessage}"/>
+                <TextBlock Foreground="{DynamicResource TextSecondaryBrush}" FontSize="11">
+                    <TextBlock.Style>
+                        <Style TargetType="TextBlock">
+                            <Setter Property="Visibility" Value="Collapsed"/>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding HasImage}" Value="True">
+                                    <Setter Property="Visibility" Value="Visible"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </TextBlock.Style>
+                    <Run Text="{Binding ImageWidth, Mode=OneWay}"/> <Run Text="×"/>
+                    <Run Text="{Binding ImageHeight, Mode=OneWay}"/> <Run Text="px"/>
+                </TextBlock>
+            </DockPanel>
+        </Border>
+
+        <!-- ╔════════════ 中央＋スプリッター＋右パネル ════════════╗ -->
+        <Grid x:Name="MainContentGrid">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="6"/>
+                <ColumnDefinition x:Name="RightPanelColumn" Width="350" MinWidth="220" MaxWidth="600"/>
+            </Grid.ColumnDefinitions>
+
+            <!-- ╔════════════ 中央: ルーラー＋プレビューエリア ════════════╗ -->
+            <Grid Grid.Column="0">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <!-- ルーラー隅 -->
+                <Border x:Name="RulerCorner" Grid.Row="0" Grid.Column="0" Width="24" Height="24"
+                        Background="{DynamicResource StatusBarBackgroundBrush}"
+                        BorderBrush="{DynamicResource SeparatorBrush}" BorderThickness="0,0,1,1"
+                        Visibility="{Binding ShowRuler, Converter={StaticResource BoolToVis}}"/>
+                <!-- 水平ルーラー -->
+                <Canvas x:Name="RulerHorizontal" Grid.Row="0" Grid.Column="1" Height="24"
+                        Background="{DynamicResource StatusBarBackgroundBrush}"
+                        Visibility="{Binding ShowRuler, Converter={StaticResource BoolToVis}}"/>
+                <!-- 垂直ルーラー -->
+                <Canvas x:Name="RulerVertical" Grid.Row="1" Grid.Column="0" Width="24"
+                        Background="{DynamicResource StatusBarBackgroundBrush}"
+                        Visibility="{Binding ShowRuler, Converter={StaticResource BoolToVis}}"/>
+                <!-- プレビューエリア -->
+                <Grid x:Name="PreviewArea" Grid.Row="1" Grid.Column="1" Background="{DynamicResource PreviewBackgroundBrush}"
+                      ClipToBounds="True"
+                      AllowDrop="True"
+                      DragEnter="PreviewArea_DragEnter"
+                      DragOver="PreviewArea_DragOver"
+                      Drop="PreviewArea_Drop"
+                      PreviewMouseWheel="PreviewArea_PreviewMouseWheel"
+                      PreviewMouseDown="PreviewArea_PreviewMouseDown"
+                      PreviewMouseMove="PreviewArea_PreviewMouseMove"
+                      PreviewMouseUp="PreviewArea_PreviewMouseUp">
+
+                <!-- ズーム・パン可能な画像コンテナ -->
+                <Grid x:Name="ImageContainer">
+                    <Grid.RenderTransform>
+                        <TransformGroup>
+                            <ScaleTransform x:Name="ZoomTransform"/>
+                            <TranslateTransform x:Name="PanTransform"/>
+                        </TransformGroup>
+                    </Grid.RenderTransform>
+
+                    <!-- プレビュー画像 (After) -->
+                    <Image x:Name="PreviewImage" Source="{Binding PreviewBitmap}"
+                           Stretch="Uniform"
+                           RenderOptions.BitmapScalingMode="HighQuality"/>
+
+                    <!-- プレビュー画像 (Before / Split) -->
+                    <Image x:Name="BeforePreviewImage" Source="{Binding BeforeBitmap}"
+                           Stretch="Uniform"
+                           RenderOptions.BitmapScalingMode="HighQuality"
+                           Visibility="Collapsed"/>
+                </Grid>
+
+                <!-- 分割線 (ドラッグ可能) -->
+                <Canvas x:Name="SplitLineCanvas" Visibility="Collapsed"/>
+
+                <!-- 三分割法グリッド線オーバーレイ -->
+                <Canvas x:Name="GridOverlayCanvas" Background="Transparent" ClipToBounds="True"
+                        IsHitTestVisible="False"/>
+
+                <!-- トリミングオーバーレイ -->
+                <Canvas x:Name="CropCanvas" Background="Transparent" ClipToBounds="True"
+                        Visibility="{Binding IsCropActive, Converter={StaticResource BoolToVis}}"
+                        MouseLeftButtonDown="CropCanvas_MouseLeftButtonDown"
+                        MouseMove="CropCanvas_MouseMove"
+                        MouseLeftButtonUp="CropCanvas_MouseLeftButtonUp"/>
+
+                <!-- ドロップヒント -->
+                <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center"
+                            Visibility="{Binding HasImage, Converter={StaticResource InverseBoolToVis}}">
+                    <Border Width="72" Height="72" CornerRadius="36" Background="{DynamicResource StatusBarBackgroundBrush}"
+                            HorizontalAlignment="Center" Margin="0,0,0,14">
+                        <TextBlock Text="&#xE722;" FontFamily="Segoe MDL2 Assets"
+                                   FontSize="28" Foreground="{DynamicResource TextSecondaryBrush}"
+                                   HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    </Border>
+                    <TextBlock Text="{DynamicResource DropHint.Line1}" FontSize="17" Foreground="{DynamicResource TextSecondaryBrush}"
+                               HorizontalAlignment="Center"/>
+                    <TextBlock Text="{DynamicResource DropHint.Line2}"
+                               FontSize="11" Foreground="{DynamicResource TextTertiaryBrush}"
+                               HorizontalAlignment="Center" Margin="0,6,0,0"/>
+                </StackPanel>
+
+                <!-- フローティングツールバー (ズーム・比較モード) -->
+                <Border x:Name="FloatingToolbar"
+                        VerticalAlignment="Bottom" HorizontalAlignment="Center"
+                        Margin="0,0,0,14" CornerRadius="6"
+                        Background="{DynamicResource StatusBarBackgroundBrush}" BorderBrush="{DynamicResource ControlBorderBrush}" BorderThickness="1"
+                        Padding="0,0,6,0"
+                        Visibility="{Binding HasImage, Converter={StaticResource BoolToVis}}">
+                    <Border.RenderTransform>
+                        <TranslateTransform x:Name="ToolbarTranslate"/>
+                    </Border.RenderTransform>
+                    <StackPanel Orientation="Horizontal">
+                        <!-- ドラッグハンドル -->
+                        <Border Background="Transparent" Cursor="SizeAll" Padding="6,6"
+                                MouseLeftButtonDown="ToolbarGrip_MouseLeftButtonDown"
+                                MouseMove="ToolbarGrip_MouseMove"
+                                MouseLeftButtonUp="ToolbarGrip_MouseLeftButtonUp">
+                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center" IsHitTestVisible="False">
+                                <Rectangle Width="2" Height="12" Fill="{DynamicResource TextSecondaryBrush}" RadiusX="1" RadiusY="1"/>
+                                <Rectangle Width="2" Height="12" Fill="{DynamicResource TextSecondaryBrush}" RadiusX="1" RadiusY="1" Margin="3,0,0,0"/>
+                            </StackPanel>
+                        </Border>
+
+                        <!-- ズーム -->
+                        <Button Content="−" Style="{StaticResource BtnTool}" Margin="0,4,2,4"
+                                Width="28" Padding="4,4" FontSize="14" Click="ZoomOut_Click"/>
+                        <TextBlock x:Name="ZoomLevelText" Text="{DynamicResource Zoom.Fit}"
+                                   Foreground="{DynamicResource LabelForegroundBrush}" FontSize="11"
+                                   VerticalAlignment="Center" Margin="4,0"
+                                   MinWidth="42" TextAlignment="Center"/>
+                        <Button Content="＋" Style="{StaticResource BtnTool}" Margin="2,4,6,4"
+                                Width="28" Padding="4,4" FontSize="14" Click="ZoomIn_Click"/>
+
+                        <Border Width="1" Background="{DynamicResource SeparatorBrush}" Margin="0,4"/>
+
+                        <!-- 比較モード -->
+                        <StackPanel Orientation="Horizontal" Margin="6,4,0,4">
+                            <RadioButton Content="{DynamicResource Compare.After}" Style="{StaticResource BtnToggle}" GroupName="Compare"
+                                         IsChecked="True"
+                                         Command="{Binding SetCompareModeCommand}" CommandParameter="After"/>
+                            <RadioButton Content="{DynamicResource Compare.Before}" Style="{StaticResource BtnToggle}" GroupName="Compare"
+                                         Command="{Binding SetCompareModeCommand}" CommandParameter="Before"/>
+                            <RadioButton Content="{DynamicResource Compare.Split}" Style="{StaticResource BtnToggle}" GroupName="Compare"
+                                         Command="{Binding SetCompareModeCommand}" CommandParameter="Split"/>
+                        </StackPanel>
+                    </StackPanel>
+                </Border>
+
+                <!-- 処理中オーバーレイ -->
+                <Border Background="{DynamicResource ProcessingOverlayBackgroundBrush}"
+                        Visibility="{Binding IsProcessing, Converter={StaticResource BoolToVis}}">
+                    <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
+                        <TextBlock Text="{Binding StatusMessage}" FontSize="14"
+                                   Foreground="{DynamicResource ProcessingOverlayForegroundBrush}"
+                                   HorizontalAlignment="Center"/>
+                    </StackPanel>
+                </Border>
+            </Grid>
+            </Grid>
+
+            <!-- 右パネル幅ドラッグ用スプリッター -->
+            <GridSplitter Grid.Column="1" Width="6" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+                          ResizeDirection="Columns" ResizeBehavior="PreviousAndNext"
+                          Background="Transparent" Cursor="SizeWE"
+                          ShowsPreview="False">
+                <GridSplitter.Template>
+                    <ControlTemplate TargetType="GridSplitter">
+                        <Border Background="{TemplateBinding Background}" Width="6">
+                            <Border Width="1" HorizontalAlignment="Left" Background="{DynamicResource SeparatorBrush}" Margin="2,0,0,0"/>
+                        </Border>
+                    </ControlTemplate>
+                </GridSplitter.Template>
+            </GridSplitter>
+
+            <!-- ╔════════════ 右パネル (編集) ════════════╗ -->
+            <Border Grid.Column="2" Background="{DynamicResource PanelBackgroundBrush}"
+                    BorderBrush="{DynamicResource PanelBorderBrush}" BorderThickness="1,0,0,0">
+                <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled"
+                             PreviewMouseLeftButtonDown="RightPanel_PreviewMouseLeftButtonDown"
+                             PreviewKeyDown="RightPanel_PreviewKeyDown">
+                <StackPanel Margin="14,4,14,16">
+
+                    <!-- ──── 基本補正 ──── -->
+                    <Expander Header="{DynamicResource Panel.BasicAdjustments}" IsExpanded="True">
+                        <StackPanel>
+                            <!-- 明るさ -->
+                            <Grid Margin="0,2"><Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="78"/><ColumnDefinition Width="Auto"/><ColumnDefinition Width="*"/><ColumnDefinition Width="34"/>
+                            </Grid.ColumnDefinitions>
+                                <TextBlock Text="{DynamicResource Field.Brightness}"      Style="{StaticResource ParamLabel}"/>
+                                <Button    Grid.Column="1"    Style="{StaticResource BtnParamReset}" Command="{Binding ResetParameterCommand}" CommandParameter="Brightness" IsEnabled="{Binding HasImage}"/>
+                                <Slider    Grid.Column="2"    Value="{Binding Brightness}" Minimum="-100" Maximum="100" SmallChange="1" IsEnabled="{Binding HasImage}"/>
+                                <TextBox  Grid.Column="3"    Style="{StaticResource ValueTextBox}" IsEnabled="{Binding HasImage}"
+                                          Text="{Binding Brightness, Converter={StaticResource SliderValueBrightness}, ConverterParameter='-100,100,F0', UpdateSourceTrigger=LostFocus}"/>
+                            </Grid>
+                            <!-- コントラスト -->
+                            <Grid Margin="0,2"><Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="78"/><ColumnDefinition Width="Auto"/><ColumnDefinition Width="*"/><ColumnDefinition Width="34"/>
+                            </Grid.ColumnDefinitions>
+                                <TextBlock Text="{DynamicResource Field.Contrast}" Style="{StaticResource ParamLabel}"/>
+                                <Button    Grid.Column="1"    Style="{StaticResource BtnParamReset}" Command="{Binding ResetParameterCommand}" CommandParameter="Contrast" IsEnabled="{Binding HasImage}"/>
+                                <Slider    Grid.Column="2"    Value="{Binding Contrast}" Minimum="-100" Maximum="100" SmallChange="1" IsEnabled="{Binding HasImage}"/>
+                                <TextBox  Grid.Column="3"    Style="{StaticResource ValueTextBox}" IsEnabled="{Binding HasImage}"
+                                          Text="{Binding Contrast, Converter={StaticResource SliderValueContrast}, ConverterParameter='-100,100,F0', UpdateSourceTrigger=LostFocus}"/>
+                            </Grid>
+                            <!-- ガンマ -->
+                            <Grid Margin="0,2"><Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="78"/><ColumnDefinition Width="Auto"/><ColumnDefinition Width="*"/><ColumnDefinition Width="34"/>
+                            </Grid.ColumnDefinitions>
+                                <TextBlock Text="{DynamicResource Field.Gamma}"      Style="{StaticResource ParamLabel}"/>
+                                <Button    Grid.Column="1"    Style="{StaticResource BtnParamReset}" Command="{Binding ResetParameterCommand}" CommandParameter="Gamma" IsEnabled="{Binding HasImage}"/>
+                                <Slider    Grid.Column="2"    Value="{Binding Gamma}" Minimum="0.2" Maximum="5.0" SmallChange="0.05" LargeChange="0.2" IsEnabled="{Binding HasImage}"/>
+                                <TextBox  Grid.Column="3"    Style="{StaticResource ValueTextBox}" IsEnabled="{Binding HasImage}"
+                                          Text="{Binding Gamma, Converter={StaticResource SliderValueGamma}, ConverterParameter='0.2,5.0,F2', UpdateSourceTrigger=LostFocus}"/>
+                            </Grid>
+                            <!-- 露出 -->
+                            <Grid Margin="0,2"><Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="78"/><ColumnDefinition Width="Auto"/><ColumnDefinition Width="*"/><ColumnDefinition Width="34"/>
+                            </Grid.ColumnDefinitions>
+                                <TextBlock Text="{DynamicResource Field.Exposure}"        Style="{StaticResource ParamLabel}"/>
+                                <Button    Grid.Column="1"    Style="{StaticResource BtnParamReset}" Command="{Binding ResetParameterCommand}" CommandParameter="Exposure" IsEnabled="{Binding HasImage}"/>
+                                <Slider    Grid.Column="2"    Value="{Binding Exposure}" Minimum="-5" Maximum="5" SmallChange="0.1" LargeChange="0.5" IsEnabled="{Binding HasImage}"/>
+                                <TextBox  Grid.Column="3"    Style="{StaticResource ValueTextBox}" IsEnabled="{Binding HasImage}"
+                                          Text="{Binding Exposure, Converter={StaticResource SliderValueExposure}, ConverterParameter='-5,5,F1', UpdateSourceTrigger=LostFocus}"/>
+                            </Grid>
+                            <!-- 彩度 -->
+                            <Grid Margin="0,2"><Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="78"/><ColumnDefinition Width="Auto"/><ColumnDefinition Width="*"/><ColumnDefinition Width="34"/>
+                            </Grid.ColumnDefinitions>
+                                <TextBlock Text="{DynamicResource Field.Saturation}"        Style="{StaticResource ParamLabel}"/>
+                                <Button    Grid.Column="1"    Style="{StaticResource BtnParamReset}" Command="{Binding ResetParameterCommand}" CommandParameter="Saturation" IsEnabled="{Binding HasImage}"/>
+                                <Slider    Grid.Column="2"    Value="{Binding Saturation}" Minimum="-100" Maximum="100" SmallChange="1" IsEnabled="{Binding HasImage}"/>
+                                <TextBox  Grid.Column="3"    Style="{StaticResource ValueTextBox}" IsEnabled="{Binding HasImage}"
+                                          Text="{Binding Saturation, Converter={StaticResource SliderValueSaturation}, ConverterParameter='-100,100,F0', UpdateSourceTrigger=LostFocus}"/>
+                            </Grid>
+                            <!-- 色温度 -->
+                            <Grid Margin="0,2"><Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="78"/><ColumnDefinition Width="Auto"/><ColumnDefinition Width="*"/><ColumnDefinition Width="34"/>
+                            </Grid.ColumnDefinitions>
+                                <TextBlock Text="{DynamicResource Field.Temperature}"      Style="{StaticResource ParamLabel}"/>
+                                <Button    Grid.Column="1"    Style="{StaticResource BtnParamReset}" Command="{Binding ResetParameterCommand}" CommandParameter="Temperature" IsEnabled="{Binding HasImage}"/>
+                                <Slider    Grid.Column="2"    Value="{Binding Temperature}" Minimum="-100" Maximum="100" SmallChange="1" IsEnabled="{Binding HasImage}"/>
+                                <TextBox  Grid.Column="3"    Style="{StaticResource ValueTextBox}" IsEnabled="{Binding HasImage}"
+                                          Text="{Binding Temperature, Converter={StaticResource SliderValueTemperature}, ConverterParameter='-100,100,F0', UpdateSourceTrigger=LostFocus}"/>
+                            </Grid>
+                            <!-- 色かぶり -->
+                            <Grid Margin="0,2"><Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="78"/><ColumnDefinition Width="Auto"/><ColumnDefinition Width="*"/><ColumnDefinition Width="34"/>
+                            </Grid.ColumnDefinitions>
+                                <TextBlock Text="{DynamicResource Field.Tint}"    Style="{StaticResource ParamLabel}"/>
+                                <Button    Grid.Column="1"    Style="{StaticResource BtnParamReset}" Command="{Binding ResetParameterCommand}" CommandParameter="Tint" IsEnabled="{Binding HasImage}"/>
+                                <Slider    Grid.Column="2"    Value="{Binding Tint}" Minimum="-100" Maximum="100" SmallChange="1" IsEnabled="{Binding HasImage}"/>
+                                <TextBox  Grid.Column="3"    Style="{StaticResource ValueTextBox}" IsEnabled="{Binding HasImage}"
+                                          Text="{Binding Tint, Converter={StaticResource SliderValueTint}, ConverterParameter='-100,100,F0', UpdateSourceTrigger=LostFocus}"/>
+                            </Grid>
+
+                            <Button Content="{DynamicResource Button.ResetAdjustments}" Style="{StaticResource Btn}" HorizontalAlignment="Left"
+                                    Command="{Binding ResetAdjustmentsCommand}" Margin="0,6,0,0"/>
+                        </StackPanel>
+                    </Expander>
+
+                    <!-- ──── VRChat向けプリセット ──── -->
+                    <Expander Header="{DynamicResource Panel.PresetWip}" IsExpanded="False">
+                        <StackPanel>
+                            <Button Content="{DynamicResource Button.ApplyPresetWip}" Style="{StaticResource Btn}" IsEnabled="False" HorizontalAlignment="Left"/>
+                        </StackPanel>
+                    </Expander>
+
+                    <!-- ──── トリミング・構図 ──── -->
+                    <Expander Header="{DynamicResource Panel.CropComposition}" IsExpanded="False">
+                        <StackPanel>
+                            <TextBlock Text="{DynamicResource Field.AspectRatio}" Style="{StaticResource ParamLabel}" Margin="0,0,0,4"/>
+                            <ComboBox ItemsSource="{Binding CropRatios}"
+                                      SelectedItem="{Binding SelectedCropRatio}"
+                                      IsEnabled="{Binding HasImage}" Margin="0,0,0,8"
+/>
+
+                            <TextBlock Text="{DynamicResource Field.RotateFlip}" Style="{StaticResource ParamLabel}" Margin="0,4,0,4"/>
+                            <WrapPanel>
+                                <Button Content="{DynamicResource Button.RotateClockwise}"  Style="{StaticResource Btn}" Margin="0,0,4,4" IsEnabled="{Binding HasImage}"
+                                        Command="{Binding RotateClockwiseCommand}"/>
+                                <Button Content="{DynamicResource Button.RotateCounterClockwise}"  Style="{StaticResource Btn}" Margin="0,0,4,4" IsEnabled="{Binding HasImage}"
+                                        Command="{Binding RotateCounterClockwiseCommand}"/>
+                                <Button Content="{DynamicResource Button.FlipHorizontal}"    Style="{StaticResource Btn}" Margin="0,0,4,4" IsEnabled="{Binding HasImage}"
+                                        Command="{Binding FlipHorizontalCommand}"/>
+                                <Button Content="{DynamicResource Button.FlipVertical}"    Style="{StaticResource Btn}" Margin="0,0,4,4" IsEnabled="{Binding HasImage}"
+                                        Command="{Binding FlipVerticalCommand}"/>
+                            </WrapPanel>
+
+                            <Button Content="{DynamicResource Button.ResetCrop}" Style="{StaticResource Btn}" HorizontalAlignment="Left"
+                                    Command="{Binding ResetCropCommand}" Margin="0,4,0,0"/>
+                        </StackPanel>
+                    </Expander>
+
+                    <!-- ──── 詳細補正 ──── -->
+                    <Expander Header="{DynamicResource Panel.DetailedAdjustments}" IsExpanded="False">
+                        <StackPanel>
+                            <!-- シャドウ -->
+                            <Grid Margin="0,2"><Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="78"/><ColumnDefinition Width="Auto"/><ColumnDefinition Width="*"/><ColumnDefinition Width="34"/>
+                            </Grid.ColumnDefinitions>
+                                <TextBlock Text="{DynamicResource Field.Shadows}"    Style="{StaticResource ParamLabel}"/>
+                                <Button    Grid.Column="1"    Style="{StaticResource BtnParamReset}" Command="{Binding ResetParameterCommand}" CommandParameter="Shadows" IsEnabled="{Binding HasImage}"/>
+                                <Slider    Grid.Column="2"    Value="{Binding Shadows}" Minimum="-100" Maximum="100" SmallChange="1" IsEnabled="{Binding HasImage}"/>
+                                <TextBox  Grid.Column="3"    Style="{StaticResource ValueTextBox}" IsEnabled="{Binding HasImage}"
+                                          Text="{Binding Shadows, Converter={StaticResource SliderValueShadows}, ConverterParameter='-100,100,F0', UpdateSourceTrigger=LostFocus}"/>
+                            </Grid>
+                            <!-- ハイライト -->
+                            <Grid Margin="0,2"><Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="78"/><ColumnDefinition Width="Auto"/><ColumnDefinition Width="*"/><ColumnDefinition Width="34"/>
+                            </Grid.ColumnDefinitions>
+                                <TextBlock Text="{DynamicResource Field.Highlights}"  Style="{StaticResource ParamLabel}"/>
+                                <Button    Grid.Column="1"    Style="{StaticResource BtnParamReset}" Command="{Binding ResetParameterCommand}" CommandParameter="Highlights" IsEnabled="{Binding HasImage}"/>
+                                <Slider    Grid.Column="2"    Value="{Binding Highlights}" Minimum="-100" Maximum="100" SmallChange="1" IsEnabled="{Binding HasImage}"/>
+                                <TextBox  Grid.Column="3"    Style="{StaticResource ValueTextBox}" IsEnabled="{Binding HasImage}"
+                                          Text="{Binding Highlights, Converter={StaticResource SliderValueHighlights}, ConverterParameter='-100,100,F0', UpdateSourceTrigger=LostFocus}"/>
+                            </Grid>
+                            <!-- 明瞭度 -->
+                            <Grid Margin="0,2"><Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="78"/><ColumnDefinition Width="Auto"/><ColumnDefinition Width="*"/><ColumnDefinition Width="34"/>
+                            </Grid.ColumnDefinitions>
+                                <TextBlock Text="{DynamicResource Field.Clarity}"      Style="{StaticResource ParamLabel}"/>
+                                <Button    Grid.Column="1"    Style="{StaticResource BtnParamReset}" Command="{Binding ResetParameterCommand}" CommandParameter="Clarity" IsEnabled="{Binding HasImage}"/>
+                                <Slider    Grid.Column="2"    Value="{Binding Clarity}" Minimum="-100" Maximum="100" SmallChange="1" IsEnabled="{Binding HasImage}"/>
+                                <TextBox  Grid.Column="3"    Style="{StaticResource ValueTextBox}" IsEnabled="{Binding HasImage}"
+                                          Text="{Binding Clarity, Converter={StaticResource SliderValueClarity}, ConverterParameter='-100,100,F0', UpdateSourceTrigger=LostFocus}"/>
+                            </Grid>
+                            <!-- シャープ -->
+                            <Grid Margin="0,2"><Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="78"/><ColumnDefinition Width="Auto"/><ColumnDefinition Width="*"/><ColumnDefinition Width="34"/>
+                            </Grid.ColumnDefinitions>
+                                <TextBlock Text="{DynamicResource Field.Sharpen}"    Style="{StaticResource ParamLabel}"/>
+                                <Button    Grid.Column="1"    Style="{StaticResource BtnParamReset}" Command="{Binding ResetParameterCommand}" CommandParameter="Sharpen" IsEnabled="{Binding HasImage}"/>
+                                <Slider    Grid.Column="2"    Value="{Binding Sharpen}" Minimum="0" Maximum="100" SmallChange="1" IsEnabled="{Binding HasImage}"/>
+                                <TextBox  Grid.Column="3"    Style="{StaticResource ValueTextBox}" IsEnabled="{Binding HasImage}"
+                                          Text="{Binding Sharpen, Converter={StaticResource SliderValueSharpen}, ConverterParameter='0,100,F0', UpdateSourceTrigger=LostFocus}"/>
+                            </Grid>
+                            <!-- 周辺減光 -->
+                            <Grid Margin="0,2"><Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="78"/><ColumnDefinition Width="Auto"/><ColumnDefinition Width="*"/><ColumnDefinition Width="34"/>
+                            </Grid.ColumnDefinitions>
+                                <TextBlock Text="{DynamicResource Field.Vignette}"    Style="{StaticResource ParamLabel}"/>
+                                <Button    Grid.Column="1"    Style="{StaticResource BtnParamReset}" Command="{Binding ResetParameterCommand}" CommandParameter="Vignette" IsEnabled="{Binding HasImage}"/>
+                                <Slider    Grid.Column="2"    Value="{Binding Vignette}" Minimum="-100" Maximum="100" SmallChange="1" IsEnabled="{Binding HasImage}"/>
+                                <TextBox  Grid.Column="3"    Style="{StaticResource ValueTextBox}" IsEnabled="{Binding HasImage}"
+                                          Text="{Binding Vignette, Converter={StaticResource SliderValueVignette}, ConverterParameter='-100,100,F0', UpdateSourceTrigger=LostFocus}"/>
+                            </Grid>
+                        </StackPanel>
+                    </Expander>
+
+                    <!-- ──── マスク (将来AI対応) ──── -->
+                    <Expander Header="{DynamicResource Panel.Mask}" IsExpanded="False">
+                        <StackPanel>
+                            <TextBlock Text="{DynamicResource Mask.Description}"
+                                       Foreground="#606060" FontSize="11" TextWrapping="Wrap" Margin="0,0,0,4"/>
+                            <Button Content="{DynamicResource Button.SelectSubjectWip}" Style="{StaticResource Btn}" IsEnabled="False" HorizontalAlignment="Left" Margin="0,2"/>
+                            <Button Content="{DynamicResource Button.AdjustBackgroundWip}" Style="{StaticResource Btn}" IsEnabled="False" HorizontalAlignment="Left" Margin="0,2"/>
+                            <Button Content="{DynamicResource Button.AdjustAvatarWip}" Style="{StaticResource Btn}" IsEnabled="False" HorizontalAlignment="Left" Margin="0,2"/>
+                        </StackPanel>
+                    </Expander>
+
+                    <!-- ──── 書き出し ──── -->
+                    <Expander Header="{DynamicResource Panel.Export}" IsExpanded="True">
+                        <StackPanel>
+                            <TextBlock Text="{DynamicResource Field.Format}" Style="{StaticResource ParamLabel}" Margin="0,0,0,3"/>
+                            <ComboBox ItemsSource="{Binding ExportFormats}"
+                                      SelectedItem="{Binding SelectedExportFormat}"
+                                      Margin="0,0,0,6"/>
+
+                            <!-- JPEG品質 -->
+                            <StackPanel>
+                                <StackPanel.Style>
+                                    <Style TargetType="StackPanel">
+                                        <Setter Property="Visibility" Value="Collapsed"/>
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding IsJpegSelected}" Value="True">
+                                                <Setter Property="Visibility" Value="Visible"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </StackPanel.Style>
+                                <Grid Margin="0,0,0,6"><Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="78"/><ColumnDefinition Width="*"/><ColumnDefinition Width="34"/>
+                                </Grid.ColumnDefinitions>
+                                    <TextBlock Text="{DynamicResource Field.JpegQuality}" Style="{StaticResource ParamLabel}"/>
+                                    <Slider Grid.Column="1" Value="{Binding JpegQuality}" Minimum="1" Maximum="100" SmallChange="1" TickFrequency="1" IsSnapToTickEnabled="True"/>
+                                    <TextBox  Grid.Column="2" Style="{StaticResource ValueTextBox}"
+                                          Text="{Binding JpegQuality, Converter={StaticResource SliderValueJpegQuality}, ConverterParameter='1,100,F0', UpdateSourceTrigger=LostFocus}"/>
+                                </Grid>
+                            </StackPanel>
+
+                            <Button Content="{DynamicResource Button.Export}" Style="{StaticResource BtnAccent}"
+                                    HorizontalAlignment="Stretch"
+                                    Command="{Binding ExportCommand}" IsEnabled="{Binding HasImage}"/>
+                        </StackPanel>
+                    </Expander>
+
+                </StackPanel>
+            </ScrollViewer>
+            </Border>
+        </Grid>
+    </DockPanel>
 </Window>
+
