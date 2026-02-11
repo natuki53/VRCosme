@@ -87,6 +87,12 @@ public partial class SettingsDialog : Window
             ExportDirTextBox.Text = dialog.FolderName;
     }
 
+    private void OpenAutoMaskSettings_Click(object sender, RoutedEventArgs e)
+    {
+        var dialog = new AutoMaskSettingsDialog { Owner = this };
+        dialog.ShowDialog();
+    }
+
     private void OK_Click(object sender, RoutedEventArgs e)
     {
         var selectedLanguage = LocalizationService.NormalizeLanguageCode(

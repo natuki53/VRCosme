@@ -1,10 +1,12 @@
 using System.Linq;
+using System.Collections.Generic;
 using Microsoft.Win32;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using System.Windows.Media.Effects;
 using System.Windows.Shapes;
 using VRCosme.Models;
 using VRCosme.Services;
@@ -44,9 +46,14 @@ public partial class MainWindow : Window
     private bool _isPanning;
     private Point _lastPanPoint;
     private MouseButton _panButton;
+    private bool _isMaskLassoing;
+    private readonly List<(double X, double Y)> _maskLassoPoints = [];
+    private Path? _maskOutlinePath;
+    private Path? _maskLassoPath;
     private const double MinZoom = 0.1;
     private const double MaxZoom = 50.0;
     private const double WheelZoomFactor = 1.15;
+    private const double MinMaskLassoPointDistanceSq = 1.0;
 
     private const double RightPanelMinWidth = 220;
     private const double RightPanelMaxWidth = 600;
@@ -69,6 +76,7 @@ public partial class MainWindow : Window
         InitCropOverlayElements();
         InitSplitLine();
         InitGridOverlay();
+        InitMaskOverlayElements();
         UpdateThemeMenuCheckmarks();
 
         ViewModel.PropertyChanged += (_, args) =>
@@ -89,7 +97,27 @@ public partial class MainWindow : Window
 
             // 新しい画像読み込み時にズーム・パンをリセット
             if (args.PropertyName == nameof(MainViewModel.SourceFilePath))
+            {
+                CancelMaskLasso();
                 ResetZoomPan();
+            }
+
+            if ((args.PropertyName is nameof(MainViewModel.IsMaskEditing)
+                or nameof(MainViewModel.IsMaskAutoSelectMode)) && !_isPanning)
+            {
+                if (!ViewModel.IsMaskEditing)
+                    CancelMaskLasso();
+                PreviewArea.Cursor = (ViewModel.IsMaskEditing || ViewModel.IsMaskAutoSelectMode) && ViewModel.HasSelectedMaskLayer
+                    ? Cursors.Cross
+                    : null;
+            }
+
+            if (args.PropertyName is nameof(MainViewModel.SelectedMaskLayer)
+                or nameof(MainViewModel.MaskCoverage)
+                or nameof(MainViewModel.SourceFilePath))
+            {
+                UpdateMaskOutlineOverlay();
+            }
         };
 
         ViewModel.CompareModeChanged += OnCompareModeChanged;
@@ -606,13 +634,41 @@ public partial class MainWindow : Window
         e.Handled = true;
     }
 
-    private void PreviewArea_PreviewMouseDown(object sender, MouseButtonEventArgs e)
+    private async void PreviewArea_PreviewMouseDown(object sender, MouseButtonEventArgs e)
     {
         if (!ViewModel.HasImage) return;
 
         // ツールバー上のクリックはパンしない
         if (IsDescendantOf(e.OriginalSource as DependencyObject, FloatingToolbar))
             return;
+
+        if (ViewModel.IsMaskAutoSelectMode && ViewModel.HasSelectedMaskLayer && e.ChangedButton == MouseButton.Left)
+        {
+            if (TryMapPreviewToImage(e.GetPosition(PreviewArea), out var imagePoint, out var insideImage) && insideImage)
+            {
+                e.Handled = true;
+                await ViewModel.AutoSelectMaskAtAsync(imagePoint.X, imagePoint.Y);
+                UpdateMaskOutlineOverlay();
+            }
+            return;
+        }
+
+        // マスク編集モード時の左ドラッグはラッソ描画に使用
+        if (ViewModel.IsMaskEditing && ViewModel.HasSelectedMaskLayer && e.ChangedButton == MouseButton.Left)
+        {
+            if (TryMapPreviewToImage(e.GetPosition(PreviewArea), out var imagePoint, out var insideImage) && insideImage)
+            {
+                _isMaskLassoing = true;
+                _maskLassoPoints.Clear();
+                _maskLassoPoints.Add((imagePoint.X, imagePoint.Y));
+                PreviewArea.CaptureMouse();
+                PreviewArea.Cursor = Cursors.Cross;
+                UpdateMaskLassoOverlay();
+
+                e.Handled = true;
+            }
+            return;
+        }
 
         // 中クリック → 常にパン
         if (e.ChangedButton == MouseButton.Middle && _dragMode == DragMode.None)
@@ -622,6 +678,8 @@ public partial class MainWindow : Window
         // 左クリック → トリミング非アクティブ時のみパン (分割線付近は除外)
         else if (e.ChangedButton == MouseButton.Left
                  && !ViewModel.IsCropActive
+                 && !ViewModel.IsMaskEditing
+                 && !ViewModel.IsMaskAutoSelectMode
                  && _dragMode == DragMode.None
                  && !_isPanning
                  && !IsNearSplitLine(e.GetPosition(PreviewArea)))
@@ -643,6 +701,21 @@ public partial class MainWindow : Window
 
     private void PreviewArea_PreviewMouseMove(object sender, MouseEventArgs e)
     {
+        if (_isMaskLassoing)
+        {
+            if (TryMapPreviewToImage(e.GetPosition(PreviewArea), out var imagePoint, out _))
+            {
+                AddLassoPoint(imagePoint);
+                UpdateMaskLassoOverlay();
+            }
+
+            e.Handled = true;
+            return;
+        }
+
+        if ((ViewModel.IsMaskEditing || ViewModel.IsMaskAutoSelectMode) && ViewModel.HasSelectedMaskLayer && !_isPanning)
+            PreviewArea.Cursor = Cursors.Cross;
+
         if (!_isPanning) return;
 
         var pos = e.GetPosition(PreviewArea);
@@ -656,12 +729,75 @@ public partial class MainWindow : Window
 
     private void PreviewArea_PreviewMouseUp(object sender, MouseButtonEventArgs e)
     {
+        if (_isMaskLassoing && e.ChangedButton == MouseButton.Left)
+        {
+            CompleteMaskLasso();
+            e.Handled = true;
+            return;
+        }
+
         if (_isPanning && e.ChangedButton == _panButton)
         {
             _isPanning = false;
             PreviewArea.ReleaseMouseCapture();
-            PreviewArea.Cursor = null;
+            PreviewArea.Cursor = (ViewModel.IsMaskEditing || ViewModel.IsMaskAutoSelectMode) && ViewModel.HasSelectedMaskLayer
+                ? Cursors.Cross
+                : null;
             e.Handled = true;
+        }
+    }
+
+    private void MaskLayerList_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+    {
+        if (MaskLayerList.SelectedItem == null) return;
+        OpenMaskAdjustmentsPopup();
+    }
+
+    private void RenameMaskLayer_Click(object sender, RoutedEventArgs e)
+    {
+        if (!ViewModel.HasSelectedMaskLayer) return;
+        var current = ViewModel.GetSelectedMaskLayerName();
+        var dialog = new MaskRenameDialog(current) { Owner = this };
+        if (dialog.ShowDialog() == true)
+        {
+            ViewModel.RenameSelectedMaskLayer(dialog.MaskName);
+        }
+    }
+
+    private void AutoMaskSettings_Click(object sender, RoutedEventArgs e)
+    {
+        var dialog = new AutoMaskSettingsDialog { Owner = this };
+        dialog.ShowDialog();
+    }
+
+    private void OpenMaskAdjustmentsPopup()
+    {
+        if (!ViewModel.HasSelectedMaskLayer) return;
+        var layerName = ViewModel.GetSelectedMaskLayerName();
+        var initial = ViewModel.GetSelectedMaskAdjustmentValues();
+        var dialog = new MaskAdjustmentsDialog(layerName, initial) { Owner = this };
+        void OnValuesChanged(MaskAdjustmentValues values) =>
+            ViewModel.PreviewSelectedMaskAdjustments(values);
+
+        dialog.ValuesChanged += OnValuesChanged;
+        bool? result;
+        try
+        {
+            result = dialog.ShowDialog();
+        }
+        finally
+        {
+            dialog.ValuesChanged -= OnValuesChanged;
+        }
+
+        if (result == true)
+        {
+            ViewModel.ClearSelectedMaskAdjustmentsPreview(schedulePreview: false);
+            ViewModel.ApplySelectedMaskAdjustments(dialog.Values);
+        }
+        else
+        {
+            ViewModel.ClearSelectedMaskAdjustmentsPreview();
         }
     }
 
@@ -732,6 +868,8 @@ public partial class MainWindow : Window
     private void UpdateAllOverlays()
     {
         UpdateCropOverlay();
+        UpdateMaskOutlineOverlay();
+        UpdateMaskLassoOverlay();
         UpdateGridOverlay();
         UpdateRulerOverlay();
         if (ViewModel.CompareMode == CompareMode.Split)
@@ -806,6 +944,8 @@ public partial class MainWindow : Window
     private void OnImageLayoutChanged()
     {
         UpdateCropOverlay();
+        UpdateMaskOutlineOverlay();
+        UpdateMaskLassoOverlay();
         UpdateGridOverlay();
         UpdateRulerOverlay();
         if (ViewModel.CompareMode == CompareMode.Split)
@@ -879,6 +1019,50 @@ public partial class MainWindow : Window
         }
     }
 
+    private void InitMaskOverlayElements()
+    {
+        _maskOutlinePath = new Path
+        {
+            Stroke = new SolidColorBrush(Color.FromRgb(232, 236, 246)),
+            StrokeThickness = 1.2,
+            StrokeDashArray = new DoubleCollection { 1.5, 2.5 },
+            StrokeStartLineCap = PenLineCap.Round,
+            StrokeEndLineCap = PenLineCap.Round,
+            SnapsToDevicePixels = true,
+            IsHitTestVisible = false,
+            Effect = new DropShadowEffect
+            {
+                Color = Colors.Black,
+                BlurRadius = 4,
+                ShadowDepth = 0,
+                Opacity = 0.55
+            },
+            Visibility = Visibility.Collapsed
+        };
+
+        _maskLassoPath = new Path
+        {
+            Stroke = new SolidColorBrush(Color.FromRgb(116, 193, 255)),
+            StrokeThickness = 1.2,
+            StrokeDashArray = new DoubleCollection { 3, 3 },
+            StrokeStartLineCap = PenLineCap.Round,
+            StrokeEndLineCap = PenLineCap.Round,
+            SnapsToDevicePixels = true,
+            IsHitTestVisible = false,
+            Effect = new DropShadowEffect
+            {
+                Color = Colors.Black,
+                BlurRadius = 3,
+                ShadowDepth = 0,
+                Opacity = 0.4
+            },
+            Visibility = Visibility.Collapsed
+        };
+
+        MaskOutlineCanvas.Children.Add(_maskOutlinePath);
+        MaskOutlineCanvas.Children.Add(_maskLassoPath);
+    }
+
     private (Rect imageRect, double scale) GetImageRenderInfo()
     {
         if (PreviewImage.Source is not BitmapSource source)
@@ -907,6 +1091,27 @@ public partial class MainWindow : Window
         if (screenW <= 0 || screenH <= 0) return (Rect.Empty, 1);
 
         return (new Rect(topLeft.X, topLeft.Y, screenW, screenH), screenW / ViewModel.ImageWidth);
+    }
+
+    private bool TryMapPreviewToImage(Point previewPos, out Point imagePos, out bool insideImage)
+    {
+        imagePos = new Point();
+        insideImage = false;
+
+        var (imageRect, scale) = GetImageRenderInfo();
+        if (imageRect.IsEmpty || scale <= 0 || ViewModel.ImageWidth <= 0 || ViewModel.ImageHeight <= 0)
+            return false;
+
+        double rawX = (previewPos.X - imageRect.X) / scale;
+        double rawY = (previewPos.Y - imageRect.Y) / scale;
+        insideImage = rawX >= 0 && rawY >= 0
+            && rawX <= ViewModel.ImageWidth - 1
+            && rawY <= ViewModel.ImageHeight - 1;
+
+        imagePos = new Point(
+            Math.Clamp(rawX, 0, ViewModel.ImageWidth - 1),
+            Math.Clamp(rawY, 0, ViewModel.ImageHeight - 1));
+        return true;
     }
 
     private void UpdateCropOverlay()
@@ -955,6 +1160,321 @@ public partial class MainWindow : Window
         if (_cropBorder != null) _cropBorder.Visibility = v;
         foreach (var h in _handles) h?.SetValue(VisibilityProperty, v);
     }
+
+    private void AddLassoPoint(Point imagePoint)
+    {
+        if (_maskLassoPoints.Count == 0)
+        {
+            _maskLassoPoints.Add((imagePoint.X, imagePoint.Y));
+            return;
+        }
+
+        var last = _maskLassoPoints[^1];
+        double dx = imagePoint.X - last.X;
+        double dy = imagePoint.Y - last.Y;
+        if ((dx * dx + dy * dy) < MinMaskLassoPointDistanceSq)
+            return;
+
+        _maskLassoPoints.Add((imagePoint.X, imagePoint.Y));
+    }
+
+    private void CompleteMaskLasso()
+    {
+        if (!_isMaskLassoing)
+            return;
+
+        _isMaskLassoing = false;
+        if (_maskLassoPoints.Count >= 3)
+            ViewModel.ApplyMaskLasso(_maskLassoPoints, ViewModel.IsMaskEraseMode);
+
+        _maskLassoPoints.Clear();
+        UpdateMaskLassoOverlay();
+        UpdateMaskOutlineOverlay();
+
+        if (PreviewArea.IsMouseCaptured)
+            PreviewArea.ReleaseMouseCapture();
+        if (!_isPanning)
+            PreviewArea.Cursor = (ViewModel.IsMaskEditing || ViewModel.IsMaskAutoSelectMode) && ViewModel.HasSelectedMaskLayer
+                ? Cursors.Cross
+                : null;
+    }
+
+    private void CancelMaskLasso()
+    {
+        if (!_isMaskLassoing && _maskLassoPoints.Count == 0)
+            return;
+
+        _isMaskLassoing = false;
+        _maskLassoPoints.Clear();
+        UpdateMaskLassoOverlay();
+        if (PreviewArea.IsMouseCaptured && !_isPanning)
+            PreviewArea.ReleaseMouseCapture();
+        if (!_isPanning)
+            PreviewArea.Cursor = (ViewModel.IsMaskEditing || ViewModel.IsMaskAutoSelectMode) && ViewModel.HasSelectedMaskLayer
+                ? Cursors.Cross
+                : null;
+    }
+
+    private void UpdateMaskOutlineOverlay()
+    {
+        if (_maskOutlinePath == null)
+            return;
+
+        if (!ViewModel.HasImage || !ViewModel.HasSelectedMaskLayer)
+        {
+            _maskOutlinePath.Data = null;
+            _maskOutlinePath.Visibility = Visibility.Collapsed;
+            return;
+        }
+
+        var state = ViewModel.GetSelectedMaskLayerState();
+        if (state == null || state.NonZeroCount <= 0 || state.Width <= 0 || state.Height <= 0)
+        {
+            _maskOutlinePath.Data = null;
+            _maskOutlinePath.Visibility = Visibility.Collapsed;
+            return;
+        }
+
+        var (ir, scale) = GetImageRenderInfo();
+        if (ir.IsEmpty || scale <= 0)
+        {
+            _maskOutlinePath.Data = null;
+            _maskOutlinePath.Visibility = Visibility.Collapsed;
+            return;
+        }
+
+        ApplyMaskOutlineStyle(scale);
+        var geometry = BuildMaskBoundaryGeometry(state, ir, scale);
+        _maskOutlinePath.Data = geometry;
+        _maskOutlinePath.Visibility = geometry == null ? Visibility.Collapsed : Visibility.Visible;
+    }
+
+    private void ApplyMaskOutlineStyle(double scale)
+    {
+        if (_maskOutlinePath == null) return;
+
+        double zoom = Math.Max(1.0, scale);
+        double dash = Math.Clamp(3.0 + Math.Log2(zoom), 3.0, 8.0);
+        _maskOutlinePath.StrokeDashArray = new DoubleCollection { dash, dash };
+        _maskOutlinePath.StrokeThickness = Math.Clamp(1.2 + Math.Log2(zoom) * 0.08, 1.2, 1.8);
+    }
+
+    private void UpdateMaskLassoOverlay()
+    {
+        if (_maskLassoPath == null)
+            return;
+
+        if (!_isMaskLassoing || _maskLassoPoints.Count < 2)
+        {
+            _maskLassoPath.Data = null;
+            _maskLassoPath.Visibility = Visibility.Collapsed;
+            return;
+        }
+
+        var (ir, scale) = GetImageRenderInfo();
+        if (ir.IsEmpty || scale <= 0)
+        {
+            _maskLassoPath.Data = null;
+            _maskLassoPath.Visibility = Visibility.Collapsed;
+            return;
+        }
+
+        var geometry = new StreamGeometry();
+        using (var ctx = geometry.Open())
+        {
+            var first = ToPreviewPoint(_maskLassoPoints[0], ir, scale);
+            ctx.BeginFigure(first, false, true);
+            for (int i = 1; i < _maskLassoPoints.Count; i++)
+            {
+                var point = ToPreviewPoint(_maskLassoPoints[i], ir, scale);
+                ctx.LineTo(point, true, false);
+            }
+        }
+
+        geometry.Freeze();
+        _maskLassoPath.Data = geometry;
+        _maskLassoPath.Visibility = Visibility.Visible;
+    }
+
+    private static StreamGeometry? BuildMaskBoundaryGeometry(MaskLayerState state, Rect imageRect, double scale)
+    {
+        if (state.MaskData.Length != state.Width * state.Height || state.NonZeroCount <= 0)
+            return null;
+
+        var edges = BuildBoundaryEdges(state.MaskData, state.Width, state.Height);
+        if (edges.Count == 0)
+            return null;
+
+        var geometry = new StreamGeometry();
+        using (var ctx = geometry.Open())
+        {
+            DrawBoundaryContours(ctx, edges, imageRect, scale);
+        }
+
+        geometry.Freeze();
+        return geometry;
+    }
+
+    private static List<GridEdge> BuildBoundaryEdges(byte[] data, int w, int h)
+    {
+        var edges = new List<GridEdge>(Math.Max(256, w + h));
+        for (int y = 0; y < h; y++)
+        {
+            int row = y * w;
+            for (int x = 0; x < w; x++)
+            {
+                int idx = row + x;
+                if (data[idx] == 0) continue;
+
+                if (y == 0 || data[idx - w] == 0)
+                    edges.Add(new GridEdge(new GridPoint(x, y), new GridPoint(x + 1, y))); // top
+                if (x == w - 1 || data[idx + 1] == 0)
+                    edges.Add(new GridEdge(new GridPoint(x + 1, y), new GridPoint(x + 1, y + 1))); // right
+                if (y == h - 1 || data[idx + w] == 0)
+                    edges.Add(new GridEdge(new GridPoint(x + 1, y + 1), new GridPoint(x, y + 1))); // bottom
+                if (x == 0 || data[idx - 1] == 0)
+                    edges.Add(new GridEdge(new GridPoint(x, y + 1), new GridPoint(x, y))); // left
+            }
+        }
+
+        return edges;
+    }
+
+    private static void DrawBoundaryContours(
+        StreamGeometryContext ctx,
+        IReadOnlyList<GridEdge> edges,
+        Rect imageRect,
+        double scale)
+    {
+        var remaining = new HashSet<GridEdge>(edges);
+        var byStart = new Dictionary<GridPoint, List<GridEdge>>();
+
+        foreach (var edge in edges)
+        {
+            if (!byStart.TryGetValue(edge.Start, out var list))
+            {
+                list = new List<GridEdge>(2);
+                byStart[edge.Start] = list;
+            }
+            list.Add(edge);
+        }
+
+        while (remaining.Count > 0)
+        {
+            var seed = remaining.First();
+            RemoveEdge(seed, remaining, byStart);
+
+            var points = new List<GridPoint>(64) { seed.Start, seed.End };
+            var start = seed.Start;
+            var current = seed.End;
+            bool closed = false;
+
+            while (TryTakeEdgeStartingAt(current, remaining, byStart, out var next))
+            {
+                current = next.End;
+                if (current == start)
+                {
+                    closed = true;
+                    break;
+                }
+
+                points.Add(current);
+            }
+
+            var simplified = SimplifyOrthogonalPoints(points, closed);
+            if (simplified.Count < 2)
+                continue;
+
+            var first = ToPreviewPoint(simplified[0], imageRect, scale);
+            ctx.BeginFigure(first, false, closed);
+            for (int i = 1; i < simplified.Count; i++)
+            {
+                var p = ToPreviewPoint(simplified[i], imageRect, scale);
+                ctx.LineTo(p, true, false);
+            }
+        }
+    }
+
+    private static bool TryTakeEdgeStartingAt(
+        GridPoint start,
+        HashSet<GridEdge> remaining,
+        Dictionary<GridPoint, List<GridEdge>> byStart,
+        out GridEdge edge)
+    {
+        edge = default;
+        if (!byStart.TryGetValue(start, out var list) || list.Count == 0)
+            return false;
+
+        edge = list[^1];
+        RemoveEdge(edge, remaining, byStart);
+        return true;
+    }
+
+    private static void RemoveEdge(
+        GridEdge edge,
+        HashSet<GridEdge> remaining,
+        Dictionary<GridPoint, List<GridEdge>> byStart)
+    {
+        if (!remaining.Remove(edge))
+            return;
+
+        if (!byStart.TryGetValue(edge.Start, out var list))
+            return;
+
+        for (int i = list.Count - 1; i >= 0; i--)
+        {
+            if (list[i].Equals(edge))
+            {
+                list.RemoveAt(i);
+                break;
+            }
+        }
+
+        if (list.Count == 0)
+            byStart.Remove(edge.Start);
+    }
+
+    private static List<GridPoint> SimplifyOrthogonalPoints(IReadOnlyList<GridPoint> points, bool closed)
+    {
+        if (points.Count <= 2)
+            return points.ToList();
+
+        var simplified = new List<GridPoint>(points.Count) { points[0] };
+        for (int i = 1; i < points.Count - 1; i++)
+        {
+            var prev = simplified[^1];
+            var curr = points[i];
+            var next = points[i + 1];
+            bool collinear = (prev.X == curr.X && curr.X == next.X)
+                             || (prev.Y == curr.Y && curr.Y == next.Y);
+            if (!collinear)
+                simplified.Add(curr);
+        }
+
+        simplified.Add(points[^1]);
+
+        if (closed && simplified.Count >= 3)
+        {
+            var first = simplified[0];
+            var last = simplified[^1];
+            var prev = simplified[^2];
+            bool redundantLast = (prev.X == last.X && last.X == first.X)
+                                 || (prev.Y == last.Y && last.Y == first.Y);
+            if (redundantLast)
+                simplified.RemoveAt(simplified.Count - 1);
+        }
+
+        return simplified;
+    }
+
+    private static Point ToPreviewPoint((double X, double Y) point, Rect imageRect, double scale) =>
+        new(imageRect.X + point.X * scale, imageRect.Y + point.Y * scale);
+
+    private static Point ToPreviewPoint(GridPoint point, Rect imageRect, double scale) =>
+        new(imageRect.X + point.X * scale, imageRect.Y + point.Y * scale);
+
+    private readonly record struct GridPoint(int X, int Y);
+    private readonly record struct GridEdge(GridPoint Start, GridPoint End);
 
     // ============================================================
     //  トリミング操作 - マウスイベント
