@@ -1,9 +1,13 @@
-﻿<Application x:Class="VRCosme.App"
+<Application x:Class="VRCosme.App"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:local="clr-namespace:VRCosme"
              StartupUri="MainWindow.xaml">
     <Application.Resources>
-         
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/VRCosme;component/Localization/Strings.ja-JP.xaml"/>
+                <ResourceDictionary Source="pack://application:,,,/VRCosme;component/Styles/ComboBoxStyles.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
     </Application.Resources>
 </Application>
