@@ -1,0 +1,31 @@
+VRCosme Terms of Use
+
+Last Updated: February 12, 2026
+
+Please read the following Terms of Use carefully before installing or using this software, "VRCosme" (the "Software"). By installing the Software, you are deemed to have agreed to these Terms.
+
+Article 1 (Free Provision)
+The Software is provided free of charge. The Software is published on GitHub, and anyone may freely download and use it.
+
+Article 2 (License Grant)
+The copyright holder of the Software (the "Author") grants users who agree to these Terms a non-exclusive right to use the Software. Users may use the Software for personal purposes.
+
+Article 3 (Prohibited Acts)
+Users must not engage in the following acts:
+(1) Reverse engineering, decompiling, or disassembling the Software
+(2) Modifying, adapting, or creating derivative works of the Software
+(3) Redistributing, selling, lending, or sublicensing the Software
+(4) Using the Software for unlawful purposes
+(5) Modifying and publishing the source code of the Software without permission
+
+Article 4 (Disclaimer)
+The Software is provided "as is." The Author makes no warranties of any kind, whether express or implied, regarding the use of the Software. The Author shall not be liable for any damages arising from the use of the Software.
+
+Article 5 (Intellectual Property Rights)
+All intellectual property rights related to the Software belong to the Author. The source code of the Software is published on GitHub for viewing purposes, and such publication does not permit modification or redistribution.
+
+Article 6 (Changes to Terms)
+The Author may change these Terms without prior notice. The revised Terms will be presented when the Software is updated or on the GitHub repository.
+
+Article 7 (Governing Law)
+These Terms are governed by and interpreted in accordance with the laws of Japan.
