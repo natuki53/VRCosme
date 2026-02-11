@@ -1,0 +1,124 @@
+<Window x:Class="VRCosme.Views.AboutDialog"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:svgc="http://sharpvectors.codeplex.com/svgc/"
+        Title="{DynamicResource About.Title}"
+        Width="500" Height="320"
+        ResizeMode="NoResize"
+        WindowStartupLocation="CenterOwner"
+        ShowInTaskbar="False"
+        Background="{DynamicResource PanelBackgroundBrush}"
+        Foreground="{DynamicResource WindowForegroundBrush}"
+        FontFamily="Segoe UI, Meiryo UI">
+
+    <Grid Margin="28,24">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- アプリアイコン（高解像度 SVG） -->
+        <Image Grid.Row="0" Source="{svgc:SvgImage Source=/Resources/VRCosme_Icon.svg, AppName=VRCosme}"
+               Width="48" Height="48" HorizontalAlignment="Center" Margin="0,0,0,12"
+               RenderOptions.BitmapScalingMode="HighQuality"/>
+
+        <!-- アプリ名 -->
+        <TextBlock Grid.Row="1" Text="VRCosme" FontSize="20" FontWeight="SemiBold"
+                   HorizontalAlignment="Center" Foreground="{DynamicResource WindowForegroundBrush}"/>
+
+        <!-- バージョン -->
+        <TextBlock Grid.Row="2" x:Name="VersionText" FontSize="12"
+                   HorizontalAlignment="Center" Margin="0,4,0,0"
+                   Foreground="{DynamicResource LabelForegroundBrush}"/>
+
+        <!-- 説明文 -->
+        <TextBlock Grid.Row="3" Text="{DynamicResource About.Description}"
+                   FontSize="11.5" HorizontalAlignment="Center" Margin="0,12,0,0"
+                   Foreground="{DynamicResource LabelForegroundBrush}"/>
+
+        <!-- 区切り線 -->
+        <Separator Grid.Row="4" Margin="0,16,0,0" Background="{DynamicResource LabelForegroundBrush}" Opacity="0.3"/>
+
+        <!-- 作者 + SNS アイコンボタン -->
+        <StackPanel Grid.Row="5" Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,10,0,0">
+            <TextBlock Text="{DynamicResource About.Author}" FontSize="11" VerticalAlignment="Center"
+                       Foreground="{DynamicResource LabelForegroundBrush}"/>
+            <Button Width="32" Height="32" Margin="8,0,0,0" Padding="4" Cursor="Hand" BorderThickness="0"
+                    ToolTip="{DynamicResource About.Tooltip.X}"
+                    Click="X_Link_Click"
+                    Background="{DynamicResource ButtonBackgroundBrush}">
+                <Grid Width="20" Height="20">
+                    <Image x:Name="XIconDark" Source="{svgc:SvgImage Source=/Resources/Icons/icon_x.svg, AppName=VRCosme}"
+                           Width="20" Height="20" Stretch="Uniform"/>
+                    <Image x:Name="XIconLight" Source="{svgc:SvgImage Source=/Resources/Icons/icon_x_light.svg, AppName=VRCosme}"
+                           Width="20" Height="20" Stretch="Uniform" Visibility="Collapsed"/>
+                </Grid>
+                <Button.Template>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="Bd" Background="{TemplateBinding Background}" CornerRadius="4"
+                                Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Bd" Property="Background" Value="{DynamicResource ButtonHoverBackgroundBrush}"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Button.Template>
+            </Button>
+            <Button Width="32" Height="32" Margin="4,0,0,0" Padding="4" Cursor="Hand" BorderThickness="0"
+                    ToolTip="{DynamicResource About.Tooltip.GitHub}"
+                    Click="GitHub_Link_Click"
+                    Background="{DynamicResource ButtonBackgroundBrush}">
+                <Grid Width="20" Height="20">
+                    <Image x:Name="GitHubIconDark" Source="{svgc:SvgImage Source=/Resources/Icons/icon_github.svg, AppName=VRCosme}"
+                           Width="20" Height="20" Stretch="Uniform"/>
+                    <Image x:Name="GitHubIconLight" Source="{svgc:SvgImage Source=/Resources/Icons/icon_github_light.svg, AppName=VRCosme}"
+                           Width="20" Height="20" Stretch="Uniform" Visibility="Collapsed"/>
+                </Grid>
+                <Button.Template>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="Bd" Background="{TemplateBinding Background}" CornerRadius="4"
+                                Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Bd" Property="Background" Value="{DynamicResource ButtonHoverBackgroundBrush}"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Button.Template>
+            </Button>
+        </StackPanel>
+
+        <!-- 閉じるボタン -->
+        <Button Grid.Row="7" Content="{DynamicResource About.Close}" Width="80" HorizontalAlignment="Center"
+                Margin="0,16,0,0"
+                Click="Close_Click" IsDefault="True" IsCancel="True"
+                Background="{DynamicResource ButtonBackgroundBrush}"
+                Foreground="{DynamicResource ButtonForegroundBrush}"
+                Padding="10,5" Cursor="Hand" BorderThickness="0">
+            <Button.Template>
+                <ControlTemplate TargetType="Button">
+                    <Border x:Name="Bd" Background="{TemplateBinding Background}"
+                            CornerRadius="4" Padding="{TemplateBinding Padding}">
+                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="Bd" Property="Background" Value="{DynamicResource ButtonHoverBackgroundBrush}"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Button.Template>
+        </Button>
+    </Grid>
+</Window>

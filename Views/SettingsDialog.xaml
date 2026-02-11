@@ -1,0 +1,168 @@
+<Window x:Class="VRCosme.Views.SettingsDialog"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="{DynamicResource Settings.Title}"
+        Width="520" Height="440"
+        ResizeMode="NoResize"
+        WindowStartupLocation="CenterOwner"
+        ShowInTaskbar="False"
+        Background="{DynamicResource PanelBackgroundBrush}"
+        Foreground="{DynamicResource WindowForegroundBrush}"
+        FontFamily="Segoe UI, Meiryo UI" FontSize="12">
+
+    <Grid Margin="24,20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+            <StackPanel>
+
+                <!-- ──── 一般 ──── -->
+                <TextBlock Text="{DynamicResource Settings.Section.General}" FontSize="14" FontWeight="SemiBold" Margin="0,0,0,10"
+                           Foreground="{DynamicResource WindowForegroundBrush}"/>
+
+                <!-- テーマ -->
+                <Grid Margin="0,0,0,10">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="160"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Text="{DynamicResource Settings.Label.Theme}" VerticalAlignment="Center"
+                               Foreground="{DynamicResource LabelForegroundBrush}"/>
+                    <ComboBox x:Name="ThemeComboBox" Grid.Column="1"/>
+                </Grid>
+
+                <!-- 言語 -->
+                <Grid Margin="0,0,0,10">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="160"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Text="{DynamicResource Settings.Label.Language}" VerticalAlignment="Center"
+                               Foreground="{DynamicResource LabelForegroundBrush}"/>
+                    <ComboBox x:Name="LanguageComboBox" Grid.Column="1"/>
+                </Grid>
+
+                <!-- 初期書き出しディレクトリ -->
+                <Grid Margin="0,0,0,10">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="160"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Text="{DynamicResource Settings.Label.DefaultExportDirectory}" VerticalAlignment="Center"
+                               Foreground="{DynamicResource LabelForegroundBrush}"/>
+                    <TextBox x:Name="ExportDirTextBox" Grid.Column="1" Margin="0,0,6,0"
+                             VerticalContentAlignment="Center" Padding="6,4"
+                             Background="{DynamicResource ComboBoxBackgroundBrush}"
+                             Foreground="{DynamicResource WindowForegroundBrush}"
+                             BorderBrush="{DynamicResource ComboBoxBorderBrush}" BorderThickness="1"/>
+                    <Button x:Name="BrowseDirButton" Grid.Column="2" Content="{DynamicResource Settings.Button.Browse}"
+                            Click="BrowseDir_Click" Padding="10,4" Cursor="Hand"
+                            Background="{DynamicResource ButtonBackgroundBrush}"
+                            Foreground="{DynamicResource ButtonForegroundBrush}"
+                            BorderThickness="0">
+                        <Button.Template>
+                            <ControlTemplate TargetType="Button">
+                                <Border x:Name="Bd" Background="{TemplateBinding Background}"
+                                        CornerRadius="4" Padding="{TemplateBinding Padding}">
+                                    <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                </Border>
+                                <ControlTemplate.Triggers>
+                                    <Trigger Property="IsMouseOver" Value="True">
+                                        <Setter TargetName="Bd" Property="Background" Value="{DynamicResource ButtonHoverBackgroundBrush}"/>
+                                    </Trigger>
+                                </ControlTemplate.Triggers>
+                            </ControlTemplate>
+                        </Button.Template>
+                    </Button>
+                </Grid>
+
+                <!-- 初期書き出し形式 -->
+                <Grid Margin="0,0,0,10">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="160"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Text="{DynamicResource Settings.Label.DefaultExportFormat}" VerticalAlignment="Center"
+                               Foreground="{DynamicResource LabelForegroundBrush}"/>
+                    <ComboBox x:Name="ExportFormatComboBox" Grid.Column="1"/>
+                </Grid>
+
+                <!-- 初期JPEG品質 -->
+                <Grid Margin="0,0,0,10">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="160"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="40"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Text="{DynamicResource Settings.Label.DefaultJpegQuality}" VerticalAlignment="Center"
+                               Foreground="{DynamicResource LabelForegroundBrush}"/>
+                    <Slider x:Name="JpegQualitySlider" Grid.Column="1"
+                            Minimum="1" Maximum="100" SmallChange="1"
+                            TickFrequency="1" IsSnapToTickEnabled="True"/>
+                    <TextBlock x:Name="JpegQualityLabel" Grid.Column="2"
+                               VerticalAlignment="Center" TextAlignment="Right"
+                               Foreground="{DynamicResource LabelForegroundBrush}"/>
+                </Grid>
+
+                <!-- ──── 区切り ──── -->
+                <Separator Margin="0,6,0,14" Background="{DynamicResource SeparatorBrush}"/>
+
+                <!-- ──── 表示 ──── -->
+                <TextBlock Text="{DynamicResource Settings.Section.View}" FontSize="14" FontWeight="SemiBold" Margin="0,0,0,10"
+                           Foreground="{DynamicResource WindowForegroundBrush}"/>
+
+                <!-- グリッド線 -->
+                <CheckBox x:Name="GridCheckBox" Content="{DynamicResource Settings.Option.Grid}" Margin="0,0,0,6"
+                          Foreground="{DynamicResource WindowForegroundBrush}" Cursor="Hand"/>
+
+                <!-- ルーラー -->
+                <CheckBox x:Name="RulerCheckBox" Content="{DynamicResource Settings.Option.Ruler}" Margin="0,0,0,6"
+                          Foreground="{DynamicResource WindowForegroundBrush}" Cursor="Hand"/>
+
+            </StackPanel>
+        </ScrollViewer>
+
+        <!-- OK / キャンセル -->
+        <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,16,0,0">
+            <Button Content="{DynamicResource Common.Ok}" Width="80" Click="OK_Click" IsDefault="True"
+                    Padding="10,5" Cursor="Hand" Margin="0,0,8,0"
+                    Background="{DynamicResource AccentBrush}" Foreground="White" BorderThickness="0">
+                <Button.Template>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="Bd" Background="{TemplateBinding Background}"
+                                CornerRadius="4" Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Bd" Property="Background" Value="{DynamicResource ButtonHoverBackgroundBrush}"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Button.Template>
+            </Button>
+            <Button Content="{DynamicResource Common.Cancel}" Width="80" Click="Cancel_Click" IsCancel="True"
+                    Padding="10,5" Cursor="Hand"
+                    Background="{DynamicResource ButtonBackgroundBrush}"
+                    Foreground="{DynamicResource ButtonForegroundBrush}" BorderThickness="0">
+                <Button.Template>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="Bd" Background="{TemplateBinding Background}"
+                                CornerRadius="4" Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Bd" Property="Background" Value="{DynamicResource ButtonHoverBackgroundBrush}"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Button.Template>
+            </Button>
+        </StackPanel>
+    </Grid>
+</Window>
