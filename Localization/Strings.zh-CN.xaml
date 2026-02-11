@@ -16,6 +16,9 @@
     <sys:String x:Key="Status.Exporting">正在导出...</sys:String>
     <sys:String x:Key="Status.ExportComplete">导出完成</sys:String>
     <sys:String x:Key="Status.ExportError">导出错误</sys:String>
+    <sys:String x:Key="Status.AutoSelectingMask">正在使用 AI 自动选择蒙版...</sys:String>
+    <sys:String x:Key="Status.DownloadingAutoMaskModel">正在下载 AI 自动蒙版模型...</sys:String>
+    <sys:String x:Key="Status.AIAutoMaskError">AI 自动蒙版错误</sys:String>
 
     <sys:String x:Key="Dialog.ErrorTitle">错误</sys:String>
     <sys:String x:Key="Dialog.OpenImage.Filter">图像文件|*.png;*.jpg;*.jpeg;*.bmp;*.tiff;*.tif;*.webp|所有文件|*.*</sys:String>
@@ -31,6 +34,11 @@
     <sys:String x:Key="Dialog.LogExport.Success">日志导出已完成。</sys:String>
     <sys:String x:Key="Dialog.LogExport.Failed">导出日志失败：&#10;{0}</sys:String>
     <sys:String x:Key="Dialog.SelectExportDirectory.Title">选择默认导出目录</sys:String>
+    <sys:String x:Key="Dialog.AIAutoMask.Failed">AI 自动选择蒙版失败：&#10;{0}</sys:String>
+    <sys:String x:Key="Dialog.AIAutoMask.DownloadFailed">下载 AI 自动蒙版模型失败：&#10;{0}</sys:String>
+    <sys:String x:Key="Dialog.AIAutoMask.DeleteFailed">删除 AI 自动蒙版模型失败：&#10;{0}</sys:String>
+    <sys:String x:Key="Dialog.AIAutoMask.ModelFilter">ONNX 模型|*.onnx|所有文件|*.*</sys:String>
+    <sys:String x:Key="Dialog.AIAutoMask.ModelTitle">选择用于 AI 自动蒙版的 ONNX 模型</sys:String>
 
     <sys:String x:Key="Menu.File">文件(_F)</sys:String>
     <sys:String x:Key="Menu.File.OpenImage">打开图像(_O)</sys:String>
@@ -41,12 +49,14 @@
     <sys:String x:Key="Menu.Edit.Undo">撤销(_U)</sys:String>
     <sys:String x:Key="Menu.Edit.Redo">重做(_R)</sys:String>
     <sys:String x:Key="Menu.Edit.PresetWip">预设  (开发中)</sys:String>
-    <sys:String x:Key="Menu.Edit.ResetAdjustments">重置调整</sys:String>
+    <sys:String x:Key="Menu.Edit.ResetAdjustments">重置基础调整（不应用掩码）</sys:String>
+    <sys:String x:Key="Menu.Edit.ResetDetailedAdjustments">重置详细调整（不应用掩码）</sys:String>
     <sys:String x:Key="Menu.Edit.ResetAll">全部重置</sys:String>
     <sys:String x:Key="Menu.View">视图(_V)</sys:String>
     <sys:String x:Key="Menu.View.Grid">三分法网格</sys:String>
     <sys:String x:Key="Menu.View.Ruler">标尺</sys:String>
     <sys:String x:Key="Menu.AI">AI 工具(_A)</sys:String>
+    <sys:String x:Key="Menu.AI.AutoMaskSelect">自动选择蒙版</sys:String>
     <sys:String x:Key="Menu.AI.AutoAdjustWip">自动调整  (开发中)</sys:String>
     <sys:String x:Key="Menu.AI.DenoiseWip">AI 降噪  (开发中)</sys:String>
     <sys:String x:Key="Menu.AI.UpscaleWip">AI 超分辨率  (开发中)</sys:String>
@@ -88,6 +98,7 @@
     <sys:String x:Key="Field.Shadows">阴影</sys:String>
     <sys:String x:Key="Field.Highlights">高光</sys:String>
     <sys:String x:Key="Field.Clarity">清晰度</sys:String>
+    <sys:String x:Key="Field.Blur">模糊</sys:String>
     <sys:String x:Key="Field.Sharpen">锐化</sys:String>
     <sys:String x:Key="Field.Vignette">暗角</sys:String>
     <sys:String x:Key="Field.Format">格式</sys:String>
@@ -103,9 +114,31 @@
     <sys:String x:Key="Button.SelectSubjectWip">选择主体 (开发中)</sys:String>
     <sys:String x:Key="Button.AdjustBackgroundWip">仅调整背景 (开发中)</sys:String>
     <sys:String x:Key="Button.AdjustAvatarWip">仅调整角色 (开发中)</sys:String>
+    <sys:String x:Key="Button.InvertMask">反转蒙版</sys:String>
+    <sys:String x:Key="Button.ClearMask">清除蒙版</sys:String>
+    <sys:String x:Key="Button.AutoMaskSettings">自动选择设置</sys:String>
+    <sys:String x:Key="Button.AutoMaskSelect">AI 自动选择</sys:String>
+    <sys:String x:Key="Button.AddMaskLayer">添加图层</sys:String>
+    <sys:String x:Key="Button.RemoveMaskLayer">删除图层</sys:String>
+    <sys:String x:Key="Button.RenameMaskLayer">重命名</sys:String>
+    <sys:String x:Key="Button.EditMaskAdjustments">蒙版调整...</sys:String>
     <sys:String x:Key="Button.Export">导出</sys:String>
 
-    <sys:String x:Key="Mask.Description">AI 蒙版功能计划在后续更新中提供。</sys:String>
+    <sys:String x:Key="Mask.Description">可通过手动编辑（套索）或自动选择（点击）来创建需要调整的蒙版区域。</sys:String>
+    <sys:String x:Key="Mask.Layers">蒙版图层</sys:String>
+    <sys:String x:Key="Mask.Enable">启用蒙版调整</sys:String>
+    <sys:String x:Key="Mask.EditMode">蒙版手动编辑</sys:String>
+    <sys:String x:Key="Mask.AutoSelectMode">蒙版自动选择</sys:String>
+    <sys:String x:Key="Mask.EraseMode">橡皮擦模式</sys:String>
+    <sys:String x:Key="Mask.BrushSize">画笔大小</sys:String>
+    <sys:String x:Key="Mask.Softness">柔边</sys:String>
+    <sys:String x:Key="Mask.OverlayOpacity">叠加层</sys:String>
+    <sys:String x:Key="Mask.ShowOverlay">显示蒙版叠加层</sys:String>
+    <sys:String x:Key="Mask.Coverage">覆盖率:</sys:String>
+    <sys:String x:Key="Mask.Hint">手动编辑可在预览上用套索圈选。自动选择会以点击位置为 AI 种子提取范围，后续点击会在当前选择基础上继续扩展。</sys:String>
+    <sys:String x:Key="Mask.RenameTitle">重命名蒙版图层</sys:String>
+    <sys:String x:Key="Mask.RenamePrompt">图层名称:</sys:String>
+    <sys:String x:Key="Mask.AdjustmentsTitle">蒙版图层调整</sys:String>
 
     <sys:String x:Key="Settings.Title">应用设置</sys:String>
     <sys:String x:Key="Settings.Section.General">常规</sys:String>
@@ -115,11 +148,37 @@
     <sys:String x:Key="Settings.Label.DefaultExportDirectory">默认导出目录</sys:String>
     <sys:String x:Key="Settings.Label.DefaultExportFormat">默认导出格式</sys:String>
     <sys:String x:Key="Settings.Label.DefaultJpegQuality">默认 JPEG 质量</sys:String>
+    <sys:String x:Key="Settings.Label.AutoMaskSettings">AI 自动选择</sys:String>
     <sys:String x:Key="Settings.Button.Browse">浏览...</sys:String>
+    <sys:String x:Key="Settings.Button.OpenAutoMaskSettings">打开自动选择设置...</sys:String>
     <sys:String x:Key="Settings.Option.Grid">三分法网格</sys:String>
     <sys:String x:Key="Settings.Option.Ruler">标尺</sys:String>
     <sys:String x:Key="Settings.RestartRequired">重启 VRCosme 以应用语言更改。</sys:String>
     <sys:String x:Key="Settings.RestartTitle">VRCosme</sys:String>
+
+    <sys:String x:Key="AutoMaskSettings.Title">AI 自动选择设置</sys:String>
+    <sys:String x:Key="AutoMaskSettings.Description">根据你想选择的目标切换模型。可在下方列表中下载或删除各个模型。</sys:String>
+    <sys:String x:Key="AutoMaskSettings.TargetLabel">选择目标</sys:String>
+    <sys:String x:Key="AutoMaskSettings.SelectedModelLabel">当前模型</sys:String>
+    <sys:String x:Key="AutoMaskSettings.MultiPass">多次执行 AI 自动选择以提高精度（会更慢）</sys:String>
+    <sys:String x:Key="AutoMaskSettings.ModelManagerTitle">模型管理</sys:String>
+    <sys:String x:Key="AutoMaskSettings.ModelManagerHint">只保留需要的模型可节省空间。各目标的默认模型与下方名称对应。</sys:String>
+    <sys:String x:Key="AutoMaskSettings.Download">下载</sys:String>
+    <sys:String x:Key="AutoMaskSettings.Delete">删除</sys:String>
+    <sys:String x:Key="AutoMaskSettings.Status.Installed">已安装 ({0:F1} MB)</sys:String>
+    <sys:String x:Key="AutoMaskSettings.Status.NotInstalled">未安装</sys:String>
+    <sys:String x:Key="AutoMaskSettings.Status.InstalledShort">已安装</sys:String>
+    <sys:String x:Key="AutoMaskSettings.Status.NotInstalledShort">未安装</sys:String>
+    <sys:String x:Key="AutoMaskSettings.Target.Human">人像</sys:String>
+    <sys:String x:Key="AutoMaskSettings.Target.Object">物体</sys:String>
+    <sys:String x:Key="AutoMaskSettings.Target.Background">背景</sys:String>
+    <sys:String x:Key="AutoMaskSettings.Target.Other">其他</sys:String>
+    <sys:String x:Key="AutoMaskSettings.Target.Lightweight">轻量</sys:String>
+    <sys:String x:Key="AutoMaskSettings.Model.Human">人像模型 (u2net_human_seg)</sys:String>
+    <sys:String x:Key="AutoMaskSettings.Model.Object">物体模型 (isnet-general-use)</sys:String>
+    <sys:String x:Key="AutoMaskSettings.Model.Background">背景模型 (u2net)</sys:String>
+    <sys:String x:Key="AutoMaskSettings.Model.Other">其他模型 (isnet-anime)</sys:String>
+    <sys:String x:Key="AutoMaskSettings.Model.Lightweight">轻量模型 (silueta)</sys:String>
 
     <sys:String x:Key="Common.Ok">确定</sys:String>
     <sys:String x:Key="Common.Cancel">取消</sys:String>

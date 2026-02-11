@@ -16,6 +16,9 @@
     <sys:String x:Key="Status.Exporting">Exporting...</sys:String>
     <sys:String x:Key="Status.ExportComplete">Export complete</sys:String>
     <sys:String x:Key="Status.ExportError">Export error</sys:String>
+    <sys:String x:Key="Status.AutoSelectingMask">Selecting mask with AI...</sys:String>
+    <sys:String x:Key="Status.DownloadingAutoMaskModel">Downloading AI auto mask model...</sys:String>
+    <sys:String x:Key="Status.AIAutoMaskError">AI auto mask error</sys:String>
 
     <sys:String x:Key="Dialog.ErrorTitle">Error</sys:String>
     <sys:String x:Key="Dialog.OpenImage.Filter">Image Files|*.png;*.jpg;*.jpeg;*.bmp;*.tiff;*.tif;*.webp|All Files|*.*</sys:String>
@@ -31,6 +34,11 @@
     <sys:String x:Key="Dialog.LogExport.Success">Log export completed successfully.</sys:String>
     <sys:String x:Key="Dialog.LogExport.Failed">Failed to export logs:&#10;{0}</sys:String>
     <sys:String x:Key="Dialog.SelectExportDirectory.Title">Select default export directory</sys:String>
+    <sys:String x:Key="Dialog.AIAutoMask.Failed">Failed to select mask with AI:&#10;{0}</sys:String>
+    <sys:String x:Key="Dialog.AIAutoMask.DownloadFailed">Failed to download AI auto mask model:&#10;{0}</sys:String>
+    <sys:String x:Key="Dialog.AIAutoMask.DeleteFailed">Failed to delete AI auto mask model:&#10;{0}</sys:String>
+    <sys:String x:Key="Dialog.AIAutoMask.ModelFilter">ONNX Model|*.onnx|All Files|*.*</sys:String>
+    <sys:String x:Key="Dialog.AIAutoMask.ModelTitle">Select an ONNX model for AI auto mask</sys:String>
 
     <sys:String x:Key="Menu.File">File(_F)</sys:String>
     <sys:String x:Key="Menu.File.OpenImage">Open Image(_O)</sys:String>
@@ -41,12 +49,14 @@
     <sys:String x:Key="Menu.Edit.Undo">Undo(_U)</sys:String>
     <sys:String x:Key="Menu.Edit.Redo">Redo(_R)</sys:String>
     <sys:String x:Key="Menu.Edit.PresetWip">Presets  (Coming soon)</sys:String>
-    <sys:String x:Key="Menu.Edit.ResetAdjustments">Reset Adjustments</sys:String>
+    <sys:String x:Key="Menu.Edit.ResetAdjustments">Reset Basic Adjustments (Mask unaffected)</sys:String>
+    <sys:String x:Key="Menu.Edit.ResetDetailedAdjustments">Reset Detailed Adjustments (Mask unaffected)</sys:String>
     <sys:String x:Key="Menu.Edit.ResetAll">Reset All</sys:String>
     <sys:String x:Key="Menu.View">View(_V)</sys:String>
     <sys:String x:Key="Menu.View.Grid">Rule of Thirds Grid</sys:String>
     <sys:String x:Key="Menu.View.Ruler">Ruler</sys:String>
     <sys:String x:Key="Menu.AI">AI Tools(_A)</sys:String>
+    <sys:String x:Key="Menu.AI.AutoMaskSelect">Auto Select Mask</sys:String>
     <sys:String x:Key="Menu.AI.AutoAdjustWip">Auto Adjust  (Coming soon)</sys:String>
     <sys:String x:Key="Menu.AI.DenoiseWip">AI Denoise  (Coming soon)</sys:String>
     <sys:String x:Key="Menu.AI.UpscaleWip">AI Upscale  (Coming soon)</sys:String>
@@ -88,6 +98,7 @@
     <sys:String x:Key="Field.Shadows">Shadows</sys:String>
     <sys:String x:Key="Field.Highlights">Highlights</sys:String>
     <sys:String x:Key="Field.Clarity">Clarity</sys:String>
+    <sys:String x:Key="Field.Blur">Blur</sys:String>
     <sys:String x:Key="Field.Sharpen">Sharpen</sys:String>
     <sys:String x:Key="Field.Vignette">Vignette</sys:String>
     <sys:String x:Key="Field.Format">Format</sys:String>
@@ -103,9 +114,31 @@
     <sys:String x:Key="Button.SelectSubjectWip">Select Subject (Coming soon)</sys:String>
     <sys:String x:Key="Button.AdjustBackgroundWip">Adjust Background Only (Coming soon)</sys:String>
     <sys:String x:Key="Button.AdjustAvatarWip">Adjust Avatar Only (Coming soon)</sys:String>
+    <sys:String x:Key="Button.InvertMask">Invert Mask</sys:String>
+    <sys:String x:Key="Button.ClearMask">Clear Mask</sys:String>
+    <sys:String x:Key="Button.AutoMaskSettings">Auto Select Settings</sys:String>
+    <sys:String x:Key="Button.AutoMaskSelect">AI Auto Select</sys:String>
+    <sys:String x:Key="Button.AddMaskLayer">Add Layer</sys:String>
+    <sys:String x:Key="Button.RemoveMaskLayer">Remove Layer</sys:String>
+    <sys:String x:Key="Button.RenameMaskLayer">Rename</sys:String>
+    <sys:String x:Key="Button.EditMaskAdjustments">Mask Adjustments...</sys:String>
     <sys:String x:Key="Button.Export">Export</sys:String>
 
-    <sys:String x:Key="Mask.Description">AI mask features are planned for a future update.</sys:String>
+    <sys:String x:Key="Mask.Description">Create mask areas with manual lasso editing or AI auto selection from a clicked point.</sys:String>
+    <sys:String x:Key="Mask.Layers">Mask Layers</sys:String>
+    <sys:String x:Key="Mask.Enable">Enable mask-based adjustments</sys:String>
+    <sys:String x:Key="Mask.EditMode">Manual Mask Edit</sys:String>
+    <sys:String x:Key="Mask.AutoSelectMode">Auto Mask Select</sys:String>
+    <sys:String x:Key="Mask.EraseMode">Eraser mode</sys:String>
+    <sys:String x:Key="Mask.BrushSize">Brush Size</sys:String>
+    <sys:String x:Key="Mask.Softness">Softness</sys:String>
+    <sys:String x:Key="Mask.OverlayOpacity">Overlay</sys:String>
+    <sys:String x:Key="Mask.ShowOverlay">Show mask overlay</sys:String>
+    <sys:String x:Key="Mask.Coverage">Coverage:</sys:String>
+    <sys:String x:Key="Mask.Hint">Manual edit uses a lasso on the preview. Auto select uses the clicked point as the AI seed, and subsequent clicks expand from the current selection instead of replacing it.</sys:String>
+    <sys:String x:Key="Mask.RenameTitle">Rename Mask Layer</sys:String>
+    <sys:String x:Key="Mask.RenamePrompt">Mask layer name:</sys:String>
+    <sys:String x:Key="Mask.AdjustmentsTitle">Mask Layer Adjustments</sys:String>
 
     <sys:String x:Key="Settings.Title">App Settings</sys:String>
     <sys:String x:Key="Settings.Section.General">General</sys:String>
@@ -115,11 +148,37 @@
     <sys:String x:Key="Settings.Label.DefaultExportDirectory">Default Export Directory</sys:String>
     <sys:String x:Key="Settings.Label.DefaultExportFormat">Default Export Format</sys:String>
     <sys:String x:Key="Settings.Label.DefaultJpegQuality">Default JPEG Quality</sys:String>
+    <sys:String x:Key="Settings.Label.AutoMaskSettings">AI Auto Select</sys:String>
     <sys:String x:Key="Settings.Button.Browse">Browse...</sys:String>
+    <sys:String x:Key="Settings.Button.OpenAutoMaskSettings">Open Auto Select Settings...</sys:String>
     <sys:String x:Key="Settings.Option.Grid">Rule of Thirds Grid</sys:String>
     <sys:String x:Key="Settings.Option.Ruler">Ruler</sys:String>
     <sys:String x:Key="Settings.RestartRequired">Restart VRCosme to apply the language change.</sys:String>
     <sys:String x:Key="Settings.RestartTitle">VRCosme</sys:String>
+
+    <sys:String x:Key="AutoMaskSettings.Title">AI Auto Select Settings</sys:String>
+    <sys:String x:Key="AutoMaskSettings.Description">Switch models based on the target you want to select. You can download or delete each model from the list below.</sys:String>
+    <sys:String x:Key="AutoMaskSettings.TargetLabel">Selection Target</sys:String>
+    <sys:String x:Key="AutoMaskSettings.SelectedModelLabel">Active Model</sys:String>
+    <sys:String x:Key="AutoMaskSettings.MultiPass">Run AI auto select multiple times for higher precision (slower)</sys:String>
+    <sys:String x:Key="AutoMaskSettings.ModelManagerTitle">Model Management</sys:String>
+    <sys:String x:Key="AutoMaskSettings.ModelManagerHint">Keep only the models you need to reduce storage usage. The default model for each target matches the labels below.</sys:String>
+    <sys:String x:Key="AutoMaskSettings.Download">Download</sys:String>
+    <sys:String x:Key="AutoMaskSettings.Delete">Delete</sys:String>
+    <sys:String x:Key="AutoMaskSettings.Status.Installed">Installed ({0:F1} MB)</sys:String>
+    <sys:String x:Key="AutoMaskSettings.Status.NotInstalled">Not installed</sys:String>
+    <sys:String x:Key="AutoMaskSettings.Status.InstalledShort">installed</sys:String>
+    <sys:String x:Key="AutoMaskSettings.Status.NotInstalledShort">not installed</sys:String>
+    <sys:String x:Key="AutoMaskSettings.Target.Human">Human</sys:String>
+    <sys:String x:Key="AutoMaskSettings.Target.Object">Object</sys:String>
+    <sys:String x:Key="AutoMaskSettings.Target.Background">Background</sys:String>
+    <sys:String x:Key="AutoMaskSettings.Target.Other">Other</sys:String>
+    <sys:String x:Key="AutoMaskSettings.Target.Lightweight">Lightweight</sys:String>
+    <sys:String x:Key="AutoMaskSettings.Model.Human">Human model (u2net_human_seg)</sys:String>
+    <sys:String x:Key="AutoMaskSettings.Model.Object">Object model (isnet-general-use)</sys:String>
+    <sys:String x:Key="AutoMaskSettings.Model.Background">Background model (u2net)</sys:String>
+    <sys:String x:Key="AutoMaskSettings.Model.Other">Other model (isnet-anime)</sys:String>
+    <sys:String x:Key="AutoMaskSettings.Model.Lightweight">Lightweight model (silueta)</sys:String>
 
     <sys:String x:Key="Common.Ok">OK</sys:String>
     <sys:String x:Key="Common.Cancel">Cancel</sys:String>
