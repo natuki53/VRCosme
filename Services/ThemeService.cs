@@ -211,6 +211,77 @@ public static class ThemeService
         catch { }
     }
 
+    /// <summary>AI自動選択用ONNXモデルパスを取得</summary>
+    public static string GetAutoMaskModelPath()
+    {
+        try { return LoadSettings().AutoMaskModelPath; }
+        catch { return ""; }
+    }
+
+    /// <summary>AI自動選択用ONNXモデルパスを保存</summary>
+    public static void SaveAutoMaskModelPath(string value)
+    {
+        try
+        {
+            Directory.CreateDirectory(DataDir);
+            var settings = LoadSettings();
+            settings.AutoMaskModelPath = value;
+            SaveSettings(settings);
+        }
+        catch { }
+    }
+
+    public static AutoMaskTargetKind GetAutoMaskTargetKind()
+    {
+        try
+        {
+            var value = LoadSettings().AutoMaskTargetKind;
+            return Enum.TryParse<AutoMaskTargetKind>(value, ignoreCase: true, out var parsed)
+                ? parsed
+                : AutoMaskTargetKind.Human;
+        }
+        catch
+        {
+            return AutoMaskTargetKind.Human;
+        }
+    }
+
+    public static void SaveAutoMaskTargetKind(AutoMaskTargetKind value)
+    {
+        try
+        {
+            Directory.CreateDirectory(DataDir);
+            var settings = LoadSettings();
+            settings.AutoMaskTargetKind = value.ToString();
+            SaveSettings(settings);
+        }
+        catch
+        {
+            // 保存失敗は無視
+        }
+    }
+
+    public static bool GetAutoMaskMultiPassEnabled()
+    {
+        try { return LoadSettings().AutoMaskMultiPassEnabled; }
+        catch { return true; }
+    }
+
+    public static void SaveAutoMaskMultiPassEnabled(bool value)
+    {
+        try
+        {
+            Directory.CreateDirectory(DataDir);
+            var settings = LoadSettings();
+            settings.AutoMaskMultiPassEnabled = value;
+            SaveSettings(settings);
+        }
+        catch
+        {
+            // 保存失敗は無視
+        }
+    }
+
     /// <summary>言語設定を取得</summary>
     public static string GetLanguage()
     {
@@ -318,5 +389,8 @@ public static class ThemeService
         public string DefaultExportDirectory { get; set; } = "";
         public string DefaultExportFormat { get; set; } = "PNG";
         public int DefaultJpegQuality { get; set; } = 90;
+        public string AutoMaskModelPath { get; set; } = "";
+        public string AutoMaskTargetKind { get; set; } = nameof(VRCosme.Models.AutoMaskTargetKind.Human);
+        public bool AutoMaskMultiPassEnabled { get; set; } = true;
     }
 }
