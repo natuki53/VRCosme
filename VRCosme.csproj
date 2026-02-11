@@ -6,10 +6,23 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <UseWPF>true</UseWPF>
+    <DefaultItemExcludes>$(DefaultItemExcludes);artifacts\**</DefaultItemExcludes>
+    <Version>0.1.0-beta</Version>
+    <ApplicationIcon>Resources\VRCosme_Icon.ico</ApplicationIcon>
+    <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
   </PropertyGroup>
 
   <ItemGroup>
+    <Resource Include="Resources\VRCosme_Icon.ico" />
+    <Resource Include="Resources\VRCosme_Icon.svg" />
+    <Resource Include="Resources\Icons\icon_x.svg" />
+    <Resource Include="Resources\Icons\icon_x_light.svg" />
+    <Resource Include="Resources\Icons\icon_github.svg" />
+    <Resource Include="Resources\Icons\icon_github_light.svg" />
+  </ItemGroup>
+  <ItemGroup>
     <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
+    <PackageReference Include="SharpVectors.Wpf" Version="1.8.5" />
     <PackageReference Include="Microsoft.ML.OnnxRuntime.Gpu" Version="1.24.1" />
     <PackageReference Include="SixLabors.ImageSharp" Version="3.1.12" />
   </ItemGroup>
