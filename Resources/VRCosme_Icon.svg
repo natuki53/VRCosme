@@ -1,0 +1,34 @@
+<svg width="512" height="512" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <!-- Kawaii Gradient: Soft Pink to Lavender -->
+    <linearGradient id="grad1" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#FF9A9E;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#FECFEF;stop-opacity:1" />
+    </linearGradient>
+    
+    <!-- Soft Shadow for depth -->
+    <filter id="shadow">
+      <feDropShadow dx="0" dy="4" stdDeviation="6" flood-color="#000000" flood-opacity="0.15" />
+    </filter>
+  </defs>
+  
+  <!-- Background: Rounded Square (Squircle-ish) -->
+  <rect x="32" y="32" width="448" height="448" rx="100" ry="100" fill="url(#grad1)" />
+  
+  <!-- Main Element: Stylized Sparkle (Beauty/Magic) -->
+  <g filter="url(#shadow)">
+    <!-- Central large star (Four-pointed) -->
+    <path d="M256 130 C256 130 290 220 350 256 C290 292 256 382 256 382 C256 382 222 292 162 256 C222 220 256 130 256 130 Z" fill="white" />
+    
+    <!-- Cosmetic/Camera Circle Hint (Optional, kept minimal) -->
+    <!-- <circle cx="256" cy="256" r="60" fill="none" stroke="white" stroke-width="8" opacity="0.5" /> -->
+  </g>
+  
+  <!-- Decorative small sparkles -->
+  <circle cx="360" cy="160" r="12" fill="white" opacity="0.9" filter="url(#shadow)" />
+  <circle cx="152" cy="352" r="12" fill="white" opacity="0.9" filter="url(#shadow)" />
+  
+  <!-- 'C' curve for Cosme (Subtle) -->
+  <!-- <path d="M 330 350 A 120 120 0 0 1 182 350" stroke="white" stroke-width="12" stroke-linecap="round" fill="none" opacity="0.4" /> -->
+
+</svg>
