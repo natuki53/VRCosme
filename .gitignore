@@ -360,3 +360,9 @@ FodyWeavers.xsd
 # JetBrains Rider
 .idea/
 *.sln.iml
+
+# VRCosme project-specific
+.claude/
+artifacts/
+Installer/Output/
+docs/_site/
