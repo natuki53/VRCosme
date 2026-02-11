@@ -19,6 +19,7 @@ public class PresetItem
     public double Shadows { get; init; }        // -100 ～ 100
     public double Highlights { get; init; }     // -100 ～ 100
     public double Clarity { get; init; }        // -100 ～ 100
+    public double Blur { get; init; }           // 0 ～ 100
     public double Sharpen { get; init; }        // 0 ～ 100
     public double Vignette { get; init; }       // -100 ～ 100
 

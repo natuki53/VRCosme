@@ -1,7 +1,7 @@
 namespace VRCosme.Models;
 
 /// <summary>
-/// 編集状態のスナップショット。Undo/Redo 用に補正・トリム・回転・反転を保持する。
+/// 編集状態のスナップショット。Undo/Redo 用に補正・トリム・回転・反転・マスクを保持する。
 /// </summary>
 public record EditState(
     double Brightness,
@@ -14,6 +14,7 @@ public record EditState(
     double Shadows,
     double Highlights,
     double Clarity,
+    double Blur,
     double Sharpen,
     double Vignette,
     bool IsCropActive,
@@ -24,5 +25,8 @@ public record EditState(
     int SelectedCropRatioIndex,
     int RotationDegrees,
     bool FlipHorizontal,
-    bool FlipVertical
+    bool FlipVertical,
+    bool IsMaskEnabled,
+    int SelectedMaskLayerIndex,
+    IReadOnlyList<MaskLayerState> MaskLayers
 );

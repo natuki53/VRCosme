@@ -11,6 +11,7 @@ public sealed class PipelineRenderer
         new PixelAdjustmentsStep(),
         new SaturationStep(),
         new ClarityStep(),
+        new BlurStep(),
         new SharpenStep(),
     ];
 
