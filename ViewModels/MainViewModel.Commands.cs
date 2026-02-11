@@ -4,6 +4,7 @@ using System.IO;
 using System.Windows;
 using VRCosme.Models;
 using VRCosme.Services;
+using VRCosme.Services.AI;
 using VRCosme.Services.ImageProcessing;
 
 namespace VRCosme.ViewModels;
@@ -66,19 +67,38 @@ public partial class MainViewModel
             var format = isPng ? ExportFormat.Png : ExportFormat.Jpeg;
             var quality = JpegQuality;
             var original = _transformedImage.Clone();
+            var layerAdjustmentSequence = BuildMaskAdjustmentSequence(
+                original.Width,
+                original.Height,
+                requireMaskEnabled: true);
 
             await Task.Run(() =>
             {
-                using var adjusted = ImageProcessor.ApplyAdjustments(original, p);
-                original.Dispose();
-                if (cropActive)
+                SixLabors.ImageSharp.Image<SixLabors.ImageSharp.PixelFormats.Rgba32>? current = null;
+                try
                 {
-                    using var cropped = ImageProcessor.Crop(adjusted, cropRect);
-                    ImageProcessor.Export(cropped, path, format, quality);
+                    current = ImageProcessor.ApplyAdjustments(original, p);
+                    foreach (var (mask, layerParams) in layerAdjustmentSequence)
+                    {
+                        var next = ImageProcessor.ApplyAdjustments(current, layerParams, mask);
+                        current.Dispose();
+                        current = next;
+                    }
+
+                    if (cropActive)
+                    {
+                        using var cropped = ImageProcessor.Crop(current, cropRect);
+                        ImageProcessor.Export(cropped, path, format, quality);
+                    }
+                    else
+                    {
+                        ImageProcessor.Export(current, path, format, quality);
+                    }
                 }
-                else
+                finally
                 {
-                    ImageProcessor.Export(adjusted, path, format, quality);
+                    current?.Dispose();
+                    original.Dispose();
                 }
             });
 
@@ -100,21 +120,118 @@ public partial class MainViewModel
         finally { IsProcessing = false; }
     }
 
+    [RelayCommand]
+    private async Task AutoSelectMaskAsync()
+    {
+        if (!HasImage || ImageWidth <= 0 || ImageHeight <= 0) return;
+
+        double centerX = (ImageWidth - 1) * 0.5;
+        double centerY = (ImageHeight - 1) * 0.5;
+        await AutoSelectMaskAtAsync(centerX, centerY);
+    }
+
+    public async Task<bool> AutoSelectMaskAtAsync(double imageX, double imageY)
+    {
+        if (!HasImage || _transformedImage == null || ImageWidth <= 0 || ImageHeight <= 0)
+            return false;
+        if (IsProcessing)
+            return false;
+
+        var targetKind = ThemeService.GetAutoMaskTargetKind();
+        var model = AutoMaskModelCatalog.GetForTarget(targetKind);
+        var modelPath = await EnsureAutoMaskModelPathAsync(model);
+        if (string.IsNullOrWhiteSpace(modelPath))
+            return false;
+
+        bool useMultiPass = ThemeService.GetAutoMaskMultiPassEnabled();
+        int seedX = Math.Clamp((int)Math.Round(imageX), 0, ImageWidth - 1);
+        int seedY = Math.Clamp((int)Math.Round(imageY), 0, ImageHeight - 1);
+
+        IsProcessing = true;
+        StatusMessage = LocalizationService.GetString("Status.AutoSelectingMask", "Selecting mask with AI...");
+
+        try
+        {
+            if (SelectedMaskLayer is null)
+                AddMaskLayerInternal(pushUndoSnapshot: false);
+
+            var input = _transformedImage.Clone();
+            var result = await Task.Run(() =>
+            {
+                try
+                {
+                    return _autoMaskSelector.CreateMask(input, modelPath, seedX, seedY, useMultiPass);
+                }
+                finally
+                {
+                    input.Dispose();
+                }
+            });
+
+            bool changed = MergeSelectedMaskFromBinary(result.Mask, result.Width, result.Height);
+            StatusMessage = BuildReadyStatusMessage();
+            return changed;
+        }
+        catch (Exception ex)
+        {
+            LogService.Error($"AI自動選択に失敗: x={seedX}, y={seedY}", ex);
+            MessageBox.Show(
+                LocalizationService.Format("Dialog.AIAutoMask.Failed", "Failed to select mask with AI:\n{0}", ex.Message),
+                LocalizationService.GetString("Dialog.ErrorTitle", "Error"),
+                MessageBoxButton.OK,
+                MessageBoxImage.Error);
+            StatusMessage = LocalizationService.GetString("Status.AIAutoMaskError", "AI auto mask error");
+            return false;
+        }
+        finally
+        {
+            IsProcessing = false;
+        }
+    }
+
     // ───────── コマンド: 補正リセット ─────────
+
+    private void ResetBasicAdjustments()
+    {
+        Brightness = 0;
+        Contrast = 0;
+        Gamma = 1.0;
+        Exposure = 0;
+        Saturation = 0;
+        Temperature = 0;
+        Tint = 0;
+    }
+
+    private void ResetDetailedAdjustmentValues()
+    {
+        Shadows = 0;
+        Highlights = 0;
+        Clarity = 0;
+        Blur = 0;
+        Sharpen = 0;
+        Vignette = 0;
+    }
 
     private void ResetAllAdjustments()
     {
-        Brightness = 0; Contrast = 0; Gamma = 1.0; Exposure = 0;
-        Saturation = 0; Temperature = 0; Tint = 0;
-        Shadows = 0; Highlights = 0; Clarity = 0; Sharpen = 0; Vignette = 0;
+        ResetBasicAdjustments();
+        ResetDetailedAdjustmentValues();
     }
 
     [RelayCommand]
     private void ResetAdjustments()
     {
-        LogService.Info("補正リセット");
+        LogService.Info("基本補正リセット");
         PushUndoSnapshot();
-        ResetAllAdjustments();
+        ResetBasicAdjustments();
+    }
+
+    [RelayCommand]
+    private void ResetDetailedAdjustments()
+    {
+        LogService.Info("詳細補正リセット");
+        PushUndoSnapshot();
+        ResetDetailedAdjustmentValues();
     }
 
     [RelayCommand]
@@ -134,6 +251,7 @@ public partial class MainViewModel
             case nameof(Shadows): Shadows = 0; break;
             case nameof(Highlights): Highlights = 0; break;
             case nameof(Clarity): Clarity = 0; break;
+            case nameof(Blur): Blur = 0; break;
             case nameof(Sharpen): Sharpen = 0; break;
             case nameof(Vignette): Vignette = 0; break;
         }
@@ -154,6 +272,7 @@ public partial class MainViewModel
         ResetAllAdjustments();
         SelectedCropRatio = CropRatios[0];
         IsCropActive = false;
+        ResetMaskForNewImage();
         _rotationDegrees = 0;
         _flipHorizontal = false;
         _flipVertical = false;
@@ -178,6 +297,7 @@ public partial class MainViewModel
         Shadows = preset.Shadows;
         Highlights = preset.Highlights;
         Clarity = preset.Clarity;
+        Blur = preset.Blur;
         Sharpen = preset.Sharpen;
         Vignette = preset.Vignette;
     }
@@ -200,4 +320,37 @@ public partial class MainViewModel
 
     [RelayCommand]
     private void SetZoom100() { IsFitToScreen = false; }
+
+    private async Task<string?> EnsureAutoMaskModelPathAsync(AutoMaskModelDefinition model)
+    {
+        var modelPath = AutoMaskModelManager.GetModelPath(model);
+        if (AutoMaskModelManager.IsModelInstalled(model))
+            return modelPath;
+
+        IsProcessing = true;
+        StatusMessage = LocalizationService.GetString("Status.DownloadingAutoMaskModel", "Downloading AI mask model...");
+
+        try
+        {
+            return await AutoMaskModelManager.EnsureModelDownloadedAsync(model);
+        }
+        catch (Exception ex)
+        {
+            LogService.Error("AI自動選択モデルのダウンロードに失敗", ex);
+            MessageBox.Show(
+                LocalizationService.Format(
+                    "Dialog.AIAutoMask.DownloadFailed",
+                    "Failed to download AI auto mask model:\n{0}",
+                    ex.Message),
+                LocalizationService.GetString("Dialog.ErrorTitle", "Error"),
+                MessageBoxButton.OK,
+                MessageBoxImage.Error);
+            StatusMessage = LocalizationService.GetString("Status.AIAutoMaskError", "AI auto mask error");
+            return null;
+        }
+        finally
+        {
+            IsProcessing = false;
+        }
+    }
 }

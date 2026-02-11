@@ -6,6 +6,7 @@ using System.IO;
 using System.Windows.Media.Imaging;
 using VRCosme.Models;
 using VRCosme.Services;
+using VRCosme.Services.AI;
 
 namespace VRCosme.ViewModels;
 
@@ -23,6 +24,7 @@ public partial class MainViewModel : ObservableObject
     private bool _flipHorizontal;
     private bool _flipVertical;
     private const int MaxPreviewDimension = 1920;
+    private readonly AutoMaskSelectorService _autoMaskSelector = new();
 
     // ───────── 表示プロパティ ─────────
 
@@ -56,6 +58,7 @@ public partial class MainViewModel : ObservableObject
     [ObservableProperty] private double _shadows;         // -100 ～ 100
     [ObservableProperty] private double _highlights;      // -100 ～ 100
     [ObservableProperty] private double _clarity;         // -100 ～ 100
+    [ObservableProperty] private double _blur;            // 0 ～ 100
     [ObservableProperty] private double _sharpen;         // 0 ～ 100
     [ObservableProperty] private double _vignette;        // -100 ～ 100
 
@@ -81,6 +84,9 @@ public partial class MainViewModel : ObservableObject
     public bool IsSplitMode => CompareMode == CompareMode.Split;
 
     // ───────── Undo / Redo ─────────
+
+    /// <summary>Undo スタックの最大数。マスクデータ等でメモリを消費するため上限で抑える。</summary>
+    private const int MaxUndoCount = 20;
 
     private readonly Stack<EditState> _undoStack = new();
     private readonly Stack<EditState> _redoStack = new();

@@ -17,8 +17,10 @@ public partial class MainViewModel
     partial void OnShadowsChanged(double value) => SchedulePreviewUpdate();
     partial void OnHighlightsChanged(double value) => SchedulePreviewUpdate();
     partial void OnClarityChanged(double value) => SchedulePreviewUpdate();
+    partial void OnBlurChanged(double value) => SchedulePreviewUpdate();
     partial void OnSharpenChanged(double value) => SchedulePreviewUpdate();
     partial void OnVignetteChanged(double value) => SchedulePreviewUpdate();
+    partial void OnIsMaskEnabledChanged(bool value) => SchedulePreviewUpdate();
 
     partial void OnSelectedExportFormatChanged(string value) =>
         OnPropertyChanged(nameof(IsJpegSelected));
