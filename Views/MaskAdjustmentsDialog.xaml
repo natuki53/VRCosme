@@ -1,0 +1,290 @@
+<Window x:Class="VRCosme.Views.MaskAdjustmentsDialog"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:converters="clr-namespace:VRCosme.Converters"
+        Title="{DynamicResource Mask.AdjustmentsTitle}"
+        Width="430" Height="620"
+        WindowStartupLocation="CenterOwner"
+        ShowInTaskbar="False"
+        Background="{DynamicResource PanelBackgroundBrush}"
+        Foreground="{DynamicResource WindowForegroundBrush}"
+        FontFamily="Segoe UI, Meiryo UI" FontSize="12">
+    <Window.Resources>
+        <converters:SliderValueConverter x:Key="SliderValueBrightness"/>
+        <converters:SliderValueConverter x:Key="SliderValueContrast"/>
+        <converters:SliderValueConverter x:Key="SliderValueGamma"/>
+        <converters:SliderValueConverter x:Key="SliderValueExposure"/>
+        <converters:SliderValueConverter x:Key="SliderValueSaturation"/>
+        <converters:SliderValueConverter x:Key="SliderValueTemperature"/>
+        <converters:SliderValueConverter x:Key="SliderValueTint"/>
+        <converters:SliderValueConverter x:Key="SliderValueShadows"/>
+        <converters:SliderValueConverter x:Key="SliderValueHighlights"/>
+        <converters:SliderValueConverter x:Key="SliderValueClarity"/>
+        <converters:SliderValueConverter x:Key="SliderValueBlur"/>
+        <converters:SliderValueConverter x:Key="SliderValueSharpen"/>
+        <converters:SliderValueConverter x:Key="SliderValueVignette"/>
+
+        <Style x:Key="ValueTextBox" TargetType="TextBox" BasedOn="{x:Null}">
+            <Setter Property="Foreground" Value="{DynamicResource ValueLabelForegroundBrush}"/>
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Padding" Value="2,1"/>
+            <Setter Property="FontSize" Value="11"/>
+            <Setter Property="MinWidth" Value="34"/>
+            <Setter Property="TextAlignment" Value="Right"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <EventSetter Event="PreviewKeyDown" Handler="ValueTextBox_PreviewKeyDown"/>
+        </Style>
+
+        <Style x:Key="BtnParamReset" TargetType="Button">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="Padding" Value="0"/>
+            <Setter Property="MinWidth" Value="16"/>
+            <Setter Property="MinHeight" Value="16"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="Transparent" MinWidth="16" MinHeight="16">
+                            <TextBlock x:Name="Icon" Text="&#x21BA;" FontSize="12" Foreground="{DynamicResource ResetButtonForegroundBrush}"
+                                       HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Icon" Property="Foreground" Value="{DynamicResource ResetButtonHoverForegroundBrush}"/>
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter TargetName="Icon" Property="Visibility" Value="Hidden"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="Btn" TargetType="Button">
+            <Setter Property="Background" Value="{DynamicResource ButtonBackgroundBrush}"/>
+            <Setter Property="Foreground" Value="{DynamicResource ButtonForegroundBrush}"/>
+            <Setter Property="BorderBrush" Value="{DynamicResource ControlBorderBrush}"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Padding" Value="10,5"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="FontSize" Value="11.5"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="Bd" Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="4" Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Bd" Property="Background" Value="{DynamicResource ButtonHoverBackgroundBrush}"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="Bd" Property="Background" Value="{DynamicResource ButtonPressedBackgroundBrush}"/>
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter TargetName="Bd" Property="Background" Value="{DynamicResource ButtonDisabledBackgroundBrush}"/>
+                                <Setter Property="Foreground" Value="{DynamicResource ButtonDisabledForegroundBrush}"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="BtnAccent" TargetType="Button" BasedOn="{StaticResource Btn}">
+            <Setter Property="Background" Value="{DynamicResource AccentBrush}"/>
+            <Setter Property="Foreground" Value="White"/>
+        </Style>
+
+        <Style TargetType="Slider">
+            <Setter Property="Focusable" Value="True"/>
+            <Setter Property="MinHeight" Value="24"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="Margin" Value="6,0"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Slider">
+                        <Border Background="Transparent" SnapsToDevicePixels="True" ClipToBounds="False" Padding="0,7">
+                            <Track x:Name="PART_Track">
+                                <Track.DecreaseRepeatButton>
+                                    <RepeatButton Command="Slider.DecreaseLarge" OverridesDefaultStyle="True" Focusable="False">
+                                        <RepeatButton.Template>
+                                            <ControlTemplate TargetType="RepeatButton">
+                                                <Border Height="3" CornerRadius="1.5" Background="{DynamicResource SliderTrackActiveBrush}"/>
+                                            </ControlTemplate>
+                                        </RepeatButton.Template>
+                                    </RepeatButton>
+                                </Track.DecreaseRepeatButton>
+                                <Track.IncreaseRepeatButton>
+                                    <RepeatButton Command="Slider.IncreaseLarge" OverridesDefaultStyle="True" Focusable="False">
+                                        <RepeatButton.Template>
+                                            <ControlTemplate TargetType="RepeatButton">
+                                                <Border Height="3" CornerRadius="1.5" Background="{DynamicResource SliderTrackInactiveBrush}"/>
+                                            </ControlTemplate>
+                                        </RepeatButton.Template>
+                                    </RepeatButton>
+                                </Track.IncreaseRepeatButton>
+                                <Track.Thumb>
+                                    <Thumb OverridesDefaultStyle="True" Focusable="False" Cursor="Hand">
+                                        <Thumb.Template>
+                                            <ControlTemplate TargetType="Thumb">
+                                                <Ellipse x:Name="Knob" Width="13" Height="13"
+                                                         Fill="{DynamicResource SliderThumbBrush}" Stroke="{DynamicResource AccentBrush}" StrokeThickness="2"/>
+                                                <ControlTemplate.Triggers>
+                                                    <Trigger Property="IsMouseOver" Value="True">
+                                                        <Setter TargetName="Knob" Property="Fill" Value="{DynamicResource SliderThumbHoverBrush}"/>
+                                                    </Trigger>
+                                                </ControlTemplate.Triggers>
+                                            </ControlTemplate>
+                                        </Thumb.Template>
+                                    </Thumb>
+                                </Track.Thumb>
+                            </Track>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Window.Resources>
+
+    <Grid Margin="14">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <ScrollViewer VerticalScrollBarVisibility="Auto"
+                      HorizontalScrollBarVisibility="Disabled"
+                      PreviewKeyDown="DialogScrollViewer_PreviewKeyDown">
+            <StackPanel>
+                <TextBlock x:Name="LayerNameText" FontWeight="SemiBold" Margin="0,0,0,10"/>
+                <TextBlock Text="{DynamicResource Panel.BasicAdjustments}" FontWeight="SemiBold" Margin="0,0,0,6"/>
+                <Grid Margin="0,0,0,10">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="100"/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="42"/>
+                    </Grid.ColumnDefinitions>
+
+                    <TextBlock Grid.Row="0" Text="{DynamicResource Field.Brightness}" VerticalAlignment="Center"/>
+                    <Button Grid.Row="0" Grid.Column="1" Style="{StaticResource BtnParamReset}" Click="ResetParameter_Click" Tag="Brightness"/>
+                    <Slider x:Name="BrightnessSlider" Grid.Row="0" Grid.Column="2" Minimum="-100" Maximum="100" SmallChange="1"/>
+                    <TextBox Grid.Row="0" Grid.Column="3" Style="{StaticResource ValueTextBox}"
+                             Text="{Binding ElementName=BrightnessSlider, Path=Value, Converter={StaticResource SliderValueBrightness}, ConverterParameter='-100,100,F0', UpdateSourceTrigger=LostFocus}"/>
+
+                    <TextBlock Grid.Row="1" Text="{DynamicResource Field.Contrast}" VerticalAlignment="Center"/>
+                    <Button Grid.Row="1" Grid.Column="1" Style="{StaticResource BtnParamReset}" Click="ResetParameter_Click" Tag="Contrast"/>
+                    <Slider x:Name="ContrastSlider" Grid.Row="1" Grid.Column="2" Minimum="-100" Maximum="100" SmallChange="1"/>
+                    <TextBox Grid.Row="1" Grid.Column="3" Style="{StaticResource ValueTextBox}"
+                             Text="{Binding ElementName=ContrastSlider, Path=Value, Converter={StaticResource SliderValueContrast}, ConverterParameter='-100,100,F0', UpdateSourceTrigger=LostFocus}"/>
+
+                    <TextBlock Grid.Row="2" Text="{DynamicResource Field.Gamma}" VerticalAlignment="Center"/>
+                    <Button Grid.Row="2" Grid.Column="1" Style="{StaticResource BtnParamReset}" Click="ResetParameter_Click" Tag="Gamma"/>
+                    <Slider x:Name="GammaSlider" Grid.Row="2" Grid.Column="2" Minimum="0.2" Maximum="5.0" SmallChange="0.05" LargeChange="0.2"/>
+                    <TextBox Grid.Row="2" Grid.Column="3" Style="{StaticResource ValueTextBox}"
+                             Text="{Binding ElementName=GammaSlider, Path=Value, Converter={StaticResource SliderValueGamma}, ConverterParameter='0.2,5.0,F2', UpdateSourceTrigger=LostFocus}"/>
+
+                    <TextBlock Grid.Row="3" Text="{DynamicResource Field.Exposure}" VerticalAlignment="Center"/>
+                    <Button Grid.Row="3" Grid.Column="1" Style="{StaticResource BtnParamReset}" Click="ResetParameter_Click" Tag="Exposure"/>
+                    <Slider x:Name="ExposureSlider" Grid.Row="3" Grid.Column="2" Minimum="-5" Maximum="5" SmallChange="0.1" LargeChange="0.5"/>
+                    <TextBox Grid.Row="3" Grid.Column="3" Style="{StaticResource ValueTextBox}"
+                             Text="{Binding ElementName=ExposureSlider, Path=Value, Converter={StaticResource SliderValueExposure}, ConverterParameter='-5,5,F1', UpdateSourceTrigger=LostFocus}"/>
+
+                    <TextBlock Grid.Row="4" Text="{DynamicResource Field.Saturation}" VerticalAlignment="Center"/>
+                    <Button Grid.Row="4" Grid.Column="1" Style="{StaticResource BtnParamReset}" Click="ResetParameter_Click" Tag="Saturation"/>
+                    <Slider x:Name="SaturationSlider" Grid.Row="4" Grid.Column="2" Minimum="-100" Maximum="100" SmallChange="1"/>
+                    <TextBox Grid.Row="4" Grid.Column="3" Style="{StaticResource ValueTextBox}"
+                             Text="{Binding ElementName=SaturationSlider, Path=Value, Converter={StaticResource SliderValueSaturation}, ConverterParameter='-100,100,F0', UpdateSourceTrigger=LostFocus}"/>
+
+                    <TextBlock Grid.Row="5" Text="{DynamicResource Field.Temperature}" VerticalAlignment="Center"/>
+                    <Button Grid.Row="5" Grid.Column="1" Style="{StaticResource BtnParamReset}" Click="ResetParameter_Click" Tag="Temperature"/>
+                    <Slider x:Name="TemperatureSlider" Grid.Row="5" Grid.Column="2" Minimum="-100" Maximum="100" SmallChange="1"/>
+                    <TextBox Grid.Row="5" Grid.Column="3" Style="{StaticResource ValueTextBox}"
+                             Text="{Binding ElementName=TemperatureSlider, Path=Value, Converter={StaticResource SliderValueTemperature}, ConverterParameter='-100,100,F0', UpdateSourceTrigger=LostFocus}"/>
+
+                    <TextBlock Grid.Row="6" Text="{DynamicResource Field.Tint}" VerticalAlignment="Center"/>
+                    <Button Grid.Row="6" Grid.Column="1" Style="{StaticResource BtnParamReset}" Click="ResetParameter_Click" Tag="Tint"/>
+                    <Slider x:Name="TintSlider" Grid.Row="6" Grid.Column="2" Minimum="-100" Maximum="100" SmallChange="1"/>
+                    <TextBox Grid.Row="6" Grid.Column="3" Style="{StaticResource ValueTextBox}"
+                             Text="{Binding ElementName=TintSlider, Path=Value, Converter={StaticResource SliderValueTint}, ConverterParameter='-100,100,F0', UpdateSourceTrigger=LostFocus}"/>
+                </Grid>
+
+                <TextBlock Text="{DynamicResource Panel.DetailedAdjustments}" FontWeight="SemiBold" Margin="0,0,0,6"/>
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="100"/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="42"/>
+                    </Grid.ColumnDefinitions>
+
+                    <TextBlock Grid.Row="0" Text="{DynamicResource Field.Shadows}" VerticalAlignment="Center"/>
+                    <Button Grid.Row="0" Grid.Column="1" Style="{StaticResource BtnParamReset}" Click="ResetParameter_Click" Tag="Shadows"/>
+                    <Slider x:Name="ShadowsSlider" Grid.Row="0" Grid.Column="2" Minimum="-100" Maximum="100" SmallChange="1"/>
+                    <TextBox Grid.Row="0" Grid.Column="3" Style="{StaticResource ValueTextBox}"
+                             Text="{Binding ElementName=ShadowsSlider, Path=Value, Converter={StaticResource SliderValueShadows}, ConverterParameter='-100,100,F0', UpdateSourceTrigger=LostFocus}"/>
+
+                    <TextBlock Grid.Row="1" Text="{DynamicResource Field.Highlights}" VerticalAlignment="Center"/>
+                    <Button Grid.Row="1" Grid.Column="1" Style="{StaticResource BtnParamReset}" Click="ResetParameter_Click" Tag="Highlights"/>
+                    <Slider x:Name="HighlightsSlider" Grid.Row="1" Grid.Column="2" Minimum="-100" Maximum="100" SmallChange="1"/>
+                    <TextBox Grid.Row="1" Grid.Column="3" Style="{StaticResource ValueTextBox}"
+                             Text="{Binding ElementName=HighlightsSlider, Path=Value, Converter={StaticResource SliderValueHighlights}, ConverterParameter='-100,100,F0', UpdateSourceTrigger=LostFocus}"/>
+
+                    <TextBlock Grid.Row="2" Text="{DynamicResource Field.Clarity}" VerticalAlignment="Center"/>
+                    <Button Grid.Row="2" Grid.Column="1" Style="{StaticResource BtnParamReset}" Click="ResetParameter_Click" Tag="Clarity"/>
+                    <Slider x:Name="ClaritySlider" Grid.Row="2" Grid.Column="2" Minimum="-100" Maximum="100" SmallChange="1"/>
+                    <TextBox Grid.Row="2" Grid.Column="3" Style="{StaticResource ValueTextBox}"
+                             Text="{Binding ElementName=ClaritySlider, Path=Value, Converter={StaticResource SliderValueClarity}, ConverterParameter='-100,100,F0', UpdateSourceTrigger=LostFocus}"/>
+
+                    <TextBlock Grid.Row="3" Text="{DynamicResource Field.Blur}" VerticalAlignment="Center"/>
+                    <Button Grid.Row="3" Grid.Column="1" Style="{StaticResource BtnParamReset}" Click="ResetParameter_Click" Tag="Blur"/>
+                    <Slider x:Name="BlurSlider" Grid.Row="3" Grid.Column="2" Minimum="0" Maximum="100" SmallChange="1"/>
+                    <TextBox Grid.Row="3" Grid.Column="3" Style="{StaticResource ValueTextBox}"
+                             Text="{Binding ElementName=BlurSlider, Path=Value, Converter={StaticResource SliderValueBlur}, ConverterParameter='0,100,F0', UpdateSourceTrigger=LostFocus}"/>
+
+                    <TextBlock Grid.Row="4" Text="{DynamicResource Field.Sharpen}" VerticalAlignment="Center"/>
+                    <Button Grid.Row="4" Grid.Column="1" Style="{StaticResource BtnParamReset}" Click="ResetParameter_Click" Tag="Sharpen"/>
+                    <Slider x:Name="SharpenSlider" Grid.Row="4" Grid.Column="2" Minimum="0" Maximum="100" SmallChange="1"/>
+                    <TextBox Grid.Row="4" Grid.Column="3" Style="{StaticResource ValueTextBox}"
+                             Text="{Binding ElementName=SharpenSlider, Path=Value, Converter={StaticResource SliderValueSharpen}, ConverterParameter='0,100,F0', UpdateSourceTrigger=LostFocus}"/>
+
+                    <TextBlock Grid.Row="5" Text="{DynamicResource Field.Vignette}" VerticalAlignment="Center"/>
+                    <Button Grid.Row="5" Grid.Column="1" Style="{StaticResource BtnParamReset}" Click="ResetParameter_Click" Tag="Vignette"/>
+                    <Slider x:Name="VignetteSlider" Grid.Row="5" Grid.Column="2" Minimum="-100" Maximum="100" SmallChange="1"/>
+                    <TextBox Grid.Row="5" Grid.Column="3" Style="{StaticResource ValueTextBox}"
+                             Text="{Binding ElementName=VignetteSlider, Path=Value, Converter={StaticResource SliderValueVignette}, ConverterParameter='-100,100,F0', UpdateSourceTrigger=LostFocus}"/>
+                </Grid>
+            </StackPanel>
+        </ScrollViewer>
+
+        <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,12,0,0">
+            <Button Content="{DynamicResource Common.Ok}" Style="{StaticResource BtnAccent}" Width="90" Margin="0,0,8,0" IsDefault="True" Click="Ok_Click"/>
+            <Button Content="{DynamicResource Common.Cancel}" Style="{StaticResource Btn}" Width="90" IsCancel="True"/>
+        </StackPanel>
+    </Grid>
+</Window>
