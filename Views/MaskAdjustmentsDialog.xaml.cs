@@ -11,6 +11,7 @@ public partial class MaskAdjustmentsDialog : Window
 {
     private bool _isInitializing;
 
+    public bool IsConfirmed { get; private set; }
     public MaskAdjustmentValues Values { get; private set; }
     public event Action<MaskAdjustmentValues>? ValuesChanged;
 
@@ -33,6 +34,7 @@ public partial class MaskAdjustmentsDialog : Window
         BlurSlider.Value = values.Blur;
         SharpenSlider.Value = values.Sharpen;
         VignetteSlider.Value = values.Vignette;
+        NaturalizeBoundaryCheckBox.IsChecked = values.NaturalizeBoundary;
 
         Values = values;
         _isInitializing = false;
@@ -43,7 +45,13 @@ public partial class MaskAdjustmentsDialog : Window
     private void Ok_Click(object sender, RoutedEventArgs e)
     {
         Values = BuildValues();
-        DialogResult = true;
+        IsConfirmed = true;
+        Close();
+    }
+
+    private void Cancel_Click(object sender, RoutedEventArgs e)
+    {
+        Close();
     }
 
     private void RegisterSliderHandlers()
@@ -70,6 +78,15 @@ public partial class MaskAdjustmentsDialog : Window
     }
 
     private void Slider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+    {
+        if (_isInitializing)
+            return;
+
+        Values = BuildValues();
+        ValuesChanged?.Invoke(Values);
+    }
+
+    private void NaturalizeBoundaryCheckBox_Toggled(object sender, RoutedEventArgs e)
     {
         if (_isInitializing)
             return;
@@ -153,6 +170,7 @@ public partial class MaskAdjustmentsDialog : Window
             ClaritySlider.Value,
             BlurSlider.Value,
             SharpenSlider.Value,
-            VignetteSlider.Value
+            VignetteSlider.Value,
+            NaturalizeBoundaryCheckBox.IsChecked == true
         );
 }

@@ -279,12 +279,18 @@
                     <TextBox Grid.Row="5" Grid.Column="3" Style="{StaticResource ValueTextBox}"
                              Text="{Binding ElementName=VignetteSlider, Path=Value, Converter={StaticResource SliderValueVignette}, ConverterParameter='-100,100,F0', UpdateSourceTrigger=LostFocus}"/>
                 </Grid>
+
+                <CheckBox x:Name="NaturalizeBoundaryCheckBox"
+                          Content="{DynamicResource Mask.NaturalizeBoundary}"
+                          Margin="0,12,0,0"
+                          Checked="NaturalizeBoundaryCheckBox_Toggled"
+                          Unchecked="NaturalizeBoundaryCheckBox_Toggled"/>
             </StackPanel>
         </ScrollViewer>
 
         <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,12,0,0">
             <Button Content="{DynamicResource Common.Ok}" Style="{StaticResource BtnAccent}" Width="90" Margin="0,0,8,0" IsDefault="True" Click="Ok_Click"/>
-            <Button Content="{DynamicResource Common.Cancel}" Style="{StaticResource Btn}" Width="90" IsCancel="True"/>
+            <Button Content="{DynamicResource Common.Cancel}" Style="{StaticResource Btn}" Width="90" IsCancel="True" Click="Cancel_Click"/>
         </StackPanel>
     </Grid>
 </Window>

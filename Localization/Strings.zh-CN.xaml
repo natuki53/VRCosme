@@ -139,6 +139,7 @@
     <sys:String x:Key="Mask.RenameTitle">重命名蒙版图层</sys:String>
     <sys:String x:Key="Mask.RenamePrompt">图层名称:</sys:String>
     <sys:String x:Key="Mask.AdjustmentsTitle">蒙版图层调整</sys:String>
+    <sys:String x:Key="Mask.NaturalizeBoundary">让边界更自然</sys:String>
 
     <sys:String x:Key="Settings.Title">应用设置</sys:String>
     <sys:String x:Key="Settings.Section.General">常规</sys:String>

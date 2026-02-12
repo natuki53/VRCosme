@@ -24,6 +24,7 @@ public partial class MaskLayer : ObservableObject
     public double Blur { get; set; }
     public double Sharpen { get; set; }
     public double Vignette { get; set; }
+    public bool NaturalizeBoundary { get; set; }
 
     public byte[] MaskData { get; private set; }
 
@@ -99,7 +100,8 @@ public partial class MaskLayer : ObservableObject
             Clarity,
             Blur,
             Sharpen,
-            Vignette
+            Vignette,
+            NaturalizeBoundary
         );
 
     public static MaskLayer FromState(MaskLayerState state)
@@ -118,7 +120,8 @@ public partial class MaskLayer : ObservableObject
             Clarity = state.Clarity,
             Blur = state.Blur,
             Sharpen = state.Sharpen,
-            Vignette = state.Vignette
+            Vignette = state.Vignette,
+            NaturalizeBoundary = state.NaturalizeBoundary
         };
         layer.SetMaskData(state.MaskData, state.Width, state.Height, state.NonZeroCount);
         return layer;

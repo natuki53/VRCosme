@@ -139,6 +139,7 @@
     <sys:String x:Key="Mask.RenameTitle">마스크 레이어 이름 변경</sys:String>
     <sys:String x:Key="Mask.RenamePrompt">레이어 이름:</sys:String>
     <sys:String x:Key="Mask.AdjustmentsTitle">마스크 레이어 보정</sys:String>
+    <sys:String x:Key="Mask.NaturalizeBoundary">경계선을 자연스럽게 하기</sys:String>
 
     <sys:String x:Key="Settings.Title">앱 설정</sys:String>
     <sys:String x:Key="Settings.Section.General">일반</sys:String>

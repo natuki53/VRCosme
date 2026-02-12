@@ -139,6 +139,7 @@
     <sys:String x:Key="Mask.RenameTitle">重新命名遮罩圖層</sys:String>
     <sys:String x:Key="Mask.RenamePrompt">圖層名稱:</sys:String>
     <sys:String x:Key="Mask.AdjustmentsTitle">遮罩圖層調整</sys:String>
+    <sys:String x:Key="Mask.NaturalizeBoundary">讓邊界更自然</sys:String>
 
     <sys:String x:Key="Settings.Title">應用程式設定</sys:String>
     <sys:String x:Key="Settings.Section.General">一般</sys:String>

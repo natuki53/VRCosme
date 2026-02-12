@@ -394,7 +394,7 @@ public partial class MainViewModel
     public MaskAdjustmentValues GetSelectedMaskAdjustmentValues()
     {
         if (SelectedMaskLayer is null)
-            return new MaskAdjustmentValues(0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+            return new MaskAdjustmentValues(0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, false);
 
         return new MaskAdjustmentValues(
             SelectedMaskLayer.Brightness,
@@ -409,7 +409,8 @@ public partial class MainViewModel
             SelectedMaskLayer.Clarity,
             SelectedMaskLayer.Blur,
             SelectedMaskLayer.Sharpen,
-            SelectedMaskLayer.Vignette
+            SelectedMaskLayer.Vignette,
+            SelectedMaskLayer.NaturalizeBoundary
         );
     }
 
@@ -432,6 +433,7 @@ public partial class MainViewModel
         SelectedMaskLayer.Blur = values.Blur;
         SelectedMaskLayer.Sharpen = values.Sharpen;
         SelectedMaskLayer.Vignette = values.Vignette;
+        SelectedMaskLayer.NaturalizeBoundary = values.NaturalizeBoundary;
 
         SchedulePreviewUpdate();
     }
@@ -705,12 +707,12 @@ public partial class MainViewModel
             SchedulePreviewUpdate();
     }
 
-    private List<(byte[] Mask, AdjustmentParams Params)> BuildMaskAdjustmentSequence(
+    private List<(byte[] Mask, AdjustmentParams Params, bool NaturalizeBoundary)> BuildMaskAdjustmentSequence(
         int targetWidth,
         int targetHeight,
         bool requireMaskEnabled)
     {
-        var result = new List<(byte[] Mask, AdjustmentParams Params)>();
+        var result = new List<(byte[] Mask, AdjustmentParams Params, bool NaturalizeBoundary)>();
         if (requireMaskEnabled && !IsMaskEnabled)
             return result;
         if (targetWidth <= 0 || targetHeight <= 0)
@@ -740,13 +742,24 @@ public partial class MainViewModel
             if (p.IsDefault)
                 continue;
 
-            var resizedMask = ResizeMaskNearest(
-                state.MaskData,
-                state.Width,
-                state.Height,
-                targetWidth,
-                targetHeight);
-            result.Add((resizedMask, p));
+            bool naturalizeBoundary = hasPreview && i == selectedIndex
+                ? previewValues.NaturalizeBoundary
+                : state.NaturalizeBoundary;
+
+            var resizedMask = naturalizeBoundary
+                ? ResizeMaskBilinear(
+                    state.MaskData,
+                    state.Width,
+                    state.Height,
+                    targetWidth,
+                    targetHeight)
+                : ResizeMaskNearest(
+                    state.MaskData,
+                    state.Width,
+                    state.Height,
+                    targetWidth,
+                    targetHeight);
+            result.Add((resizedMask, p, naturalizeBoundary));
         }
 
         return result;
@@ -799,6 +812,50 @@ public partial class MainViewModel
             {
                 int srcX = (int)((long)x * sourceWidth / targetWidth);
                 resized[dstRow + x] = source[srcRow + srcX];
+            }
+        }
+
+        return resized;
+    }
+
+    private static byte[] ResizeMaskBilinear(byte[] source, int sourceWidth, int sourceHeight, int targetWidth, int targetHeight)
+    {
+        if (sourceWidth == targetWidth && sourceHeight == targetHeight)
+            return (byte[])source.Clone();
+
+        var resized = new byte[targetWidth * targetHeight];
+
+        for (int y = 0; y < targetHeight; y++)
+        {
+            double srcY = ((y + 0.5) * sourceHeight / targetHeight) - 0.5;
+            int y0 = Math.Clamp((int)Math.Floor(srcY), 0, sourceHeight - 1);
+            int y1 = Math.Clamp(y0 + 1, 0, sourceHeight - 1);
+            float fy = (float)(srcY - y0);
+            if (fy < 0f) fy = 0f;
+            if (fy > 1f) fy = 1f;
+
+            int row0 = y0 * sourceWidth;
+            int row1 = y1 * sourceWidth;
+            int dstRow = y * targetWidth;
+
+            for (int x = 0; x < targetWidth; x++)
+            {
+                double srcX = ((x + 0.5) * sourceWidth / targetWidth) - 0.5;
+                int x0 = Math.Clamp((int)Math.Floor(srcX), 0, sourceWidth - 1);
+                int x1 = Math.Clamp(x0 + 1, 0, sourceWidth - 1);
+                float fx = (float)(srcX - x0);
+                if (fx < 0f) fx = 0f;
+                if (fx > 1f) fx = 1f;
+
+                float v00 = source[row0 + x0];
+                float v10 = source[row0 + x1];
+                float v01 = source[row1 + x0];
+                float v11 = source[row1 + x1];
+
+                float top = v00 + (v10 - v00) * fx;
+                float bottom = v01 + (v11 - v01) * fx;
+                float value = top + (bottom - top) * fy;
+                resized[dstRow + x] = (byte)Math.Clamp(MathF.Round(value), 0f, 255f);
             }
         }
 

@@ -139,6 +139,7 @@
     <sys:String x:Key="Mask.RenameTitle">Rename Mask Layer</sys:String>
     <sys:String x:Key="Mask.RenamePrompt">Mask layer name:</sys:String>
     <sys:String x:Key="Mask.AdjustmentsTitle">Mask Layer Adjustments</sys:String>
+    <sys:String x:Key="Mask.NaturalizeBoundary">Naturalize mask boundary</sys:String>
 
     <sys:String x:Key="Settings.Title">App Settings</sys:String>
     <sys:String x:Key="Settings.Section.General">General</sys:String>

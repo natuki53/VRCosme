@@ -18,5 +18,6 @@ public record MaskLayerState(
     double Clarity,
     double Blur,
     double Sharpen,
-    double Vignette
+    double Vignette,
+    bool NaturalizeBoundary
 );

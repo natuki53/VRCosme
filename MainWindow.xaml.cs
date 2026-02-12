@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Microsoft.Win32;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
@@ -50,6 +51,10 @@ public partial class MainWindow : Window
     private readonly List<(double X, double Y)> _maskLassoPoints = [];
     private Path? _maskOutlinePath;
     private Path? _maskLassoPath;
+    private MaskAdjustmentsDialog? _maskAdjustmentsDialog;
+    private MaskLayer? _maskAdjustmentsTargetLayer;
+    private int _maskAdjustmentsTargetLayerIndex = -1;
+    private bool _isMaskAdjustmentsSelectionValidationPending;
     private const double MinZoom = 0.1;
     private const double MaxZoom = 50.0;
     private const double WheelZoomFactor = 1.15;
@@ -98,6 +103,8 @@ public partial class MainWindow : Window
             // 新しい画像読み込み時にズーム・パンをリセット
             if (args.PropertyName == nameof(MainViewModel.SourceFilePath))
             {
+                if (_maskAdjustmentsDialog != null)
+                    _maskAdjustmentsDialog.Close();
                 CancelMaskLasso();
                 ResetZoomPan();
             }
@@ -116,6 +123,12 @@ public partial class MainWindow : Window
                 or nameof(MainViewModel.MaskCoverage)
                 or nameof(MainViewModel.SourceFilePath))
             {
+                if (args.PropertyName == nameof(MainViewModel.SelectedMaskLayer)
+                    && _maskAdjustmentsDialog != null)
+                {
+                    ScheduleMaskAdjustmentsDialogSelectionValidation();
+                }
+
                 UpdateMaskOutlineOverlay();
             }
         };
@@ -134,6 +147,9 @@ public partial class MainWindow : Window
 
     private void MainWindow_Closing(object? sender, System.ComponentModel.CancelEventArgs e)
     {
+        if (_maskAdjustmentsDialog != null)
+            _maskAdjustmentsDialog.Close();
+
         if (RightPanelColumn.Width.IsAbsolute)
         {
             var w = RightPanelColumn.Width.Value;
@@ -192,16 +208,32 @@ public partial class MainWindow : Window
 
     private void RightPanel_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
     {
-        var src = e.OriginalSource as DependencyObject;
-        while (src != null)
+        var source = e.OriginalSource as DependencyObject;
+
+        if (HasAncestor<Slider>(source))
         {
-            if (src is Slider)
-            {
-                ViewModel.PushUndoSnapshot();
-                break;
-            }
-            src = VisualTreeHelper.GetParent(src);
+            ViewModel.PushUndoSnapshot();
+            return;
         }
+
+        if (!ViewModel.HasSelectedMaskLayer)
+            return;
+
+        if (HasAncestor<ButtonBase>(source)
+            || HasAncestor<TextBoxBase>(source)
+            || HasAncestor<ComboBox>(source)
+            || HasAncestor<ListBoxItem>(source)
+            || HasAncestor<CheckBox>(source)
+            || HasAncestor<RadioButton>(source)
+            || HasAncestor<ScrollBar>(source)
+            || HasAncestor<Thumb>(source)
+            || HasAncestor<MenuItem>(source))
+        {
+            return;
+        }
+
+        if (source is Panel or Border or ScrollViewer)
+            ViewModel.SelectedMaskLayer = null;
     }
 
     /// <summary>矢印キーでスライダー操作後もフォーカスが外れないようにする</summary>
@@ -224,6 +256,9 @@ public partial class MainWindow : Window
         }
         return null;
     }
+
+    private static bool HasAncestor<T>(DependencyObject? child) where T : DependencyObject =>
+        FindParent<T>(child) != null;
 
     /// <summary>数値TextBoxでEnter押下時に適用し、同行情報のスライダーにフォーカスを移す</summary>
     private void ValueTextBox_PreviewKeyDown(object sender, KeyEventArgs e)
@@ -773,31 +808,128 @@ public partial class MainWindow : Window
     private void OpenMaskAdjustmentsPopup()
     {
         if (!ViewModel.HasSelectedMaskLayer) return;
+        var selectedLayer = ViewModel.SelectedMaskLayer;
+        if (selectedLayer == null) return;
+
+        if (_maskAdjustmentsDialog != null)
+        {
+            int selectedIndex = ViewModel.MaskLayers.IndexOf(selectedLayer);
+            if (selectedIndex >= 0 && IsMaskAdjustmentsTargetMatch(selectedLayer, selectedIndex))
+            {
+                _maskAdjustmentsDialog.Activate();
+                _maskAdjustmentsDialog.Focus();
+                return;
+            }
+
+            _maskAdjustmentsDialog.Close();
+        }
+
         var layerName = ViewModel.GetSelectedMaskLayerName();
         var initial = ViewModel.GetSelectedMaskAdjustmentValues();
         var dialog = new MaskAdjustmentsDialog(layerName, initial) { Owner = this };
-        void OnValuesChanged(MaskAdjustmentValues values) =>
-            ViewModel.PreviewSelectedMaskAdjustments(values);
 
-        dialog.ValuesChanged += OnValuesChanged;
-        bool? result;
-        try
-        {
-            result = dialog.ShowDialog();
-        }
-        finally
-        {
-            dialog.ValuesChanged -= OnValuesChanged;
-        }
+        _maskAdjustmentsDialog = dialog;
+        _maskAdjustmentsTargetLayer = selectedLayer;
+        _maskAdjustmentsTargetLayerIndex = ViewModel.MaskLayers.IndexOf(selectedLayer);
 
-        if (result == true)
-        {
-            ViewModel.ClearSelectedMaskAdjustmentsPreview(schedulePreview: false);
+        dialog.ValuesChanged += MaskAdjustmentsDialog_ValuesChanged;
+        dialog.Closed += MaskAdjustmentsDialog_Closed;
+        dialog.Show();
+        dialog.Activate();
+    }
+
+    private void MaskAdjustmentsDialog_ValuesChanged(MaskAdjustmentValues values)
+    {
+        var selectedLayer = ViewModel.SelectedMaskLayer;
+        if (selectedLayer == null)
+            return;
+
+        int selectedIndex = ViewModel.MaskLayers.IndexOf(selectedLayer);
+        if (selectedIndex < 0 || !IsMaskAdjustmentsTargetMatch(selectedLayer, selectedIndex))
+            return;
+
+        _maskAdjustmentsTargetLayer = selectedLayer;
+        _maskAdjustmentsTargetLayerIndex = selectedIndex;
+
+        ViewModel.PreviewSelectedMaskAdjustments(values);
+    }
+
+    private void MaskAdjustmentsDialog_Closed(object? sender, EventArgs e)
+    {
+        if (sender is not MaskAdjustmentsDialog dialog)
+            return;
+
+        dialog.ValuesChanged -= MaskAdjustmentsDialog_ValuesChanged;
+        dialog.Closed -= MaskAdjustmentsDialog_Closed;
+
+        var selectedLayer = ViewModel.SelectedMaskLayer;
+        int selectedIndex = selectedLayer == null ? -1 : ViewModel.MaskLayers.IndexOf(selectedLayer);
+        bool applyChanges = dialog.IsConfirmed
+            && selectedLayer != null
+            && selectedIndex >= 0
+            && IsMaskAdjustmentsTargetMatch(selectedLayer, selectedIndex);
+
+        _maskAdjustmentsDialog = null;
+        _maskAdjustmentsTargetLayer = null;
+        _maskAdjustmentsTargetLayerIndex = -1;
+        _isMaskAdjustmentsSelectionValidationPending = false;
+
+        if (applyChanges)
             ViewModel.ApplySelectedMaskAdjustments(dialog.Values);
+        else
+            ViewModel.ClearSelectedMaskAdjustmentsPreview();
+    }
+
+    private bool IsMaskAdjustmentsTargetMatch(MaskLayer selectedLayer, int selectedIndex)
+    {
+        bool sameReference = _maskAdjustmentsTargetLayer != null
+            && ReferenceEquals(selectedLayer, _maskAdjustmentsTargetLayer);
+        bool sameIndex = _maskAdjustmentsTargetLayerIndex >= 0
+            && selectedIndex == _maskAdjustmentsTargetLayerIndex;
+        return sameReference || sameIndex;
+    }
+
+    private void ScheduleMaskAdjustmentsDialogSelectionValidation()
+    {
+        if (_maskAdjustmentsDialog == null || _isMaskAdjustmentsSelectionValidationPending)
+            return;
+
+        _isMaskAdjustmentsSelectionValidationPending = true;
+        Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Background, new Action(() =>
+        {
+            _isMaskAdjustmentsSelectionValidationPending = false;
+            ValidateMaskAdjustmentsDialogSelection();
+        }));
+    }
+
+    private void ValidateMaskAdjustmentsDialogSelection()
+    {
+        if (_maskAdjustmentsDialog == null)
+            return;
+
+        var selectedLayer = ViewModel.SelectedMaskLayer;
+        if (selectedLayer == null || !ViewModel.HasSelectedMaskLayer)
+        {
+            if (ViewModel.MaskLayers.Count == 0)
+                _maskAdjustmentsDialog.Close();
+            return;
+        }
+
+        int selectedIndex = ViewModel.MaskLayers.IndexOf(selectedLayer);
+        if (selectedIndex < 0)
+        {
+            _maskAdjustmentsDialog.Close();
+            return;
+        }
+
+        if (IsMaskAdjustmentsTargetMatch(selectedLayer, selectedIndex))
+        {
+            _maskAdjustmentsTargetLayer = selectedLayer;
+            _maskAdjustmentsTargetLayerIndex = selectedIndex;
         }
         else
         {
-            ViewModel.ClearSelectedMaskAdjustmentsPreview();
+            _maskAdjustmentsDialog.Close();
         }
     }
 

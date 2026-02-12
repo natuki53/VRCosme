@@ -265,7 +265,7 @@ public sealed class AutoMaskSelectorService : IDisposable
             var source = new float[stride];
             Array.Copy(raw, offset, source, 0, stride);
             NormalizeInPlace(source);
-            return ResizeNearest(source, mapWidth, mapHeight, outWidth, outHeight);
+            return ResizeBilinear(source, mapWidth, mapHeight, outWidth, outHeight);
         }
 
         throw new InvalidOperationException("No valid float output tensor found in ONNX inference result.");
@@ -293,23 +293,39 @@ public sealed class AutoMaskSelectorService : IDisposable
             values[i] = (values[i] - min) / range;
     }
 
-    private static float[] ResizeNearest(float[] source, int sourceWidth, int sourceHeight, int targetWidth, int targetHeight)
+    private static float[] ResizeBilinear(float[] source, int sourceWidth, int sourceHeight, int targetWidth, int targetHeight)
     {
         if (sourceWidth == targetWidth && sourceHeight == targetHeight)
             return source;
 
         var target = new float[targetWidth * targetHeight];
+        double yScale = targetHeight > 1 ? (double)(sourceHeight - 1) / (targetHeight - 1) : 0.0;
+        double xScale = targetWidth > 1 ? (double)(sourceWidth - 1) / (targetWidth - 1) : 0.0;
+
         for (int y = 0; y < targetHeight; y++)
         {
-            int srcY = (int)((long)y * sourceHeight / targetHeight);
-            int srcRow = srcY * sourceWidth;
+            double fy = y * yScale;
+            int y0 = (int)fy;
+            int y1 = Math.Min(y0 + 1, sourceHeight - 1);
+            float wy = (float)(fy - y0);
+
             int dstRow = y * targetWidth;
+            int srcRow0 = y0 * sourceWidth;
+            int srcRow1 = y1 * sourceWidth;
+
             for (int x = 0; x < targetWidth; x++)
             {
-                int srcX = (int)((long)x * sourceWidth / targetWidth);
-                target[dstRow + x] = source[srcRow + srcX];
+                double fx = x * xScale;
+                int x0 = (int)fx;
+                int x1 = Math.Min(x0 + 1, sourceWidth - 1);
+                float wx = (float)(fx - x0);
+
+                float top = source[srcRow0 + x0] + (source[srcRow0 + x1] - source[srcRow0 + x0]) * wx;
+                float bottom = source[srcRow1 + x0] + (source[srcRow1 + x1] - source[srcRow1 + x0]) * wx;
+                target[dstRow + x] = top + (bottom - top) * wy;
             }
         }
+
         return target;
     }
 

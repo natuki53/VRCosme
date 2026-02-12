@@ -139,6 +139,7 @@
     <sys:String x:Key="Mask.RenameTitle">マスクレイヤー名の変更</sys:String>
     <sys:String x:Key="Mask.RenamePrompt">レイヤー名:</sys:String>
     <sys:String x:Key="Mask.AdjustmentsTitle">マスクレイヤー補正</sys:String>
+    <sys:String x:Key="Mask.NaturalizeBoundary">境界線を自然にする</sys:String>
 
     <sys:String x:Key="Settings.Title">アプリ設定</sys:String>
     <sys:String x:Key="Settings.Section.General">一般</sys:String>

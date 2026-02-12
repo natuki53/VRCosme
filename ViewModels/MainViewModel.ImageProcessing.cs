@@ -235,9 +235,9 @@ public partial class MainViewModel
             try
             {
                 current = ImageProcessor.ApplyAdjustments(source, p);
-                foreach (var (mask, layerParams) in layerAdjustmentSequence)
+                foreach (var (mask, layerParams, naturalizeBoundary) in layerAdjustmentSequence)
                 {
-                    var next = ImageProcessor.ApplyAdjustments(current, layerParams, mask);
+                    var next = ImageProcessor.ApplyAdjustments(current, layerParams, mask, naturalizeBoundary);
                     current.Dispose();
                     current = next;
                 }
