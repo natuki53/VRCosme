@@ -1,4 +1,6 @@
 using CommunityToolkit.Mvvm.Input;
+using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.PixelFormats;
 using System.IO;
 using System.Windows;
 using VRCosme.Models;
@@ -23,7 +25,8 @@ public partial class MainViewModel
         Highlights: (float)Highlights,
         Clarity: (float)Clarity,
         Sharpen: (float)Sharpen,
-        Vignette: (float)Vignette
+        Vignette: (float)Vignette,
+        Blur: (float)Blur
     );
 
     // ───────── トリミング ─────────
@@ -62,6 +65,9 @@ public partial class MainViewModel
             _rotationDegrees = 0;
             _flipHorizontal = false;
             _flipVertical = false;
+            IsMaskEditing = false;
+            IsMaskEraseMode = false;
+            ResetMaskForNewImage();
 
             _transformedImage = _pristineImage.Clone();
             _previewSourceImage = await Task.Run(() =>
@@ -71,6 +77,7 @@ public partial class MainViewModel
             ImageWidth = _transformedImage.Width;
             ImageHeight = _transformedImage.Height;
             PreviewScale = (double)_previewSourceImage.Width / _transformedImage.Width;
+            EnsureMaskSizeMatchesImageOrClear();
             WindowTitle = BuildWindowTitle(filePath);
 
             ResetAllAdjustments();
@@ -143,6 +150,7 @@ public partial class MainViewModel
     {
         if (!HasImage) return;
         PushUndoSnapshot();
+        RotateMaskClockwise90();
         _rotationDegrees = (_rotationDegrees + 90) % 360;
         LogService.Info($"右90°回転 (累計={_rotationDegrees}°)");
         await ApplyTransformAsync();
@@ -153,6 +161,7 @@ public partial class MainViewModel
     {
         if (!HasImage) return;
         PushUndoSnapshot();
+        RotateMaskCounterClockwise90();
         _rotationDegrees = (_rotationDegrees + 270) % 360;
         LogService.Info($"左90°回転 (累計={_rotationDegrees}°)");
         await ApplyTransformAsync();
@@ -163,6 +172,7 @@ public partial class MainViewModel
     {
         if (!HasImage) return;
         PushUndoSnapshot();
+        FlipMaskHorizontal();
         _flipHorizontal = !_flipHorizontal;
         LogService.Info($"左右反転 ({_flipHorizontal})");
         await ApplyTransformAsync();
@@ -173,6 +183,7 @@ public partial class MainViewModel
     {
         if (!HasImage) return;
         PushUndoSnapshot();
+        FlipMaskVertical();
         _flipVertical = !_flipVertical;
         LogService.Info($"上下反転 ({_flipVertical})");
         await ApplyTransformAsync();
@@ -210,16 +221,38 @@ public partial class MainViewModel
 
         var p = BuildParams();
         var source = _previewSourceImage.Clone();
+        int previewWidth = source.Width;
+        int previewHeight = source.Height;
+        var layerAdjustmentSequence = BuildMaskAdjustmentSequence(
+            previewWidth,
+            previewHeight,
+            requireMaskEnabled: false);
 
         StatusMessage = LocalizationService.GetString("Status.RenderingPreview", "Rendering preview...");
-        var bitmap = await Task.Run(() =>
+        var result = await Task.Run(() =>
         {
-            using var adjusted = ImageProcessor.ApplyAdjustments(source, p);
-            source.Dispose();
-            return ImageProcessor.ToBitmapSource(adjusted);
+            Image<Rgba32>? current = null;
+            try
+            {
+                current = ImageProcessor.ApplyAdjustments(source, p);
+                foreach (var (mask, layerParams, naturalizeBoundary) in layerAdjustmentSequence)
+                {
+                    var next = ImageProcessor.ApplyAdjustments(current, layerParams, mask, naturalizeBoundary);
+                    current.Dispose();
+                    current = next;
+                }
+
+                var previewBitmap = ImageProcessor.ToBitmapSource(current);
+                return previewBitmap;
+            }
+            finally
+            {
+                current?.Dispose();
+                source.Dispose();
+            }
         });
 
-        PreviewBitmap = bitmap;
+        PreviewBitmap = result;
         StatusMessage = BuildReadyStatusMessage();
     }
 

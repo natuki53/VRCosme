@@ -39,6 +39,7 @@
         <converters:SliderValueConverter x:Key="SliderValueShadows"/>
         <converters:SliderValueConverter x:Key="SliderValueHighlights"/>
         <converters:SliderValueConverter x:Key="SliderValueClarity"/>
+        <converters:SliderValueConverter x:Key="SliderValueBlur"/>
         <converters:SliderValueConverter x:Key="SliderValueSharpen"/>
         <converters:SliderValueConverter x:Key="SliderValueVignette"/>
         <converters:SliderValueConverter x:Key="SliderValueJpegQuality"/>
@@ -451,6 +452,7 @@
                 <MenuItem Header="{DynamicResource Menu.Edit.PresetWip}" IsEnabled="False"/>
                 <Separator/>
                 <MenuItem Header="{DynamicResource Menu.Edit.ResetAdjustments}" Command="{Binding ResetAdjustmentsCommand}"/>
+                <MenuItem Header="{DynamicResource Menu.Edit.ResetDetailedAdjustments}" Command="{Binding ResetDetailedAdjustmentsCommand}"/>
                 <MenuItem Header="{DynamicResource Menu.Edit.ResetAll}" Command="{Binding ResetAllCommand}"/>
             </MenuItem>
             <MenuItem Header="{DynamicResource Menu.View}">
@@ -460,6 +462,10 @@
                           IsChecked="{Binding ShowRuler, Mode=TwoWay}"/>
             </MenuItem>
             <MenuItem Header="{DynamicResource Menu.AI}">
+                <MenuItem Header="{DynamicResource Menu.AI.AutoMaskSelect}"
+                          Command="{Binding AutoSelectMaskCommand}"
+                          IsEnabled="{Binding HasImage}"/>
+                <Separator/>
                 <MenuItem Header="{DynamicResource Menu.AI.AutoAdjustWip}" IsEnabled="False"/>
                 <MenuItem Header="{DynamicResource Menu.AI.DenoiseWip}" IsEnabled="False"/>
                 <MenuItem Header="{DynamicResource Menu.AI.UpscaleWip}" IsEnabled="False"/>
@@ -571,6 +577,10 @@
 
                 <!-- 分割線 (ドラッグ可能) -->
                 <Canvas x:Name="SplitLineCanvas" Visibility="Collapsed"/>
+
+                <!-- マスク点線アウトライン -->
+                <Canvas x:Name="MaskOutlineCanvas" Background="Transparent" ClipToBounds="True"
+                        IsHitTestVisible="False"/>
 
                 <!-- 三分割法グリッド線オーバーレイ -->
                 <Canvas x:Name="GridOverlayCanvas" Background="Transparent" ClipToBounds="True"
@@ -753,42 +763,6 @@
                                 <TextBox  Grid.Column="3"    Style="{StaticResource ValueTextBox}" IsEnabled="{Binding HasImage}"
                                           Text="{Binding Tint, Converter={StaticResource SliderValueTint}, ConverterParameter='-100,100,F0', UpdateSourceTrigger=LostFocus}"/>
                             </Grid>
-
-                            <Button Content="{DynamicResource Button.ResetAdjustments}" Style="{StaticResource Btn}" HorizontalAlignment="Left"
-                                    Command="{Binding ResetAdjustmentsCommand}" Margin="0,6,0,0"/>
-                        </StackPanel>
-                    </Expander>
-
-                    <!-- ──── VRChat向けプリセット ──── -->
-                    <Expander Header="{DynamicResource Panel.PresetWip}" IsExpanded="False">
-                        <StackPanel>
-                            <Button Content="{DynamicResource Button.ApplyPresetWip}" Style="{StaticResource Btn}" IsEnabled="False" HorizontalAlignment="Left"/>
-                        </StackPanel>
-                    </Expander>
-
-                    <!-- ──── トリミング・構図 ──── -->
-                    <Expander Header="{DynamicResource Panel.CropComposition}" IsExpanded="False">
-                        <StackPanel>
-                            <TextBlock Text="{DynamicResource Field.AspectRatio}" Style="{StaticResource ParamLabel}" Margin="0,0,0,4"/>
-                            <ComboBox ItemsSource="{Binding CropRatios}"
-                                      SelectedItem="{Binding SelectedCropRatio}"
-                                      IsEnabled="{Binding HasImage}" Margin="0,0,0,8"
-/>
-
-                            <TextBlock Text="{DynamicResource Field.RotateFlip}" Style="{StaticResource ParamLabel}" Margin="0,4,0,4"/>
-                            <WrapPanel>
-                                <Button Content="{DynamicResource Button.RotateClockwise}"  Style="{StaticResource Btn}" Margin="0,0,4,4" IsEnabled="{Binding HasImage}"
-                                        Command="{Binding RotateClockwiseCommand}"/>
-                                <Button Content="{DynamicResource Button.RotateCounterClockwise}"  Style="{StaticResource Btn}" Margin="0,0,4,4" IsEnabled="{Binding HasImage}"
-                                        Command="{Binding RotateCounterClockwiseCommand}"/>
-                                <Button Content="{DynamicResource Button.FlipHorizontal}"    Style="{StaticResource Btn}" Margin="0,0,4,4" IsEnabled="{Binding HasImage}"
-                                        Command="{Binding FlipHorizontalCommand}"/>
-                                <Button Content="{DynamicResource Button.FlipVertical}"    Style="{StaticResource Btn}" Margin="0,0,4,4" IsEnabled="{Binding HasImage}"
-                                        Command="{Binding FlipVerticalCommand}"/>
-                            </WrapPanel>
-
-                            <Button Content="{DynamicResource Button.ResetCrop}" Style="{StaticResource Btn}" HorizontalAlignment="Left"
-                                    Command="{Binding ResetCropCommand}" Margin="0,4,0,0"/>
                         </StackPanel>
                     </Expander>
 
@@ -825,6 +799,16 @@
                                 <TextBox  Grid.Column="3"    Style="{StaticResource ValueTextBox}" IsEnabled="{Binding HasImage}"
                                           Text="{Binding Clarity, Converter={StaticResource SliderValueClarity}, ConverterParameter='-100,100,F0', UpdateSourceTrigger=LostFocus}"/>
                             </Grid>
+                            <!-- ぼかし -->
+                            <Grid Margin="0,2"><Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="78"/><ColumnDefinition Width="Auto"/><ColumnDefinition Width="*"/><ColumnDefinition Width="34"/>
+                            </Grid.ColumnDefinitions>
+                                <TextBlock Text="{DynamicResource Field.Blur}"    Style="{StaticResource ParamLabel}"/>
+                                <Button    Grid.Column="1"    Style="{StaticResource BtnParamReset}" Command="{Binding ResetParameterCommand}" CommandParameter="Blur" IsEnabled="{Binding HasImage}"/>
+                                <Slider    Grid.Column="2"    Value="{Binding Blur}" Minimum="0" Maximum="100" SmallChange="1" IsEnabled="{Binding HasImage}"/>
+                                <TextBox  Grid.Column="3"    Style="{StaticResource ValueTextBox}" IsEnabled="{Binding HasImage}"
+                                          Text="{Binding Blur, Converter={StaticResource SliderValueBlur}, ConverterParameter='0,100,F0', UpdateSourceTrigger=LostFocus}"/>
+                            </Grid>
                             <!-- シャープ -->
                             <Grid Margin="0,2"><Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="78"/><ColumnDefinition Width="Auto"/><ColumnDefinition Width="*"/><ColumnDefinition Width="34"/>
@@ -848,14 +832,156 @@
                         </StackPanel>
                     </Expander>
 
-                    <!-- ──── マスク (将来AI対応) ──── -->
+                    <!-- ──── マスク ──── -->
                     <Expander Header="{DynamicResource Panel.Mask}" IsExpanded="False">
                         <StackPanel>
                             <TextBlock Text="{DynamicResource Mask.Description}"
-                                       Foreground="#606060" FontSize="11" TextWrapping="Wrap" Margin="0,0,0,4"/>
-                            <Button Content="{DynamicResource Button.SelectSubjectWip}" Style="{StaticResource Btn}" IsEnabled="False" HorizontalAlignment="Left" Margin="0,2"/>
-                            <Button Content="{DynamicResource Button.AdjustBackgroundWip}" Style="{StaticResource Btn}" IsEnabled="False" HorizontalAlignment="Left" Margin="0,2"/>
-                            <Button Content="{DynamicResource Button.AdjustAvatarWip}" Style="{StaticResource Btn}" IsEnabled="False" HorizontalAlignment="Left" Margin="0,2"/>
+                                       Foreground="#606060" FontSize="11" TextWrapping="Wrap" Margin="0,0,0,6"/>
+
+                            <TextBlock Text="{DynamicResource Mask.Layers}" Style="{StaticResource ParamLabel}" Margin="0,2,0,4"/>
+
+                            <Border Background="#0F1013"
+                                    BorderBrush="#23252B"
+                                    BorderThickness="1"
+                                    CornerRadius="6"
+                                    Height="118">
+                                <ListBox x:Name="MaskLayerList"
+                                         Background="Transparent"
+                                         BorderThickness="0"
+                                         Padding="4"
+                                         Foreground="{DynamicResource WindowForegroundBrush}"
+                                         ItemsSource="{Binding MaskLayers}"
+                                         SelectedItem="{Binding SelectedMaskLayer}"
+                                         DisplayMemberPath="Name"
+                                         IsHitTestVisible="{Binding HasImage}"
+                                         Focusable="{Binding HasImage}"
+                                         MouseDoubleClick="MaskLayerList_MouseDoubleClick"
+                                         ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                                         ScrollViewer.VerticalScrollBarVisibility="Auto">
+                                    <ListBox.ItemContainerStyle>
+                                        <Style TargetType="ListBoxItem">
+                                            <Setter Property="Padding" Value="8,4"/>
+                                            <Setter Property="Margin" Value="0,0,0,2"/>
+                                            <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                                            <Setter Property="Foreground" Value="{DynamicResource LabelForegroundBrush}"/>
+                                            <Setter Property="Template">
+                                                <Setter.Value>
+                                                    <ControlTemplate TargetType="ListBoxItem">
+                                                        <Border x:Name="Bd"
+                                                                Background="Transparent"
+                                                                CornerRadius="4"
+                                                                SnapsToDevicePixels="True">
+                                                            <ContentPresenter VerticalAlignment="Center"/>
+                                                        </Border>
+                                                        <ControlTemplate.Triggers>
+                                                            <Trigger Property="IsSelected" Value="True">
+                                                                <Setter TargetName="Bd" Property="Background" Value="#2C3F60"/>
+                                                                <Setter Property="Foreground" Value="#F5F8FF"/>
+                                                            </Trigger>
+                                                            <Trigger Property="IsMouseOver" Value="True">
+                                                                <Setter TargetName="Bd" Property="Background" Value="#1F232A"/>
+                                                            </Trigger>
+                                                            <Trigger Property="IsEnabled" Value="False">
+                                                                <Setter Property="Opacity" Value="0.6"/>
+                                                            </Trigger>
+                                                        </ControlTemplate.Triggers>
+                                                    </ControlTemplate>
+                                                </Setter.Value>
+                                            </Setter>
+                                        </Style>
+                                    </ListBox.ItemContainerStyle>
+                                </ListBox>
+                            </Border>
+
+                            <WrapPanel Margin="0,6,0,4">
+                                <Button Content="{DynamicResource Button.AddMaskLayer}"
+                                        Style="{StaticResource Btn}"
+                                        Command="{Binding AddMaskLayerCommand}"
+                                        IsEnabled="{Binding HasImage}"
+                                        Margin="0,0,4,4"/>
+                                <Button Content="{DynamicResource Button.RemoveMaskLayer}"
+                                        Style="{StaticResource Btn}"
+                                        Command="{Binding RemoveSelectedMaskLayerCommand}"
+                                        IsEnabled="{Binding HasSelectedMaskLayer}"
+                                        Margin="0,0,4,4"/>
+                                <Button Content="{DynamicResource Button.RenameMaskLayer}"
+                                        Style="{StaticResource Btn}"
+                                        Click="RenameMaskLayer_Click"
+                                        IsEnabled="{Binding HasSelectedMaskLayer}"
+                                        Margin="0,0,4,4"/>
+                            </WrapPanel>
+
+                            <WrapPanel Margin="0,0,0,2">
+                                <CheckBox Content="{DynamicResource Mask.EditMode}"
+                                          IsChecked="{Binding IsMaskEditing}"
+                                          IsEnabled="{Binding HasImage}"
+                                          Margin="0,0,12,2"/>
+                                <CheckBox Content="{DynamicResource Mask.AutoSelectMode}"
+                                          IsChecked="{Binding IsMaskAutoSelectMode}"
+                                          IsEnabled="{Binding HasImage}"
+                                          Margin="0,0,0,2"/>
+                            </WrapPanel>
+
+                            <CheckBox Content="{DynamicResource Mask.EraseMode}"
+                                      IsChecked="{Binding IsMaskEraseMode}"
+                                      IsEnabled="{Binding IsMaskEditing}"
+                                      Margin="0,0,0,8"/>
+
+                            <WrapPanel Margin="0,8,0,0">
+                                <Button Content="{DynamicResource Button.InvertMask}"
+                                        Style="{StaticResource Btn}"
+                                        Margin="0,0,4,0"
+                                        Command="{Binding InvertSelectedMaskCommand}"
+                                        IsEnabled="{Binding HasSelectedMaskLayer}"/>
+                                <Button Content="{DynamicResource Button.ClearMask}"
+                                        Style="{StaticResource Btn}"
+                                        Margin="0,0,4,0"
+                                        Command="{Binding ClearMaskCommand}"
+                                        IsEnabled="{Binding HasSelectedMaskLayer}"/>
+                                <Button Content="{DynamicResource Button.AutoMaskSettings}"
+                                        Style="{StaticResource Btn}"
+                                        Click="AutoMaskSettings_Click"
+                                        IsEnabled="{Binding HasImage}"/>
+                            </WrapPanel>
+
+                            <TextBlock Text="{DynamicResource Mask.Hint}"
+                                       Foreground="{DynamicResource TextSecondaryBrush}"
+                                       FontSize="10.5"
+                                       TextWrapping="Wrap"
+                                       Margin="0,8,0,0"/>
+                        </StackPanel>
+                    </Expander>
+
+                    <!-- ──── VRChat向けプリセット ──── -->
+                    <Expander Header="{DynamicResource Panel.PresetWip}" IsExpanded="False">
+                        <StackPanel>
+                            <Button Content="{DynamicResource Button.ApplyPresetWip}" Style="{StaticResource Btn}" IsEnabled="False" HorizontalAlignment="Left"/>
+                        </StackPanel>
+                    </Expander>
+
+                    <!-- ──── トリミング・構図 ──── -->
+                    <Expander Header="{DynamicResource Panel.CropComposition}" IsExpanded="False">
+                        <StackPanel>
+                            <TextBlock Text="{DynamicResource Field.AspectRatio}" Style="{StaticResource ParamLabel}" Margin="0,0,0,4"/>
+                            <ComboBox ItemsSource="{Binding CropRatios}"
+                                      SelectedItem="{Binding SelectedCropRatio}"
+                                      IsEnabled="{Binding HasImage}" Margin="0,0,0,8"
+/>
+
+                            <TextBlock Text="{DynamicResource Field.RotateFlip}" Style="{StaticResource ParamLabel}" Margin="0,4,0,4"/>
+                            <WrapPanel>
+                                <Button Content="{DynamicResource Button.RotateClockwise}"  Style="{StaticResource Btn}" Margin="0,0,4,4" IsEnabled="{Binding HasImage}"
+                                        Command="{Binding RotateClockwiseCommand}"/>
+                                <Button Content="{DynamicResource Button.RotateCounterClockwise}"  Style="{StaticResource Btn}" Margin="0,0,4,4" IsEnabled="{Binding HasImage}"
+                                        Command="{Binding RotateCounterClockwiseCommand}"/>
+                                <Button Content="{DynamicResource Button.FlipHorizontal}"    Style="{StaticResource Btn}" Margin="0,0,4,4" IsEnabled="{Binding HasImage}"
+                                        Command="{Binding FlipHorizontalCommand}"/>
+                                <Button Content="{DynamicResource Button.FlipVertical}"    Style="{StaticResource Btn}" Margin="0,0,4,4" IsEnabled="{Binding HasImage}"
+                                        Command="{Binding FlipVerticalCommand}"/>
+                            </WrapPanel>
+
+                            <Button Content="{DynamicResource Button.ResetCrop}" Style="{StaticResource Btn}" HorizontalAlignment="Left"
+                                    Command="{Binding ResetCropCommand}" Margin="0,4,0,0"/>
                         </StackPanel>
                     </Expander>
 
@@ -901,4 +1027,3 @@
         </Grid>
     </DockPanel>
 </Window>
-

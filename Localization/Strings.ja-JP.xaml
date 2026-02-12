@@ -16,6 +16,9 @@
     <sys:String x:Key="Status.Exporting">書き出し中...</sys:String>
     <sys:String x:Key="Status.ExportComplete">書き出し完了</sys:String>
     <sys:String x:Key="Status.ExportError">書き出しエラー</sys:String>
+    <sys:String x:Key="Status.AutoSelectingMask">AIでマスクを自動選択中...</sys:String>
+    <sys:String x:Key="Status.DownloadingAutoMaskModel">AI自動選択モデルをダウンロード中...</sys:String>
+    <sys:String x:Key="Status.AIAutoMaskError">AIマスク自動選択エラー</sys:String>
 
     <sys:String x:Key="Dialog.ErrorTitle">エラー</sys:String>
     <sys:String x:Key="Dialog.OpenImage.Filter">画像ファイル|*.png;*.jpg;*.jpeg;*.bmp;*.tiff;*.tif;*.webp|すべてのファイル|*.*</sys:String>
@@ -31,6 +34,11 @@
     <sys:String x:Key="Dialog.LogExport.Success">ログの書き出しが完了しました。</sys:String>
     <sys:String x:Key="Dialog.LogExport.Failed">ログの書き出しに失敗しました:&#10;{0}</sys:String>
     <sys:String x:Key="Dialog.SelectExportDirectory.Title">初期書き出しディレクトリを選択</sys:String>
+    <sys:String x:Key="Dialog.AIAutoMask.Failed">AI自動選択に失敗しました:&#10;{0}</sys:String>
+    <sys:String x:Key="Dialog.AIAutoMask.DownloadFailed">AI自動選択モデルのダウンロードに失敗しました:&#10;{0}</sys:String>
+    <sys:String x:Key="Dialog.AIAutoMask.DeleteFailed">AI自動選択モデルの削除に失敗しました:&#10;{0}</sys:String>
+    <sys:String x:Key="Dialog.AIAutoMask.ModelFilter">ONNX モデル|*.onnx|すべてのファイル|*.*</sys:String>
+    <sys:String x:Key="Dialog.AIAutoMask.ModelTitle">AI自動選択モデル(ONNX)を選択</sys:String>
 
     <sys:String x:Key="Menu.File">ファイル(_F)</sys:String>
     <sys:String x:Key="Menu.File.OpenImage">画像を開く(_O)</sys:String>
@@ -41,12 +49,14 @@
     <sys:String x:Key="Menu.Edit.Undo">元に戻す(_U)</sys:String>
     <sys:String x:Key="Menu.Edit.Redo">やり直す(_R)</sys:String>
     <sys:String x:Key="Menu.Edit.PresetWip">プリセット  (準備中)</sys:String>
-    <sys:String x:Key="Menu.Edit.ResetAdjustments">補正をリセット</sys:String>
+    <sys:String x:Key="Menu.Edit.ResetAdjustments">基本補正をリセット（マスクは適用外）</sys:String>
+    <sys:String x:Key="Menu.Edit.ResetDetailedAdjustments">詳細補正をリセット（マスクは適用外）</sys:String>
     <sys:String x:Key="Menu.Edit.ResetAll">すべてリセット</sys:String>
     <sys:String x:Key="Menu.View">表示(_V)</sys:String>
     <sys:String x:Key="Menu.View.Grid">グリッド線（三分割法）</sys:String>
     <sys:String x:Key="Menu.View.Ruler">ルーラー</sys:String>
     <sys:String x:Key="Menu.AI">AIツール(_A)</sys:String>
+    <sys:String x:Key="Menu.AI.AutoMaskSelect">マスク自動選択</sys:String>
     <sys:String x:Key="Menu.AI.AutoAdjustWip">自動補正  (準備中)</sys:String>
     <sys:String x:Key="Menu.AI.DenoiseWip">AIノイズ除去  (準備中)</sys:String>
     <sys:String x:Key="Menu.AI.UpscaleWip">AI高解像化  (準備中)</sys:String>
@@ -88,6 +98,7 @@
     <sys:String x:Key="Field.Shadows">シャドウ</sys:String>
     <sys:String x:Key="Field.Highlights">ハイライト</sys:String>
     <sys:String x:Key="Field.Clarity">明瞭度</sys:String>
+    <sys:String x:Key="Field.Blur">ぼかし</sys:String>
     <sys:String x:Key="Field.Sharpen">シャープ</sys:String>
     <sys:String x:Key="Field.Vignette">周辺減光</sys:String>
     <sys:String x:Key="Field.Format">フォーマット</sys:String>
@@ -103,9 +114,32 @@
     <sys:String x:Key="Button.SelectSubjectWip">被写体を選択 (準備中)</sys:String>
     <sys:String x:Key="Button.AdjustBackgroundWip">背景のみ補正 (準備中)</sys:String>
     <sys:String x:Key="Button.AdjustAvatarWip">アバターのみ補正 (準備中)</sys:String>
+    <sys:String x:Key="Button.InvertMask">マスクを反転</sys:String>
+    <sys:String x:Key="Button.ClearMask">マスクをクリア</sys:String>
+    <sys:String x:Key="Button.AutoMaskSettings">自動選択の設定</sys:String>
+    <sys:String x:Key="Button.AutoMaskSelect">AI自動選択</sys:String>
+    <sys:String x:Key="Button.AddMaskLayer">レイヤー追加</sys:String>
+    <sys:String x:Key="Button.RemoveMaskLayer">レイヤー削除</sys:String>
+    <sys:String x:Key="Button.RenameMaskLayer">名前変更</sys:String>
+    <sys:String x:Key="Button.EditMaskAdjustments">マスク補正...</sys:String>
     <sys:String x:Key="Button.Export">書き出し</sys:String>
 
-    <sys:String x:Key="Mask.Description">AI マスク機能は今後のアップデートで追加予定です。</sys:String>
+    <sys:String x:Key="Mask.Description">手動編集（投げ縄）または自動選択（クリック）で補正範囲を作成します。</sys:String>
+    <sys:String x:Key="Mask.Layers">マスクレイヤー</sys:String>
+    <sys:String x:Key="Mask.Enable">マスクを補正に適用</sys:String>
+    <sys:String x:Key="Mask.EditMode">マスクの手動編集</sys:String>
+    <sys:String x:Key="Mask.AutoSelectMode">マスクの自動選択</sys:String>
+    <sys:String x:Key="Mask.EraseMode">消しゴムモード</sys:String>
+    <sys:String x:Key="Mask.BrushSize">ブラシサイズ</sys:String>
+    <sys:String x:Key="Mask.Softness">ぼかし</sys:String>
+    <sys:String x:Key="Mask.OverlayOpacity">オーバーレイ</sys:String>
+    <sys:String x:Key="Mask.ShowOverlay">マスクオーバーレイを表示</sys:String>
+    <sys:String x:Key="Mask.Coverage">適用範囲:</sys:String>
+    <sys:String x:Key="Mask.Hint">手動編集ではプレビュー上をドラッグして投げ縄を描きます。自動選択ではクリック位置を基準にAIで抽出し、2回目以降のクリックは現在の選択範囲に追加して探索します。</sys:String>
+    <sys:String x:Key="Mask.RenameTitle">マスクレイヤー名の変更</sys:String>
+    <sys:String x:Key="Mask.RenamePrompt">レイヤー名:</sys:String>
+    <sys:String x:Key="Mask.AdjustmentsTitle">マスクレイヤー補正</sys:String>
+    <sys:String x:Key="Mask.NaturalizeBoundary">境界線を自然にする</sys:String>
 
     <sys:String x:Key="Settings.Title">アプリ設定</sys:String>
     <sys:String x:Key="Settings.Section.General">一般</sys:String>
@@ -115,11 +149,37 @@
     <sys:String x:Key="Settings.Label.DefaultExportDirectory">初期書き出しディレクトリ</sys:String>
     <sys:String x:Key="Settings.Label.DefaultExportFormat">初期書き出し形式</sys:String>
     <sys:String x:Key="Settings.Label.DefaultJpegQuality">初期JPEG品質</sys:String>
+    <sys:String x:Key="Settings.Label.AutoMaskSettings">AI自動選択</sys:String>
     <sys:String x:Key="Settings.Button.Browse">参照...</sys:String>
+    <sys:String x:Key="Settings.Button.OpenAutoMaskSettings">自動選択の設定を開く...</sys:String>
     <sys:String x:Key="Settings.Option.Grid">グリッド線（三分割法）</sys:String>
     <sys:String x:Key="Settings.Option.Ruler">ルーラー</sys:String>
     <sys:String x:Key="Settings.RestartRequired">言語設定を反映するにはアプリの再起動が必要です。</sys:String>
     <sys:String x:Key="Settings.RestartTitle">VRCosme</sys:String>
+
+    <sys:String x:Key="AutoMaskSettings.Title">AI自動選択の設定</sys:String>
+    <sys:String x:Key="AutoMaskSettings.Description">選択対象に応じて使用モデルを切り替えます。モデルは下の一覧から事前にダウンロード・削除できます。</sys:String>
+    <sys:String x:Key="AutoMaskSettings.TargetLabel">選択対象</sys:String>
+    <sys:String x:Key="AutoMaskSettings.SelectedModelLabel">使用モデル</sys:String>
+    <sys:String x:Key="AutoMaskSettings.MultiPass">AI自動選択を複数回実行して精度を向上させる（遅くなります）</sys:String>
+    <sys:String x:Key="AutoMaskSettings.ModelManagerTitle">モデル管理</sys:String>
+    <sys:String x:Key="AutoMaskSettings.ModelManagerHint">必要なモデルだけを残すことで容量を節約できます。選択対象ごとの既定モデルは一覧の名称に対応します。</sys:String>
+    <sys:String x:Key="AutoMaskSettings.Download">ダウンロード</sys:String>
+    <sys:String x:Key="AutoMaskSettings.Delete">削除</sys:String>
+    <sys:String x:Key="AutoMaskSettings.Status.Installed">インストール済み ({0:F1} MB)</sys:String>
+    <sys:String x:Key="AutoMaskSettings.Status.NotInstalled">未インストール</sys:String>
+    <sys:String x:Key="AutoMaskSettings.Status.InstalledShort">インストール済み</sys:String>
+    <sys:String x:Key="AutoMaskSettings.Status.NotInstalledShort">未インストール</sys:String>
+    <sys:String x:Key="AutoMaskSettings.Target.Human">人間</sys:String>
+    <sys:String x:Key="AutoMaskSettings.Target.Object">物体</sys:String>
+    <sys:String x:Key="AutoMaskSettings.Target.Background">背景</sys:String>
+    <sys:String x:Key="AutoMaskSettings.Target.Other">その他</sys:String>
+    <sys:String x:Key="AutoMaskSettings.Target.Lightweight">軽量</sys:String>
+    <sys:String x:Key="AutoMaskSettings.Model.Human">人間向け (u2net_human_seg)</sys:String>
+    <sys:String x:Key="AutoMaskSettings.Model.Object">物体向け (isnet-general-use)</sys:String>
+    <sys:String x:Key="AutoMaskSettings.Model.Background">背景向け (u2net)</sys:String>
+    <sys:String x:Key="AutoMaskSettings.Model.Other">その他向け (isnet-anime)</sys:String>
+    <sys:String x:Key="AutoMaskSettings.Model.Lightweight">軽量向け (silueta)</sys:String>
 
     <sys:String x:Key="Common.Ok">OK</sys:String>
     <sys:String x:Key="Common.Cancel">キャンセル</sys:String>

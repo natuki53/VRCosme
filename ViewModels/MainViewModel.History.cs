@@ -6,6 +6,22 @@ namespace VRCosme.ViewModels;
 
 public partial class MainViewModel
 {
+    private void PushUndoState(EditState snapshot)
+    {
+        if (_isRestoringState || !HasImage) return;
+        _undoStack.Push(snapshot);
+        if (_undoStack.Count > MaxUndoCount)
+        {
+            var list = _undoStack.ToList();
+            _undoStack.Clear();
+            for (int i = MaxUndoCount - 1; i >= 0; i--)
+                _undoStack.Push(list[i]);
+        }
+
+        _redoStack.Clear();
+        NotifyUndoRedoChanged();
+    }
+
     private void NotifyUndoRedoChanged()
     {
         OnPropertyChanged(nameof(CanUndo));
@@ -18,20 +34,19 @@ public partial class MainViewModel
     {
         var cropIndex = CropRatios.IndexOf(SelectedCropRatio);
         if (cropIndex < 0) cropIndex = 0;
+        var mask = CloneMaskSnapshot();
         return new EditState(
             Brightness, Contrast, Gamma, Exposure, Saturation, Temperature, Tint,
-            Shadows, Highlights, Clarity, Sharpen, Vignette,
+            Shadows, Highlights, Clarity, Blur, Sharpen, Vignette,
             IsCropActive, CropX, CropY, CropWidth, CropHeight, cropIndex,
-            _rotationDegrees, _flipHorizontal, _flipVertical);
+            _rotationDegrees, _flipHorizontal, _flipVertical,
+            IsMaskEnabled, mask.SelectedIndex, mask.Layers);
     }
 
     /// <summary>編集開始前に View から呼ぶ。現在状態を Undo スタックに積む。</summary>
     public void PushUndoSnapshot()
     {
-        if (_isRestoringState || !HasImage) return;
-        _undoStack.Push(CreateSnapshot());
-        _redoStack.Clear();
-        NotifyUndoRedoChanged();
+        PushUndoState(CreateSnapshot());
     }
 
     private async Task RestoreStateAsync(EditState state)
@@ -49,14 +64,19 @@ public partial class MainViewModel
             Shadows = state.Shadows;
             Highlights = state.Highlights;
             Clarity = state.Clarity;
+            Blur = state.Blur;
             Sharpen = state.Sharpen;
             Vignette = state.Vignette;
 
             _rotationDegrees = state.RotationDegrees;
             _flipHorizontal = state.FlipHorizontal;
             _flipVertical = state.FlipVertical;
+            IsMaskEnabled = state.IsMaskEnabled;
             if (_pristineImage != null)
                 await ApplyTransformAsync();
+
+            RestoreMaskSnapshot(state.MaskLayers, state.SelectedMaskLayerIndex);
+            SchedulePreviewUpdate();
 
             var cropIndex = Math.Clamp(state.SelectedCropRatioIndex, 0, CropRatios.Count - 1);
             SelectedCropRatio = CropRatios[cropIndex];

@@ -2,7 +2,7 @@
 ; 自己完結型の単体 exe をインストーラーで配布する
 
 #define MyAppName "VRCosme"
-#define MyAppVersion "0.1.1-beta"
+#define MyAppVersion "0.2.0-beta"
 #define MyAppPublisher "VRCosme"
 #define MyAppExeName "VRCosme.exe"
 
