@@ -282,6 +282,36 @@ public static class ThemeService
         }
     }
 
+    public static AutoMaskExecutionDevice GetAutoMaskExecutionDevice()
+    {
+        try
+        {
+            var value = LoadSettings().AutoMaskExecutionDevice;
+            return Enum.TryParse<AutoMaskExecutionDevice>(value, ignoreCase: true, out var parsed)
+                ? parsed
+                : AutoMaskExecutionDevice.Cpu;
+        }
+        catch
+        {
+            return AutoMaskExecutionDevice.Cpu;
+        }
+    }
+
+    public static void SaveAutoMaskExecutionDevice(AutoMaskExecutionDevice value)
+    {
+        try
+        {
+            Directory.CreateDirectory(DataDir);
+            var settings = LoadSettings();
+            settings.AutoMaskExecutionDevice = value.ToString();
+            SaveSettings(settings);
+        }
+        catch
+        {
+            // 保存失敗は無視
+        }
+    }
+
     /// <summary>言語設定を取得</summary>
     public static string GetLanguage()
     {
@@ -392,5 +422,6 @@ public static class ThemeService
         public string AutoMaskModelPath { get; set; } = "";
         public string AutoMaskTargetKind { get; set; } = nameof(VRCosme.Models.AutoMaskTargetKind.Human);
         public bool AutoMaskMultiPassEnabled { get; set; } = true;
+        public string AutoMaskExecutionDevice { get; set; } = nameof(VRCosme.Models.AutoMaskExecutionDevice.Cpu);
     }
 }
