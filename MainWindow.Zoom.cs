@@ -48,19 +48,22 @@ public partial class MainWindow
         if (IsDescendantOf(e.OriginalSource as DependencyObject, FloatingToolbar))
             return;
 
-        if (ViewModel.IsMaskAutoSelectMode && ViewModel.HasSelectedMaskLayer && e.ChangedButton == MouseButton.Left)
+        if (ViewModel.IsMaskColorAutoSelectMode && ViewModel.HasSelectedMaskLayer && e.ChangedButton == MouseButton.Left)
         {
             if (TryMapPreviewToImage(e.GetPosition(PreviewArea), out var imagePoint, out var insideImage) && insideImage)
             {
                 e.Handled = true;
-                await ViewModel.AutoSelectMaskAtAsync(imagePoint.X, imagePoint.Y);
+                await ViewModel.AutoSelectMaskByColorAtAsync(imagePoint.X, imagePoint.Y);
                 UpdateMaskOutlineOverlay();
             }
             return;
         }
 
-        // マスク編集モード時の左ドラッグはラッソ描画に使用
-        if (ViewModel.IsMaskEditing && ViewModel.HasSelectedMaskLayer && e.ChangedButton == MouseButton.Left)
+        // 消しゴム単体モードは手動選択OFFでもラッソ消去できるようにする
+        if ((ViewModel.IsMaskEditing
+                || (ViewModel.IsMaskEraseMode && !ViewModel.IsMaskColorAutoSelectMode && !ViewModel.IsMaskAutoSelectMode))
+            && ViewModel.HasSelectedMaskLayer
+            && e.ChangedButton == MouseButton.Left)
         {
             if (TryMapPreviewToImage(e.GetPosition(PreviewArea), out var imagePoint, out var insideImage) && insideImage)
             {
@@ -76,6 +79,17 @@ public partial class MainWindow
             return;
         }
 
+        if (ViewModel.IsMaskAutoSelectMode && ViewModel.HasSelectedMaskLayer && e.ChangedButton == MouseButton.Left)
+        {
+            if (TryMapPreviewToImage(e.GetPosition(PreviewArea), out var imagePoint, out var insideImage) && insideImage)
+            {
+                e.Handled = true;
+                await ViewModel.AutoSelectMaskAtAsync(imagePoint.X, imagePoint.Y);
+                UpdateMaskOutlineOverlay();
+            }
+            return;
+        }
+
         // 中クリック → 常にパン
         if (e.ChangedButton == MouseButton.Middle && _dragMode == DragMode.None)
         {
@@ -85,6 +99,8 @@ public partial class MainWindow
         else if (e.ChangedButton == MouseButton.Left
                  && !ViewModel.IsCropActive
                  && !ViewModel.IsMaskEditing
+                 && !ViewModel.IsMaskEraseMode
+                 && !ViewModel.IsMaskColorAutoSelectMode
                  && !ViewModel.IsMaskAutoSelectMode
                  && _dragMode == DragMode.None
                  && !_isPanning
@@ -108,7 +124,9 @@ public partial class MainWindow
             return;
         }
 
-        if ((ViewModel.IsMaskEditing || ViewModel.IsMaskAutoSelectMode) && ViewModel.HasSelectedMaskLayer && !_isPanning)
+        if ((ViewModel.IsMaskEditing || ViewModel.IsMaskEraseMode || ViewModel.IsMaskColorAutoSelectMode || ViewModel.IsMaskAutoSelectMode)
+            && ViewModel.HasSelectedMaskLayer
+            && !_isPanning)
             PreviewArea.Cursor = Cursors.Cross;
 
         if (!_isPanning) return;
@@ -135,7 +153,8 @@ public partial class MainWindow
         {
             _isPanning = false;
             PreviewArea.ReleaseMouseCapture();
-            PreviewArea.Cursor = (ViewModel.IsMaskEditing || ViewModel.IsMaskAutoSelectMode) && ViewModel.HasSelectedMaskLayer
+            PreviewArea.Cursor = (ViewModel.IsMaskEditing || ViewModel.IsMaskEraseMode || ViewModel.IsMaskColorAutoSelectMode || ViewModel.IsMaskAutoSelectMode)
+                && ViewModel.HasSelectedMaskLayer
                 ? Cursors.Cross
                 : null;
             e.Handled = true;

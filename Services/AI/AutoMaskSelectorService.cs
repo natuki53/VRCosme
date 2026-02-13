@@ -5,6 +5,8 @@ using SixLabors.ImageSharp.Advanced;
 using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp.Processing;
 using System.IO;
+using VRCosme.Models;
+using VRCosme.Services;
 
 namespace VRCosme.Services.AI;
 
@@ -13,6 +15,7 @@ public sealed class AutoMaskSelectorService : IDisposable
     private readonly object _sync = new();
     private InferenceSession? _session;
     private string? _modelPath;
+    private AutoMaskExecutionDevice _executionDevice = AutoMaskExecutionDevice.Cpu;
     private string? _inputName;
     private int _inputWidth;
     private int _inputHeight;
@@ -21,12 +24,12 @@ public sealed class AutoMaskSelectorService : IDisposable
 
     public AutoMaskResult CreateMask(Image<Rgba32> source, string modelPath)
     {
-        return CreateMask(source, modelPath, null, null, useMultiPass: true);
+        return CreateMask(source, modelPath, null, null, useMultiPass: true, AutoMaskExecutionDevice.Cpu);
     }
 
     public AutoMaskResult CreateMask(Image<Rgba32> source, string modelPath, int seedX, int seedY)
     {
-        return CreateMask(source, modelPath, seedX, seedY, useMultiPass: true);
+        return CreateMask(source, modelPath, seedX, seedY, useMultiPass: true, AutoMaskExecutionDevice.Cpu);
     }
 
     public AutoMaskResult CreateMask(
@@ -36,7 +39,27 @@ public sealed class AutoMaskSelectorService : IDisposable
         int seedY,
         bool useMultiPass)
     {
-        return CreateMask(source, modelPath, (int?)seedX, (int?)seedY, useMultiPass);
+        return CreateMask(source, modelPath, seedX, seedY, useMultiPass, AutoMaskExecutionDevice.Cpu);
+    }
+
+    public AutoMaskResult CreateMask(
+        Image<Rgba32> source,
+        string modelPath,
+        int seedX,
+        int seedY,
+        bool useMultiPass,
+        AutoMaskExecutionDevice executionDevice)
+    {
+        return CreateMask(source, modelPath, (int?)seedX, (int?)seedY, useMultiPass, executionDevice);
+    }
+
+    public AutoMaskResult CreateMask(
+        Image<Rgba32> source,
+        string modelPath,
+        bool useMultiPass,
+        AutoMaskExecutionDevice executionDevice)
+    {
+        return CreateMask(source, modelPath, null, null, useMultiPass, executionDevice);
     }
 
     private AutoMaskResult CreateMask(
@@ -44,7 +67,8 @@ public sealed class AutoMaskSelectorService : IDisposable
         string modelPath,
         int? seedX,
         int? seedY,
-        bool useMultiPass)
+        bool useMultiPass,
+        AutoMaskExecutionDevice executionDevice)
     {
         if (source.Width <= 0 || source.Height <= 0)
             throw new ArgumentException("Invalid source image size.", nameof(source));
@@ -53,7 +77,7 @@ public sealed class AutoMaskSelectorService : IDisposable
         if (!File.Exists(modelPath))
             throw new FileNotFoundException("ONNX model file was not found.", modelPath);
 
-        EnsureSession(modelPath);
+        EnsureSession(modelPath, executionDevice);
         var output = useMultiPass
             ? BuildHighQualityOutputMap(source)
             : RunModel(source);
@@ -139,35 +163,68 @@ public sealed class AutoMaskSelectorService : IDisposable
             _session?.Dispose();
             _session = null;
             _modelPath = null;
+            _executionDevice = AutoMaskExecutionDevice.Cpu;
             _inputName = null;
             _inputWidth = 0;
             _inputHeight = 0;
         }
     }
 
-    private void EnsureSession(string modelPath)
+    private void EnsureSession(string modelPath, AutoMaskExecutionDevice executionDevice)
     {
         lock (_sync)
         {
             if (_session != null
                 && _modelPath != null
-                && string.Equals(_modelPath, modelPath, StringComparison.OrdinalIgnoreCase))
+                && string.Equals(_modelPath, modelPath, StringComparison.OrdinalIgnoreCase)
+                && _executionDevice == executionDevice)
             {
                 return;
             }
 
             _session?.Dispose();
-            var options = new SessionOptions
-            {
-                GraphOptimizationLevel = GraphOptimizationLevel.ORT_ENABLE_ALL
-            };
-            _session = new InferenceSession(modelPath, options);
+            _session = CreateSession(modelPath, executionDevice);
             _modelPath = modelPath;
+            _executionDevice = executionDevice;
 
             var input = _session.InputMetadata.First();
             _inputName = input.Key;
             ResolveInputSize(input.Value.Dimensions, out _inputWidth, out _inputHeight);
         }
+    }
+
+    private static SessionOptions CreateDefaultSessionOptions()
+    {
+        return new SessionOptions
+        {
+            GraphOptimizationLevel = GraphOptimizationLevel.ORT_ENABLE_ALL
+        };
+    }
+
+    private static InferenceSession CreateSession(string modelPath, AutoMaskExecutionDevice executionDevice)
+    {
+        if (executionDevice == AutoMaskExecutionDevice.Gpu)
+        {
+            try
+            {
+                using var gpuOptions = CreateDefaultSessionOptions();
+                gpuOptions.AppendExecutionProvider_DML(0);
+                var session = new InferenceSession(modelPath, gpuOptions);
+                LogService.Info("AI自動選択推論デバイス: GPU (DirectML)");
+                return session;
+            }
+            catch (Exception ex)
+            {
+                LogService.Error("GPU (DirectML) でのAI自動選択セッション作成に失敗したためCPUへフォールバックします。", ex);
+                using var fallbackOptions = CreateDefaultSessionOptions();
+                var session = new InferenceSession(modelPath, fallbackOptions);
+                LogService.Info("AI自動選択推論デバイス: CPU (GPU設定からフォールバック)");
+                return session;
+            }
+        }
+
+        using var cpuOptions = CreateDefaultSessionOptions();
+        return new InferenceSession(modelPath, cpuOptions);
     }
 
     private static void ResolveInputSize(IReadOnlyList<int> dims, out int width, out int height)

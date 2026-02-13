@@ -30,6 +30,16 @@ public partial class MainViewModel
         RedoCommand.NotifyCanExecuteChanged();
     }
 
+    private void ReplaceLatestUndoState(EditState snapshot)
+    {
+        if (_undoStack.Count == 0)
+            return;
+
+        _undoStack.Pop();
+        _undoStack.Push(snapshot);
+        NotifyUndoRedoChanged();
+    }
+
     private EditState CreateSnapshot()
     {
         var cropIndex = CropRatios.IndexOf(SelectedCropRatio);

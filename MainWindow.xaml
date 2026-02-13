@@ -5,6 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:converters="clr-namespace:VRCosme.Converters"
         xmlns:vm="clr-namespace:VRCosme.ViewModels"
+        xmlns:sys="clr-namespace:System;assembly=mscorlib"
         mc:Ignorable="d"
         Title="{Binding WindowTitle}" Height="800" Width="1280"
         MinHeight="560" MinWidth="900"
@@ -390,6 +391,46 @@
             <Setter Property="Padding" Value="8,4"/>
             <Setter Property="FontSize" Value="11"/>
             <Setter Property="Background" Value="{DynamicResource ToolButtonBackgroundBrush}"/>
+        </Style>
+
+        <!-- ═══ マスク行ミニボタン ═══ -->
+        <Style x:Key="BtnListAdjust" TargetType="Button" BasedOn="{StaticResource Btn}">
+            <Setter Property="Padding" Value="10,3"/>
+            <Setter Property="MinWidth" Value="58"/>
+            <Setter Property="FontSize" Value="10.5"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Background" Value="{DynamicResource ButtonBackgroundBrush}"/>
+            <Setter Property="BorderBrush" Value="{DynamicResource ControlBorderBrush}"/>
+            <Setter Property="Foreground" Value="{DynamicResource ButtonForegroundBrush}"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="Bd"
+                                BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="9"
+                                Padding="{TemplateBinding Padding}"
+                                Background="{TemplateBinding Background}"
+                                SnapsToDevicePixels="True">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,-0.5,0,0"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Bd" Property="BorderBrush" Value="{DynamicResource AccentBrush}"/>
+                                <Setter TargetName="Bd" Property="Background" Value="{DynamicResource ButtonHoverBackgroundBrush}"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="Bd" Property="BorderBrush" Value="{DynamicResource AccentBrush}"/>
+                                <Setter TargetName="Bd" Property="Background" Value="{DynamicResource ButtonPressedBackgroundBrush}"/>
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter TargetName="Bd" Property="Background" Value="{DynamicResource ButtonDisabledBackgroundBrush}"/>
+                                <Setter TargetName="Bd" Property="BorderBrush" Value="{DynamicResource ControlBorderBrush}"/>
+                                <Setter Property="Foreground" Value="{DynamicResource ButtonDisabledForegroundBrush}"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
         </Style>
 
         <!-- ═══ トグル風ボタン ═══ -->
@@ -835,13 +876,10 @@
                     <!-- ──── マスク ──── -->
                     <Expander Header="{DynamicResource Panel.Mask}" IsExpanded="False">
                         <StackPanel>
-                            <TextBlock Text="{DynamicResource Mask.Description}"
-                                       Foreground="#606060" FontSize="11" TextWrapping="Wrap" Margin="0,0,0,6"/>
-
                             <TextBlock Text="{DynamicResource Mask.Layers}" Style="{StaticResource ParamLabel}" Margin="0,2,0,4"/>
 
-                            <Border Background="#0F1013"
-                                    BorderBrush="#23252B"
+                            <Border Background="{DynamicResource ControlBackgroundBrush}"
+                                    BorderBrush="{DynamicResource ControlBorderBrush}"
                                     BorderThickness="1"
                                     CornerRadius="6"
                                     Height="118">
@@ -852,12 +890,32 @@
                                          Foreground="{DynamicResource WindowForegroundBrush}"
                                          ItemsSource="{Binding MaskLayers}"
                                          SelectedItem="{Binding SelectedMaskLayer}"
-                                         DisplayMemberPath="Name"
                                          IsHitTestVisible="{Binding HasImage}"
                                          Focusable="{Binding HasImage}"
-                                         MouseDoubleClick="MaskLayerList_MouseDoubleClick"
                                          ScrollViewer.HorizontalScrollBarVisibility="Disabled"
                                          ScrollViewer.VerticalScrollBarVisibility="Auto">
+                                    <ListBox.ItemTemplate>
+                                        <DataTemplate>
+                                            <Grid>
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="*"/>
+                                                    <ColumnDefinition Width="Auto"/>
+                                                </Grid.ColumnDefinitions>
+                                                <TextBlock Text="{Binding Name}"
+                                                           VerticalAlignment="Center"
+                                                           Margin="0,1,0,0"
+                                                           TextTrimming="CharacterEllipsis"/>
+                                                <Button Grid.Column="1"
+                                                        Content="{DynamicResource Mask.AdjustButton}"
+                                                        Style="{StaticResource BtnListAdjust}"
+                                                        Click="MaskLayerAdjustButton_Click"
+                                                        VerticalAlignment="Center"
+                                                        Margin="8,1,0,0"
+                                                        Padding="8,1"
+                                                        MinWidth="52"/>
+                                            </Grid>
+                                        </DataTemplate>
+                                    </ListBox.ItemTemplate>
                                     <ListBox.ItemContainerStyle>
                                         <Style TargetType="ListBoxItem">
                                             <Setter Property="Padding" Value="8,4"/>
@@ -869,17 +927,20 @@
                                                     <ControlTemplate TargetType="ListBoxItem">
                                                         <Border x:Name="Bd"
                                                                 Background="Transparent"
+                                                                BorderBrush="Transparent"
+                                                                BorderThickness="1"
                                                                 CornerRadius="4"
                                                                 SnapsToDevicePixels="True">
                                                             <ContentPresenter VerticalAlignment="Center"/>
                                                         </Border>
                                                         <ControlTemplate.Triggers>
                                                             <Trigger Property="IsSelected" Value="True">
-                                                                <Setter TargetName="Bd" Property="Background" Value="#2C3F60"/>
-                                                                <Setter Property="Foreground" Value="#F5F8FF"/>
+                                                                <Setter TargetName="Bd" Property="Background" Value="{DynamicResource ToggleButtonHoverBackgroundBrush}"/>
+                                                                <Setter TargetName="Bd" Property="BorderBrush" Value="{DynamicResource AccentBrush}"/>
+                                                                <Setter Property="Foreground" Value="{DynamicResource WindowForegroundBrush}"/>
                                                             </Trigger>
                                                             <Trigger Property="IsMouseOver" Value="True">
-                                                                <Setter TargetName="Bd" Property="Background" Value="#1F232A"/>
+                                                                <Setter TargetName="Bd" Property="Background" Value="{DynamicResource ToggleButtonHoverBackgroundBrush}"/>
                                                             </Trigger>
                                                             <Trigger Property="IsEnabled" Value="False">
                                                                 <Setter Property="Opacity" Value="0.6"/>
@@ -911,21 +972,108 @@
                                         Margin="0,0,4,4"/>
                             </WrapPanel>
 
-                            <WrapPanel Margin="0,0,0,2">
+                            <StackPanel Margin="0,0,0,2">
                                 <CheckBox Content="{DynamicResource Mask.EditMode}"
                                           IsChecked="{Binding IsMaskEditing}"
                                           IsEnabled="{Binding HasImage}"
-                                          Margin="0,0,12,2"/>
+                                          Margin="0,0,0,2"/>
                                 <CheckBox Content="{DynamicResource Mask.AutoSelectMode}"
+                                          IsChecked="{Binding IsMaskColorAutoSelectMode}"
+                                          IsEnabled="{Binding HasImage}"
+                                          Margin="0,0,0,2"/>
+                                <Grid Margin="0,0,0,2"
+                                      Visibility="{Binding IsMaskColorAutoSelectMode, Converter={StaticResource BoolToVis}}">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="120"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="34"/>
+                                    </Grid.ColumnDefinitions>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
+                                    </Grid.RowDefinitions>
+                                    <TextBlock Text="{DynamicResource Mask.AutoSelectColorError}"
+                                               Grid.Row="0"
+                                               VerticalAlignment="Center"
+                                               Style="{StaticResource ParamLabel}"/>
+                                    <Slider Grid.Row="0"
+                                            Grid.Column="1"
+                                            Tag="NoUndo"
+                                            Minimum="0"
+                                            Maximum="80"
+                                            SmallChange="1"
+                                            TickFrequency="1"
+                                            IsSnapToTickEnabled="True"
+                                            Value="{Binding MaskColorError}"
+                                            IsEnabled="{Binding HasImage}"/>
+                                    <TextBlock Grid.Row="0"
+                                               Grid.Column="2"
+                                               Text="{Binding MaskColorError}"
+                                               Style="{StaticResource ValueLabel}"/>
+                                    <TextBlock Grid.Row="1"
+                                               Text="{DynamicResource Mask.AutoSelectGapClosing}"
+                                               Margin="0,4,0,0"
+                                               VerticalAlignment="Center"
+                                               Style="{StaticResource ParamLabel}"/>
+                                    <Slider Grid.Row="1"
+                                            Grid.Column="1"
+                                            Tag="NoUndo"
+                                            Margin="0,4,0,0"
+                                            Minimum="0"
+                                            Maximum="6"
+                                            SmallChange="1"
+                                            TickFrequency="1"
+                                            IsSnapToTickEnabled="True"
+                                            Value="{Binding MaskGapClosing}"
+                                            IsEnabled="{Binding HasImage}"/>
+                                    <TextBlock Grid.Row="1"
+                                               Grid.Column="2"
+                                               Margin="0,4,0,0"
+                                               Text="{Binding MaskGapClosing}"
+                                               Style="{StaticResource ValueLabel}"/>
+                                    <TextBlock Grid.Row="2"
+                                               Text="{DynamicResource Mask.AutoSelectConnectivity}"
+                                               Margin="0,4,0,0"
+                                               VerticalAlignment="Center"
+                                               Style="{StaticResource ParamLabel}"/>
+                                    <ComboBox Grid.Row="2"
+                                              Grid.Column="1"
+                                              Grid.ColumnSpan="2"
+                                              Margin="0,4,0,0"
+                                              SelectedValue="{Binding MaskColorConnectivity}"
+                                              SelectedValuePath="Tag"
+                                              IsEnabled="{Binding HasImage}">
+                                        <ComboBoxItem Content="{DynamicResource Mask.AutoSelectConnectivity4}">
+                                            <ComboBoxItem.Tag>
+                                                <sys:Int32>4</sys:Int32>
+                                            </ComboBoxItem.Tag>
+                                        </ComboBoxItem>
+                                        <ComboBoxItem Content="{DynamicResource Mask.AutoSelectConnectivity8}">
+                                            <ComboBoxItem.Tag>
+                                                <sys:Int32>8</sys:Int32>
+                                            </ComboBoxItem.Tag>
+                                        </ComboBoxItem>
+                                    </ComboBox>
+                                    <CheckBox Grid.Row="3"
+                                              Grid.ColumnSpan="3"
+                                              Content="{DynamicResource Mask.AutoSelectAntialias}"
+                                              IsChecked="{Binding IsMaskAutoSelectAntialiasEnabled}"
+                                              IsEnabled="{Binding HasImage}"
+                                              Margin="0,4,0,0"/>
+                                </Grid>
+                                <CheckBox Content="{DynamicResource Mask.EraseMode}"
+                                          IsChecked="{Binding IsMaskEraseMode}"
+                                          IsEnabled="{Binding HasImage}"
+                                          Margin="0,0,0,2"/>
+                                <CheckBox Content="{DynamicResource Mask.AIAutoSelectMode}"
                                           IsChecked="{Binding IsMaskAutoSelectMode}"
                                           IsEnabled="{Binding HasImage}"
                                           Margin="0,0,0,2"/>
-                            </WrapPanel>
-
-                            <CheckBox Content="{DynamicResource Mask.EraseMode}"
-                                      IsChecked="{Binding IsMaskEraseMode}"
-                                      IsEnabled="{Binding IsMaskEditing}"
-                                      Margin="0,0,0,8"/>
+                            </StackPanel>
+                            
+                            <Border Height="6" Background="Transparent"/>
 
                             <WrapPanel Margin="0,8,0,0">
                                 <Button Content="{DynamicResource Button.InvertMask}"
@@ -944,11 +1092,6 @@
                                         IsEnabled="{Binding HasImage}"/>
                             </WrapPanel>
 
-                            <TextBlock Text="{DynamicResource Mask.Hint}"
-                                       Foreground="{DynamicResource TextSecondaryBrush}"
-                                       FontSize="10.5"
-                                       TextWrapping="Wrap"
-                                       Margin="0,8,0,0"/>
                         </StackPanel>
                     </Expander>
 

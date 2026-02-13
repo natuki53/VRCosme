@@ -17,6 +17,9 @@ public partial class MainWindow
     private readonly List<(double X, double Y)> _maskLassoPoints = [];
     private Path? _maskOutlinePath;
     private Path? _maskLassoPath;
+    private MaskLayer? _maskOutlineCacheLayer;
+    private int _maskOutlineCacheRevision = -1;
+    private IReadOnlyList<BoundaryContour>? _maskOutlineCacheContours;
     private MaskAdjustmentsDialog? _maskAdjustmentsDialog;
     private MaskLayer? _maskAdjustmentsTargetLayer;
     private int _maskAdjustmentsTargetLayerIndex = -1;
@@ -75,10 +78,16 @@ public partial class MainWindow
     //  マスクレイヤー操作
     // ============================================================
 
-    private void MaskLayerList_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+    private void MaskLayerAdjustButton_Click(object sender, RoutedEventArgs e)
     {
-        if (MaskLayerList.SelectedItem == null) return;
+        if (sender is not FrameworkElement element || element.DataContext is not MaskLayer layer)
+            return;
+
+        if (!ReferenceEquals(ViewModel.SelectedMaskLayer, layer))
+            ViewModel.SelectedMaskLayer = layer;
+
         OpenMaskAdjustmentsPopup();
+        e.Handled = true;
     }
 
     private void RenameMaskLayer_Click(object sender, RoutedEventArgs e)
@@ -267,7 +276,8 @@ public partial class MainWindow
         if (PreviewArea.IsMouseCaptured)
             PreviewArea.ReleaseMouseCapture();
         if (!_isPanning)
-            PreviewArea.Cursor = (ViewModel.IsMaskEditing || ViewModel.IsMaskAutoSelectMode) && ViewModel.HasSelectedMaskLayer
+            PreviewArea.Cursor = (ViewModel.IsMaskEditing || ViewModel.IsMaskEraseMode || ViewModel.IsMaskColorAutoSelectMode || ViewModel.IsMaskAutoSelectMode)
+                && ViewModel.HasSelectedMaskLayer
                 ? Cursors.Cross
                 : null;
     }
@@ -283,7 +293,8 @@ public partial class MainWindow
         if (PreviewArea.IsMouseCaptured && !_isPanning)
             PreviewArea.ReleaseMouseCapture();
         if (!_isPanning)
-            PreviewArea.Cursor = (ViewModel.IsMaskEditing || ViewModel.IsMaskAutoSelectMode) && ViewModel.HasSelectedMaskLayer
+            PreviewArea.Cursor = (ViewModel.IsMaskEditing || ViewModel.IsMaskEraseMode || ViewModel.IsMaskColorAutoSelectMode || ViewModel.IsMaskAutoSelectMode)
+                && ViewModel.HasSelectedMaskLayer
                 ? Cursors.Cross
                 : null;
     }
@@ -297,15 +308,33 @@ public partial class MainWindow
         if (_maskOutlinePath == null)
             return;
 
-        if (!ViewModel.HasImage || !ViewModel.HasSelectedMaskLayer)
+        if (!ViewModel.HasImage || !ViewModel.HasSelectedMaskLayer || ViewModel.SelectedMaskLayer is null)
         {
+            InvalidateMaskOutlineCache();
             _maskOutlinePath.Data = null;
             _maskOutlinePath.Visibility = Visibility.Collapsed;
             return;
         }
 
-        var state = ViewModel.GetSelectedMaskLayerState();
-        if (state == null || state.NonZeroCount <= 0 || state.Width <= 0 || state.Height <= 0)
+        var selectedLayer = ViewModel.SelectedMaskLayer;
+        int revision = ViewModel.MaskRevision;
+        if (!ReferenceEquals(_maskOutlineCacheLayer, selectedLayer) || _maskOutlineCacheRevision != revision)
+        {
+            var state = ViewModel.GetSelectedMaskLayerState();
+            if (state == null || state.NonZeroCount <= 0 || state.Width <= 0 || state.Height <= 0)
+            {
+                InvalidateMaskOutlineCache();
+                _maskOutlinePath.Data = null;
+                _maskOutlinePath.Visibility = Visibility.Collapsed;
+                return;
+            }
+
+            _maskOutlineCacheContours = BuildBoundaryContours(state.MaskData, state.Width, state.Height);
+            _maskOutlineCacheLayer = selectedLayer;
+            _maskOutlineCacheRevision = revision;
+        }
+
+        if (_maskOutlineCacheContours == null || _maskOutlineCacheContours.Count == 0)
         {
             _maskOutlinePath.Data = null;
             _maskOutlinePath.Visibility = Visibility.Collapsed;
@@ -321,9 +350,16 @@ public partial class MainWindow
         }
 
         ApplyMaskOutlineStyle(scale);
-        var geometry = BuildMaskBoundaryGeometry(state, ir, scale);
+        var geometry = BuildMaskBoundaryGeometry(_maskOutlineCacheContours, ir, scale);
         _maskOutlinePath.Data = geometry;
         _maskOutlinePath.Visibility = geometry == null ? Visibility.Collapsed : Visibility.Visible;
+    }
+
+    private void InvalidateMaskOutlineCache()
+    {
+        _maskOutlineCacheLayer = null;
+        _maskOutlineCacheRevision = -1;
+        _maskOutlineCacheContours = null;
     }
 
     private void ApplyMaskOutlineStyle(double scale)
@@ -377,59 +413,48 @@ public partial class MainWindow
     //  マスク境界ジオメトリ
     // ============================================================
 
-    private static StreamGeometry? BuildMaskBoundaryGeometry(MaskLayerState state, Rect imageRect, double scale)
+    private static StreamGeometry? BuildMaskBoundaryGeometry(
+        IReadOnlyList<BoundaryContour> contours,
+        Rect imageRect,
+        double scale)
     {
-        if (state.MaskData.Length != state.Width * state.Height || state.NonZeroCount <= 0)
-            return null;
-
-        var edges = BuildBoundaryEdges(state.MaskData, state.Width, state.Height);
-        if (edges.Count == 0)
+        if (contours.Count == 0)
             return null;
 
         var geometry = new StreamGeometry();
         using (var ctx = geometry.Open())
         {
-            DrawBoundaryContours(ctx, edges, imageRect, scale);
+            foreach (var contour in contours)
+            {
+                var points = contour.Points;
+                if (points.Count < 2)
+                    continue;
+
+                var first = ToPreviewPoint(points[0], imageRect, scale);
+                ctx.BeginFigure(first, false, contour.Closed);
+                for (int i = 1; i < points.Count; i++)
+                {
+                    var p = ToPreviewPoint(points[i], imageRect, scale);
+                    ctx.LineTo(p, true, false);
+                }
+            }
         }
 
         geometry.Freeze();
         return geometry;
     }
 
-    private static List<GridEdge> BuildBoundaryEdges(byte[] data, int w, int h)
+    private static List<BoundaryContour> BuildBoundaryContours(byte[] data, int width, int height)
     {
-        var edges = new List<GridEdge>(Math.Max(256, w + h));
-        for (int y = 0; y < h; y++)
-        {
-            int row = y * w;
-            for (int x = 0; x < w; x++)
-            {
-                int idx = row + x;
-                if (data[idx] == 0) continue;
+        if (width <= 0 || height <= 0 || data.Length != width * height)
+            return [];
 
-                if (y == 0 || data[idx - w] == 0)
-                    edges.Add(new GridEdge(new GridPoint(x, y), new GridPoint(x + 1, y))); // top
-                if (x == w - 1 || data[idx + 1] == 0)
-                    edges.Add(new GridEdge(new GridPoint(x + 1, y), new GridPoint(x + 1, y + 1))); // right
-                if (y == h - 1 || data[idx + w] == 0)
-                    edges.Add(new GridEdge(new GridPoint(x + 1, y + 1), new GridPoint(x, y + 1))); // bottom
-                if (x == 0 || data[idx - 1] == 0)
-                    edges.Add(new GridEdge(new GridPoint(x, y + 1), new GridPoint(x, y))); // left
-            }
-        }
+        var edges = BuildBoundaryEdges(data, width, height);
+        if (edges.Count == 0)
+            return [];
 
-        return edges;
-    }
-
-    private static void DrawBoundaryContours(
-        StreamGeometryContext ctx,
-        IReadOnlyList<GridEdge> edges,
-        Rect imageRect,
-        double scale)
-    {
         var remaining = new HashSet<GridEdge>(edges);
         var byStart = new Dictionary<GridPoint, List<GridEdge>>();
-
         foreach (var edge in edges)
         {
             if (!byStart.TryGetValue(edge.Start, out var list))
@@ -440,6 +465,7 @@ public partial class MainWindow
             list.Add(edge);
         }
 
+        var contours = new List<BoundaryContour>(Math.Max(8, edges.Count / 64));
         while (remaining.Count > 0)
         {
             var seed = remaining.First();
@@ -466,14 +492,35 @@ public partial class MainWindow
             if (simplified.Count < 2)
                 continue;
 
-            var first = ToPreviewPoint(simplified[0], imageRect, scale);
-            ctx.BeginFigure(first, false, closed);
-            for (int i = 1; i < simplified.Count; i++)
+            contours.Add(new BoundaryContour(simplified, closed));
+        }
+
+        return contours;
+    }
+
+    private static List<GridEdge> BuildBoundaryEdges(byte[] data, int w, int h)
+    {
+        var edges = new List<GridEdge>(Math.Max(256, w + h));
+        for (int y = 0; y < h; y++)
+        {
+            int row = y * w;
+            for (int x = 0; x < w; x++)
             {
-                var p = ToPreviewPoint(simplified[i], imageRect, scale);
-                ctx.LineTo(p, true, false);
+                int idx = row + x;
+                if (data[idx] == 0) continue;
+
+                if (y == 0 || data[idx - w] == 0)
+                    edges.Add(new GridEdge(new GridPoint(x, y), new GridPoint(x + 1, y))); // top
+                if (x == w - 1 || data[idx + 1] == 0)
+                    edges.Add(new GridEdge(new GridPoint(x + 1, y), new GridPoint(x + 1, y + 1))); // right
+                if (y == h - 1 || data[idx + w] == 0)
+                    edges.Add(new GridEdge(new GridPoint(x + 1, y + 1), new GridPoint(x, y + 1))); // bottom
+                if (x == 0 || data[idx - 1] == 0)
+                    edges.Add(new GridEdge(new GridPoint(x, y + 1), new GridPoint(x, y))); // left
             }
         }
+
+        return edges;
     }
 
     private static bool TryTakeEdgeStartingAt(
@@ -558,6 +605,7 @@ public partial class MainWindow
     private static Point ToPreviewPoint(GridPoint point, Rect imageRect, double scale) =>
         new(imageRect.X + point.X * scale, imageRect.Y + point.Y * scale);
 
+    private readonly record struct BoundaryContour(IReadOnlyList<GridPoint> Points, bool Closed);
     private readonly record struct GridPoint(int X, int Y);
     private readonly record struct GridEdge(GridPoint Start, GridPoint End);
 }

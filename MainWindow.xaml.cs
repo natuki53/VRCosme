@@ -66,17 +66,20 @@ public partial class MainWindow : Window
             }
 
             if ((args.PropertyName is nameof(MainViewModel.IsMaskEditing)
+                or nameof(MainViewModel.IsMaskEraseMode)
+                or nameof(MainViewModel.IsMaskColorAutoSelectMode)
                 or nameof(MainViewModel.IsMaskAutoSelectMode)) && !_isPanning)
             {
-                if (!ViewModel.IsMaskEditing)
+                if (!ViewModel.IsMaskEditing && !ViewModel.IsMaskEraseMode)
                     CancelMaskLasso();
-                PreviewArea.Cursor = (ViewModel.IsMaskEditing || ViewModel.IsMaskAutoSelectMode) && ViewModel.HasSelectedMaskLayer
+                PreviewArea.Cursor = (ViewModel.IsMaskEditing || ViewModel.IsMaskEraseMode || ViewModel.IsMaskColorAutoSelectMode || ViewModel.IsMaskAutoSelectMode)
+                    && ViewModel.HasSelectedMaskLayer
                     ? Cursors.Cross
                     : null;
             }
 
             if (args.PropertyName is nameof(MainViewModel.SelectedMaskLayer)
-                or nameof(MainViewModel.MaskCoverage)
+                or nameof(MainViewModel.MaskRevision)
                 or nameof(MainViewModel.SourceFilePath))
             {
                 if (args.PropertyName == nameof(MainViewModel.SelectedMaskLayer)
@@ -170,9 +173,11 @@ public partial class MainWindow : Window
     {
         var source = e.OriginalSource as DependencyObject;
 
-        if (HasAncestor<Slider>(source))
+        var slider = FindParent<Slider>(source);
+        if (slider != null)
         {
-            ViewModel.PushUndoSnapshot();
+            if (!string.Equals(slider.Tag as string, "NoUndo", StringComparison.Ordinal))
+                ViewModel.PushUndoSnapshot();
             return;
         }
 

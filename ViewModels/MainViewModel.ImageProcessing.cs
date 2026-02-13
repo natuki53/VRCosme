@@ -55,13 +55,26 @@ public partial class MainViewModel
         StatusMessage = LocalizationService.GetString("Status.LoadingImage", "Loading image...");
         try
         {
-            _pristineImage?.Dispose();
-            _transformedImage?.Dispose();
-            _previewSourceImage?.Dispose();
+            Image<Rgba32>? oldPristine;
+            Image<Rgba32>? oldTransformed;
+            Image<Rgba32>? oldPreview;
+            lock (_imageSync)
+            {
+                oldPristine = _pristineImage;
+                oldTransformed = _transformedImage;
+                oldPreview = _previewSourceImage;
+                _pristineImage = null;
+                _transformedImage = null;
+                _previewSourceImage = null;
+            }
+
+            oldPristine?.Dispose();
+            oldTransformed?.Dispose();
+            oldPreview?.Dispose();
 
             LogService.Info($"画像読み込み開始: {filePath}");
 
-            _pristineImage = await Task.Run(() => ImageProcessor.LoadImage(filePath));
+            var loadedPristine = await Task.Run(() => ImageProcessor.LoadImage(filePath));
             _rotationDegrees = 0;
             _flipHorizontal = false;
             _flipVertical = false;
@@ -69,14 +82,20 @@ public partial class MainViewModel
             IsMaskEraseMode = false;
             ResetMaskForNewImage();
 
-            _transformedImage = _pristineImage.Clone();
-            _previewSourceImage = await Task.Run(() =>
-                ImageProcessor.CreatePreview(_transformedImage, MaxPreviewDimension));
+            var transformed = loadedPristine.Clone();
+            var preview = await Task.Run(() =>
+                ImageProcessor.CreatePreview(transformed, MaxPreviewDimension));
+            lock (_imageSync)
+            {
+                _pristineImage = loadedPristine;
+                _transformedImage = transformed;
+                _previewSourceImage = preview;
+            }
 
             SourceFilePath = filePath;
-            ImageWidth = _transformedImage.Width;
-            ImageHeight = _transformedImage.Height;
-            PreviewScale = (double)_previewSourceImage.Width / _transformedImage.Width;
+            ImageWidth = transformed.Width;
+            ImageHeight = transformed.Height;
+            PreviewScale = (double)preview.Width / transformed.Width;
             EnsureMaskSizeMatchesImageOrClear();
             WindowTitle = BuildWindowTitle(filePath);
 
@@ -114,22 +133,37 @@ public partial class MainViewModel
 
     private async Task ApplyTransformAsync()
     {
-        if (_pristineImage == null) return;
+        Image<Rgba32>? pristine;
+        lock (_imageSync)
+        {
+            pristine = _pristineImage;
+        }
+        if (pristine == null) return;
         IsProcessing = true;
         StatusMessage = LocalizationService.GetString("Status.ApplyingTransform", "Applying transform...");
         try
         {
-            _transformedImage?.Dispose();
-            _transformedImage = await Task.Run(() =>
-                ImageProcessor.ApplyTransform(_pristineImage, _rotationDegrees, _flipHorizontal, _flipVertical));
+            var transformed = await Task.Run(() =>
+                ImageProcessor.ApplyTransform(pristine, _rotationDegrees, _flipHorizontal, _flipVertical));
 
-            _previewSourceImage?.Dispose();
-            _previewSourceImage = await Task.Run(() =>
-                ImageProcessor.CreatePreview(_transformedImage, MaxPreviewDimension));
+            var preview = await Task.Run(() =>
+                ImageProcessor.CreatePreview(transformed, MaxPreviewDimension));
 
-            ImageWidth = _transformedImage.Width;
-            ImageHeight = _transformedImage.Height;
-            PreviewScale = (double)_previewSourceImage.Width / _transformedImage.Width;
+            Image<Rgba32>? oldTransformed;
+            Image<Rgba32>? oldPreview;
+            lock (_imageSync)
+            {
+                oldTransformed = _transformedImage;
+                oldPreview = _previewSourceImage;
+                _transformedImage = transformed;
+                _previewSourceImage = preview;
+            }
+            oldTransformed?.Dispose();
+            oldPreview?.Dispose();
+
+            ImageWidth = transformed.Width;
+            ImageHeight = transformed.Height;
+            PreviewScale = (double)preview.Width / transformed.Width;
 
             if (IsCropActive) InitializeCropRect(SelectedCropRatio);
 
@@ -217,10 +251,14 @@ public partial class MainViewModel
 
     public async Task UpdatePreviewAsync()
     {
-        if (_previewSourceImage == null) return;
+        Image<Rgba32>? source;
+        lock (_imageSync)
+        {
+            source = _previewSourceImage?.Clone();
+        }
+        if (source == null) return;
 
         var p = BuildParams();
-        var source = _previewSourceImage.Clone();
         int previewWidth = source.Width;
         int previewHeight = source.Height;
         var layerAdjustmentSequence = BuildMaskAdjustmentSequence(
@@ -228,7 +266,15 @@ public partial class MainViewModel
             previewHeight,
             requireMaskEnabled: false);
 
-        StatusMessage = LocalizationService.GetString("Status.RenderingPreview", "Rendering preview...");
+        var renderingStatus = LocalizationService.GetString("Status.RenderingPreview", "Rendering preview...");
+        var previousStatus = StatusMessage;
+        bool shouldManagePreviewStatus =
+            !IsProcessing
+            || string.IsNullOrWhiteSpace(previousStatus)
+            || previousStatus == renderingStatus;
+        if (shouldManagePreviewStatus)
+            StatusMessage = renderingStatus;
+
         var result = await Task.Run(() =>
         {
             Image<Rgba32>? current = null;
@@ -253,13 +299,22 @@ public partial class MainViewModel
         });
 
         PreviewBitmap = result;
-        StatusMessage = BuildReadyStatusMessage();
+        if (shouldManagePreviewStatus)
+        {
+            StatusMessage = IsProcessing
+                ? previousStatus
+                : BuildReadyStatusMessage();
+        }
     }
 
     private async Task GenerateBeforeBitmapAsync()
     {
-        if (_previewSourceImage == null) return;
-        var source = _previewSourceImage.Clone();
+        Image<Rgba32>? source;
+        lock (_imageSync)
+        {
+            source = _previewSourceImage?.Clone();
+        }
+        if (source == null) return;
         var bitmap = await Task.Run(() =>
         {
             var bmp = ImageProcessor.ToBitmapSource(source);

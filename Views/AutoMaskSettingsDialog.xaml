@@ -90,6 +90,18 @@
                         <ColumnDefinition Width="180"/>
                         <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
+                    <TextBlock Text="{DynamicResource AutoMaskSettings.ExecutionDeviceLabel}"
+                               VerticalAlignment="Center"
+                               Foreground="{DynamicResource LabelForegroundBrush}"/>
+                    <ComboBox x:Name="ExecutionDeviceComboBox"
+                              Grid.Column="1"/>
+                </Grid>
+
+                <Grid Margin="0,0,0,8">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="180"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
                     <TextBlock Text="{DynamicResource AutoMaskSettings.SelectedModelLabel}"
                                VerticalAlignment="Center"
                                Foreground="{DynamicResource LabelForegroundBrush}"/>
