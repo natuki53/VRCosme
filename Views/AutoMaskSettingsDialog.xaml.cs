@@ -13,6 +13,11 @@ public partial class AutoMaskSettingsDialog : Window
         public override string ToString() => Label;
     }
 
+    private sealed record DeviceOption(AutoMaskExecutionDevice Value, string Label)
+    {
+        public override string ToString() => Label;
+    }
+
     private sealed record ModelUi(TextBlock Name, TextBlock Status, Button Download, Button Delete);
 
     private readonly Dictionary<string, ModelUi> _modelUiById;
@@ -55,6 +60,18 @@ public partial class AutoMaskSettingsDialog : Window
         TargetComboBox.SelectedValue = ThemeService.GetAutoMaskTargetKind();
         if (TargetComboBox.SelectedIndex < 0)
             TargetComboBox.SelectedIndex = 0;
+
+        ExecutionDeviceComboBox.ItemsSource = new[]
+        {
+            new DeviceOption(AutoMaskExecutionDevice.Cpu,
+                LocalizationService.GetString("AutoMaskSettings.ExecutionDevice.Cpu", "CPU")),
+            new DeviceOption(AutoMaskExecutionDevice.Gpu,
+                LocalizationService.GetString("AutoMaskSettings.ExecutionDevice.Gpu", "GPU")),
+        };
+        ExecutionDeviceComboBox.SelectedValuePath = nameof(DeviceOption.Value);
+        ExecutionDeviceComboBox.SelectedValue = ThemeService.GetAutoMaskExecutionDevice();
+        if (ExecutionDeviceComboBox.SelectedIndex < 0)
+            ExecutionDeviceComboBox.SelectedIndex = 0;
 
         MultiPassCheckBox.IsChecked = ThemeService.GetAutoMaskMultiPassEnabled();
         UpdateSelectedModelText();
@@ -180,6 +197,7 @@ public partial class AutoMaskSettingsDialog : Window
         _isBusy = value;
         Cursor = value ? System.Windows.Input.Cursors.Wait : null;
         TargetComboBox.IsEnabled = !value;
+        ExecutionDeviceComboBox.IsEnabled = !value;
         MultiPassCheckBox.IsEnabled = !value;
         RefreshModelStatus();
     }
@@ -188,6 +206,9 @@ public partial class AutoMaskSettingsDialog : Window
     {
         if (TargetComboBox.SelectedValue is AutoMaskTargetKind target)
             ThemeService.SaveAutoMaskTargetKind(target);
+
+        if (ExecutionDeviceComboBox.SelectedValue is AutoMaskExecutionDevice device)
+            ThemeService.SaveAutoMaskExecutionDevice(device);
 
         ThemeService.SaveAutoMaskMultiPassEnabled(MultiPassCheckBox.IsChecked == true);
         DialogResult = true;
