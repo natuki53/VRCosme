@@ -26,8 +26,14 @@ public partial class MainViewModel
     [ObservableProperty] private bool _isMaskEnabled = true;
 
     [ObservableProperty] private bool _isMaskEditing;
+    [ObservableProperty] private bool _isMaskColorAutoSelectMode;
     [ObservableProperty] private bool _isMaskAutoSelectMode;
     [ObservableProperty] private bool _isMaskEraseMode;
+    [ObservableProperty] private int _maskColorError = 18;
+    [ObservableProperty] private int _maskGapClosing = 1;
+    [ObservableProperty] private bool _isMaskAutoSelectAntialiasEnabled = true;
+    [ObservableProperty] private int _maskColorConnectivity = 4;
+    [ObservableProperty] private int _maskRevision;
     [ObservableProperty] private double _maskCoverage;
 
     public bool HasMask => MaskLayers.Any(layer => layer.HasMask);
@@ -46,6 +52,14 @@ public partial class MainViewModel
         lock (_maskSync)
         {
             _hasSelectedMaskAdjustmentPreview = false;
+        }
+
+        if (value is null)
+        {
+            IsMaskEditing = false;
+            IsMaskColorAutoSelectMode = false;
+            IsMaskAutoSelectMode = false;
+            IsMaskEraseMode = false;
         }
 
         MaskCoverage = value?.CoveragePercent ?? 0;
@@ -70,6 +84,26 @@ public partial class MainViewModel
     {
         if (!value) return;
 
+        if (IsMaskEraseMode)
+            IsMaskEraseMode = false;
+
+        if (IsMaskColorAutoSelectMode)
+            IsMaskColorAutoSelectMode = false;
+
+        if (IsMaskAutoSelectMode)
+            IsMaskAutoSelectMode = false;
+
+        if (!HasSelectedMaskLayer && HasImage)
+            AddMaskLayerInternal(pushUndoSnapshot: false);
+    }
+
+    partial void OnIsMaskColorAutoSelectModeChanged(bool value)
+    {
+        if (!value) return;
+
+        if (IsMaskEditing)
+            IsMaskEditing = false;
+
         if (IsMaskAutoSelectMode)
             IsMaskAutoSelectMode = false;
 
@@ -84,8 +118,43 @@ public partial class MainViewModel
         if (IsMaskEditing)
             IsMaskEditing = false;
 
+        if (IsMaskColorAutoSelectMode)
+            IsMaskColorAutoSelectMode = false;
+
         if (!HasSelectedMaskLayer && HasImage)
             AddMaskLayerInternal(pushUndoSnapshot: false);
+    }
+
+    partial void OnIsMaskEraseModeChanged(bool value)
+    {
+        if (!value) return;
+
+        if (IsMaskEditing)
+            IsMaskEditing = false;
+
+        if (!HasSelectedMaskLayer && HasImage)
+            AddMaskLayerInternal(pushUndoSnapshot: false);
+    }
+
+    partial void OnMaskColorErrorChanged(int value)
+    {
+        int clamped = Math.Clamp(value, 0, 80);
+        if (value != clamped)
+            MaskColorError = clamped;
+    }
+
+    partial void OnMaskGapClosingChanged(int value)
+    {
+        int clamped = Math.Clamp(value, 0, 6);
+        if (value != clamped)
+            MaskGapClosing = clamped;
+    }
+
+    partial void OnMaskColorConnectivityChanged(int value)
+    {
+        int normalized = value == 8 ? 8 : 4;
+        if (value != normalized)
+            MaskColorConnectivity = normalized;
     }
 
     [RelayCommand]
@@ -121,6 +190,7 @@ public partial class MainViewModel
         if (becameEmpty)
         {
             IsMaskEditing = false;
+            IsMaskColorAutoSelectMode = false;
             IsMaskAutoSelectMode = false;
         }
 
@@ -327,7 +397,7 @@ public partial class MainViewModel
 
                 foreach (var idx in component)
                 {
-                    if (merged[idx] == MaskOnValue)
+                    if (merged[idx] > 0)
                         continue;
 
                     merged[idx] = MaskOnValue;
@@ -338,7 +408,7 @@ public partial class MainViewModel
             mergedNonZero = 0;
             for (int i = 0; i < merged.Length; i++)
             {
-                if (merged[i] == MaskOnValue)
+                if (merged[i] > 0)
                     mergedNonZero++;
             }
 
@@ -363,6 +433,127 @@ public partial class MainViewModel
         lock (_maskSync)
         {
             SelectedMaskLayer.SetMaskData(merged, ImageWidth, ImageHeight, mergedNonZero);
+        }
+
+        NotifyMaskStateChanged(schedulePreview: true);
+        return true;
+    }
+
+    public bool AppendSelectedMaskFromBinary(byte[] maskData, int width, int height)
+    {
+        if (!HasImage
+            || SelectedMaskLayer is null
+            || ImageWidth <= 0
+            || ImageHeight <= 0
+            || width <= 0
+            || height <= 0
+            || maskData.Length != width * height)
+        {
+            return false;
+        }
+
+        var resized = width == ImageWidth && height == ImageHeight
+            ? (byte[])maskData.Clone()
+            : ResizeMaskNearest(maskData, width, height, ImageWidth, ImageHeight);
+
+        byte[] merged;
+        int mergedNonZero;
+        bool changed = false;
+
+        lock (_maskSync)
+        {
+            if (SelectedMaskLayer.Width != ImageWidth || SelectedMaskLayer.Height != ImageHeight)
+                SelectedMaskLayer.ResetMaskSize(ImageWidth, ImageHeight);
+
+            var current = SelectedMaskLayer.MaskData;
+            merged = (byte[])current.Clone();
+
+            for (int i = 0; i < resized.Length; i++)
+            {
+                if (resized[i] == 0)
+                    continue;
+
+                if (merged[i] >= resized[i])
+                    continue;
+
+                merged[i] = resized[i];
+                changed = true;
+            }
+
+            mergedNonZero = 0;
+            for (int i = 0; i < merged.Length; i++)
+            {
+                if (merged[i] > 0)
+                    mergedNonZero++;
+            }
+        }
+
+        if (!changed)
+            return false;
+
+        PushUndoSnapshot();
+        lock (_maskSync)
+        {
+            SelectedMaskLayer.SetMaskData(merged, ImageWidth, ImageHeight, mergedNonZero);
+        }
+
+        NotifyMaskStateChanged(schedulePreview: true);
+        return true;
+    }
+
+    public bool SubtractSelectedMaskFromBinary(byte[] maskData, int width, int height)
+    {
+        if (!HasImage
+            || SelectedMaskLayer is null
+            || ImageWidth <= 0
+            || ImageHeight <= 0
+            || width <= 0
+            || height <= 0
+            || maskData.Length != width * height)
+        {
+            return false;
+        }
+
+        var resized = width == ImageWidth && height == ImageHeight
+            ? (byte[])maskData.Clone()
+            : ResizeMaskNearest(maskData, width, height, ImageWidth, ImageHeight);
+
+        byte[] subtracted;
+        int nonZero;
+        bool changed = false;
+
+        lock (_maskSync)
+        {
+            if (SelectedMaskLayer.Width != ImageWidth || SelectedMaskLayer.Height != ImageHeight)
+                SelectedMaskLayer.ResetMaskSize(ImageWidth, ImageHeight);
+
+            var current = SelectedMaskLayer.MaskData;
+            subtracted = (byte[])current.Clone();
+
+            for (int i = 0; i < resized.Length; i++)
+            {
+                if (resized[i] == 0 || subtracted[i] == 0)
+                    continue;
+
+                subtracted[i] = MaskOffValue;
+                changed = true;
+            }
+
+            nonZero = 0;
+            for (int i = 0; i < subtracted.Length; i++)
+            {
+                if (subtracted[i] > 0)
+                    nonZero++;
+            }
+        }
+
+        if (!changed)
+            return false;
+
+        PushUndoSnapshot();
+        lock (_maskSync)
+        {
+            SelectedMaskLayer.SetMaskData(subtracted, ImageWidth, ImageHeight, nonZero);
         }
 
         NotifyMaskStateChanged(schedulePreview: true);
@@ -672,8 +863,10 @@ public partial class MainViewModel
         }
 
         IsMaskEditing = false;
+        IsMaskColorAutoSelectMode = false;
         IsMaskAutoSelectMode = false;
         MaskCoverage = 0;
+        MaskRevision = unchecked(MaskRevision + 1);
         OnPropertyChanged(nameof(HasMask));
         OnPropertyChanged(nameof(HasSelectedMaskLayer));
     }
@@ -700,6 +893,7 @@ public partial class MainViewModel
     private void NotifyMaskStateChanged(bool schedulePreview)
     {
         MaskCoverage = SelectedMaskLayer?.CoveragePercent ?? 0;
+        MaskRevision = unchecked(MaskRevision + 1);
         OnPropertyChanged(nameof(HasMask));
         OnPropertyChanged(nameof(HasSelectedMaskLayer));
 

@@ -18,6 +18,7 @@ public partial class MainViewModel : ObservableObject
     private Image<Rgba32>? _pristineImage;          // 読込時のオリジナル (変更しない)
     private Image<Rgba32>? _transformedImage;       // 回転・反転適用後
     private Image<Rgba32>? _previewSourceImage;     // プレビュー用ダウンサイズ
+    private readonly object _imageSync = new();
     private bool _previewUpdatePending;
     private bool _previewUpdateRunning;
     private int _rotationDegrees;
@@ -137,7 +138,7 @@ public partial class MainViewModel : ObservableObject
     {
         CropRatios = BuildCropRatios();
         _selectedCropRatio = CropRatios[0];
-        _statusMessage = LocalizationService.GetString("Status.Ready", "Ready");
+        _statusMessage = "";
         _windowTitle = LocalizationService.GetString("App.Name", "VRCosme");
         _showRuleOfThirdsGrid = ThemeService.GetShowRuleOfThirdsGrid();
         _showRuler = ThemeService.GetShowRuler();
@@ -164,11 +165,7 @@ public partial class MainViewModel : ObservableObject
 
     public string BuildReadyStatusMessage()
     {
-        if (ImageWidth <= 0 || ImageHeight <= 0)
-            return LocalizationService.GetString("Status.Ready", "Ready");
-
-        return LocalizationService.Format("Status.ReadyWithSize", "{0} × {1} px  Ready",
-            ImageWidth, ImageHeight);
+        return "";
     }
 
     public void RefreshLocalization()
