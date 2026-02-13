@@ -260,7 +260,7 @@ public partial class MainViewModel
             if (SelectedMaskLayer.Width != ImageWidth || SelectedMaskLayer.Height != ImageHeight)
                 SelectedMaskLayer.ResetMaskSize(ImageWidth, ImageHeight);
 
-            changed = FillPolygonMaskLocked(SelectedMaskLayer, polygonPoints, eraseMode);
+            changed = MaskProcessingService.FillPolygon(SelectedMaskLayer, polygonPoints, eraseMode);
         }
 
         if (!changed)
@@ -286,7 +286,7 @@ public partial class MainViewModel
 
         var resized = width == ImageWidth && height == ImageHeight
             ? (byte[])maskData.Clone()
-            : ResizeMaskNearest(maskData, width, height, ImageWidth, ImageHeight);
+            : MaskProcessingService.ResizeMaskNearest(maskData, width, height, ImageWidth, ImageHeight);
 
         bool changed = false;
         int nonZero = 0;
@@ -344,7 +344,7 @@ public partial class MainViewModel
 
         var resized = width == ImageWidth && height == ImageHeight
             ? (byte[])maskData.Clone()
-            : ResizeMaskNearest(maskData, width, height, ImageWidth, ImageHeight);
+            : MaskProcessingService.ResizeMaskNearest(maskData, width, height, ImageWidth, ImageHeight);
 
         for (int i = 0; i < resized.Length; i++)
             resized[i] = resized[i] > 0 ? MaskOnValue : MaskOffValue;
@@ -360,7 +360,7 @@ public partial class MainViewModel
 
             var current = SelectedMaskLayer.MaskData;
             merged = (byte[])current.Clone();
-            var dilatedCurrent = BuildDilatedBinaryMask(current, ImageWidth, ImageHeight, iterations: 10);
+            var dilatedCurrent = MaskProcessingService.BuildDilatedBinaryMask(current, ImageWidth, ImageHeight, iterations: 10);
             changed = false;
 
             var visited = new bool[resized.Length];
@@ -454,7 +454,7 @@ public partial class MainViewModel
 
         var resized = width == ImageWidth && height == ImageHeight
             ? (byte[])maskData.Clone()
-            : ResizeMaskNearest(maskData, width, height, ImageWidth, ImageHeight);
+            : MaskProcessingService.ResizeMaskNearest(maskData, width, height, ImageWidth, ImageHeight);
 
         byte[] merged;
         int mergedNonZero;
@@ -516,7 +516,7 @@ public partial class MainViewModel
 
         var resized = width == ImageWidth && height == ImageHeight
             ? (byte[])maskData.Clone()
-            : ResizeMaskNearest(maskData, width, height, ImageWidth, ImageHeight);
+            : MaskProcessingService.ResizeMaskNearest(maskData, width, height, ImageWidth, ImageHeight);
 
         byte[] subtracted;
         int nonZero;
@@ -585,24 +585,11 @@ public partial class MainViewModel
     public MaskAdjustmentValues GetSelectedMaskAdjustmentValues()
     {
         if (SelectedMaskLayer is null)
-            return new MaskAdjustmentValues(0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, false);
+            return new MaskAdjustmentValues(AdjustmentValues.Default, false);
 
         return new MaskAdjustmentValues(
-            SelectedMaskLayer.Brightness,
-            SelectedMaskLayer.Contrast,
-            SelectedMaskLayer.Gamma,
-            SelectedMaskLayer.Exposure,
-            SelectedMaskLayer.Saturation,
-            SelectedMaskLayer.Temperature,
-            SelectedMaskLayer.Tint,
-            SelectedMaskLayer.Shadows,
-            SelectedMaskLayer.Highlights,
-            SelectedMaskLayer.Clarity,
-            SelectedMaskLayer.Blur,
-            SelectedMaskLayer.Sharpen,
-            SelectedMaskLayer.Vignette,
-            SelectedMaskLayer.NaturalizeBoundary
-        );
+            SelectedMaskLayer.Adjustments,
+            SelectedMaskLayer.NaturalizeBoundary);
     }
 
     public void ApplySelectedMaskAdjustments(MaskAdjustmentValues values)
@@ -611,19 +598,7 @@ public partial class MainViewModel
 
         ClearSelectedMaskAdjustmentsPreview(schedulePreview: false);
         PushUndoSnapshot();
-        SelectedMaskLayer.Brightness = values.Brightness;
-        SelectedMaskLayer.Contrast = values.Contrast;
-        SelectedMaskLayer.Gamma = values.Gamma;
-        SelectedMaskLayer.Exposure = values.Exposure;
-        SelectedMaskLayer.Saturation = values.Saturation;
-        SelectedMaskLayer.Temperature = values.Temperature;
-        SelectedMaskLayer.Tint = values.Tint;
-        SelectedMaskLayer.Shadows = values.Shadows;
-        SelectedMaskLayer.Highlights = values.Highlights;
-        SelectedMaskLayer.Clarity = values.Clarity;
-        SelectedMaskLayer.Blur = values.Blur;
-        SelectedMaskLayer.Sharpen = values.Sharpen;
-        SelectedMaskLayer.Vignette = values.Vignette;
+        SelectedMaskLayer.Adjustments = values.Adjustments;
         SelectedMaskLayer.NaturalizeBoundary = values.NaturalizeBoundary;
 
         SchedulePreviewUpdate();
@@ -706,123 +681,6 @@ public partial class MainViewModel
     {
         var value = name?.Trim();
         return string.IsNullOrEmpty(value) ? "Mask" : value;
-    }
-
-    private static bool FillPolygonMaskLocked(
-        MaskLayer layer,
-        IReadOnlyList<(double X, double Y)> points,
-        bool eraseMode)
-    {
-        var vertices = NormalizePolygonPoints(points, layer.Width, layer.Height);
-        if (vertices.Count < 3)
-            return false;
-
-        double minYValue = vertices[0].Y;
-        double maxYValue = vertices[0].Y;
-        for (int i = 1; i < vertices.Count; i++)
-        {
-            var y = vertices[i].Y;
-            if (y < minYValue) minYValue = y;
-            if (y > maxYValue) maxYValue = y;
-        }
-
-        int minY = Math.Max(0, (int)Math.Floor(minYValue - 1.0));
-        int maxY = Math.Min(layer.Height - 1, (int)Math.Ceiling(maxYValue + 1.0));
-        if (minY > maxY)
-            return false;
-
-        var changed = false;
-        var intersections = new List<double>(vertices.Count);
-        byte fillValue = eraseMode ? MaskOffValue : MaskOnValue;
-
-        for (int py = minY; py <= maxY; py++)
-        {
-            intersections.Clear();
-            double scanY = py + 0.5;
-
-            for (int i = 0; i < vertices.Count; i++)
-            {
-                var a = vertices[i];
-                var b = vertices[(i + 1) % vertices.Count];
-                bool crosses = (a.Y <= scanY && b.Y > scanY) || (b.Y <= scanY && a.Y > scanY);
-                if (!crosses) continue;
-
-                double x = a.X + (scanY - a.Y) * (b.X - a.X) / (b.Y - a.Y);
-                intersections.Add(x);
-            }
-
-            if (intersections.Count < 2)
-                continue;
-
-            intersections.Sort();
-            for (int i = 0; i + 1 < intersections.Count; i += 2)
-            {
-                double left = intersections[i];
-                double right = intersections[i + 1];
-                if (right < left)
-                    (left, right) = (right, left);
-
-                int minX = Math.Max(0, (int)Math.Ceiling(left - 0.5));
-                int maxX = Math.Min(layer.Width - 1, (int)Math.Floor(right - 0.5));
-                if (minX > maxX) continue;
-
-                int row = py * layer.Width;
-                for (int px = minX; px <= maxX; px++)
-                {
-                    int idx = row + px;
-                    if (layer.MaskData[idx] == fillValue) continue;
-                    layer.SetMaskPixel(idx, fillValue);
-                    changed = true;
-                }
-            }
-        }
-
-        return changed;
-    }
-
-    private static List<(double X, double Y)> NormalizePolygonPoints(
-        IReadOnlyList<(double X, double Y)> points,
-        int width,
-        int height)
-    {
-        var normalized = new List<(double X, double Y)>(points.Count);
-        if (width <= 0 || height <= 0)
-            return normalized;
-
-        double maxX = width - 1;
-        double maxY = height - 1;
-        const double minDistanceSq = 0.25;
-
-        for (int i = 0; i < points.Count; i++)
-        {
-            var point = (
-                X: Math.Clamp(points[i].X, 0, maxX),
-                Y: Math.Clamp(points[i].Y, 0, maxY));
-
-            if (normalized.Count == 0)
-            {
-                normalized.Add(point);
-                continue;
-            }
-
-            var last = normalized[^1];
-            double dx = point.X - last.X;
-            double dy = point.Y - last.Y;
-            if ((dx * dx + dy * dy) >= minDistanceSq)
-                normalized.Add(point);
-        }
-
-        if (normalized.Count >= 3)
-        {
-            var first = normalized[0];
-            var last = normalized[^1];
-            double dx = first.X - last.X;
-            double dy = first.Y - last.Y;
-            if ((dx * dx + dy * dy) < minDistanceSq)
-                normalized.RemoveAt(normalized.Count - 1);
-        }
-
-        return normalized;
     }
 
     private (List<MaskLayerState> Layers, int SelectedIndex) CloneMaskSnapshot()
@@ -941,13 +799,13 @@ public partial class MainViewModel
                 : state.NaturalizeBoundary;
 
             var resizedMask = naturalizeBoundary
-                ? ResizeMaskBilinear(
+                ? MaskProcessingService.ResizeMaskBilinear(
                     state.MaskData,
                     state.Width,
                     state.Height,
                     targetWidth,
                     targetHeight)
-                : ResizeMaskNearest(
+                : MaskProcessingService.ResizeMaskNearest(
                     state.MaskData,
                     state.Width,
                     state.Height,
@@ -959,146 +817,11 @@ public partial class MainViewModel
         return result;
     }
 
-    private static AdjustmentParams BuildLayerParams(MaskLayerState layer) => new(
-        Brightness: 1.0f + (float)(layer.Brightness / 100.0),
-        Contrast: 1.0f + (float)(layer.Contrast / 100.0),
-        Gamma: (float)layer.Gamma,
-        Exposure: (float)layer.Exposure,
-        Saturation: 1.0f + (float)(layer.Saturation / 100.0),
-        Temperature: (float)layer.Temperature,
-        Tint: (float)layer.Tint,
-        Shadows: (float)layer.Shadows,
-        Highlights: (float)layer.Highlights,
-        Clarity: (float)layer.Clarity,
-        Blur: (float)layer.Blur,
-        Sharpen: (float)layer.Sharpen,
-        Vignette: (float)layer.Vignette
-    );
+    private static AdjustmentParams BuildLayerParams(MaskLayerState layer) =>
+        layer.Adjustments.ToParams();
 
-    private static AdjustmentParams BuildLayerParams(MaskAdjustmentValues values) => new(
-        Brightness: 1.0f + (float)(values.Brightness / 100.0),
-        Contrast: 1.0f + (float)(values.Contrast / 100.0),
-        Gamma: (float)values.Gamma,
-        Exposure: (float)values.Exposure,
-        Saturation: 1.0f + (float)(values.Saturation / 100.0),
-        Temperature: (float)values.Temperature,
-        Tint: (float)values.Tint,
-        Shadows: (float)values.Shadows,
-        Highlights: (float)values.Highlights,
-        Clarity: (float)values.Clarity,
-        Blur: (float)values.Blur,
-        Sharpen: (float)values.Sharpen,
-        Vignette: (float)values.Vignette
-    );
-
-    private static byte[] ResizeMaskNearest(byte[] source, int sourceWidth, int sourceHeight, int targetWidth, int targetHeight)
-    {
-        if (sourceWidth == targetWidth && sourceHeight == targetHeight)
-            return (byte[])source.Clone();
-
-        var resized = new byte[targetWidth * targetHeight];
-        for (int y = 0; y < targetHeight; y++)
-        {
-            int srcY = (int)((long)y * sourceHeight / targetHeight);
-            int srcRow = srcY * sourceWidth;
-            int dstRow = y * targetWidth;
-            for (int x = 0; x < targetWidth; x++)
-            {
-                int srcX = (int)((long)x * sourceWidth / targetWidth);
-                resized[dstRow + x] = source[srcRow + srcX];
-            }
-        }
-
-        return resized;
-    }
-
-    private static byte[] ResizeMaskBilinear(byte[] source, int sourceWidth, int sourceHeight, int targetWidth, int targetHeight)
-    {
-        if (sourceWidth == targetWidth && sourceHeight == targetHeight)
-            return (byte[])source.Clone();
-
-        var resized = new byte[targetWidth * targetHeight];
-
-        for (int y = 0; y < targetHeight; y++)
-        {
-            double srcY = ((y + 0.5) * sourceHeight / targetHeight) - 0.5;
-            int y0 = Math.Clamp((int)Math.Floor(srcY), 0, sourceHeight - 1);
-            int y1 = Math.Clamp(y0 + 1, 0, sourceHeight - 1);
-            float fy = (float)(srcY - y0);
-            if (fy < 0f) fy = 0f;
-            if (fy > 1f) fy = 1f;
-
-            int row0 = y0 * sourceWidth;
-            int row1 = y1 * sourceWidth;
-            int dstRow = y * targetWidth;
-
-            for (int x = 0; x < targetWidth; x++)
-            {
-                double srcX = ((x + 0.5) * sourceWidth / targetWidth) - 0.5;
-                int x0 = Math.Clamp((int)Math.Floor(srcX), 0, sourceWidth - 1);
-                int x1 = Math.Clamp(x0 + 1, 0, sourceWidth - 1);
-                float fx = (float)(srcX - x0);
-                if (fx < 0f) fx = 0f;
-                if (fx > 1f) fx = 1f;
-
-                float v00 = source[row0 + x0];
-                float v10 = source[row0 + x1];
-                float v01 = source[row1 + x0];
-                float v11 = source[row1 + x1];
-
-                float top = v00 + (v10 - v00) * fx;
-                float bottom = v01 + (v11 - v01) * fx;
-                float value = top + (bottom - top) * fy;
-                resized[dstRow + x] = (byte)Math.Clamp(MathF.Round(value), 0f, 255f);
-            }
-        }
-
-        return resized;
-    }
-
-    private static byte[] BuildDilatedBinaryMask(byte[] source, int width, int height, int iterations)
-    {
-        if (iterations <= 0 || source.Length == 0)
-            return (byte[])source.Clone();
-
-        var current = new byte[source.Length];
-        for (int i = 0; i < source.Length; i++)
-            current[i] = source[i] > 0 ? MaskOnValue : MaskOffValue;
-
-        var next = new byte[source.Length];
-        for (int iter = 0; iter < iterations; iter++)
-        {
-            Array.Clear(next);
-
-            for (int y = 0; y < height; y++)
-            {
-                int row = y * width;
-                for (int x = 0; x < width; x++)
-                {
-                    int idx = row + x;
-                    if (current[idx] == MaskOffValue)
-                        continue;
-
-                    for (int oy = -1; oy <= 1; oy++)
-                    {
-                        int ny = y + oy;
-                        if ((uint)ny >= (uint)height) continue;
-                        int nrow = ny * width;
-                        for (int ox = -1; ox <= 1; ox++)
-                        {
-                            int nx = x + ox;
-                            if ((uint)nx >= (uint)width) continue;
-                            next[nrow + nx] = MaskOnValue;
-                        }
-                    }
-                }
-            }
-
-            (current, next) = (next, current);
-        }
-
-        return current;
-    }
+    private static AdjustmentParams BuildLayerParams(MaskAdjustmentValues values) =>
+        values.Adjustments.ToParams();
 
     private void RotateMaskClockwise90()
     {

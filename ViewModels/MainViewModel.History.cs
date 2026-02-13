@@ -46,8 +46,7 @@ public partial class MainViewModel
         if (cropIndex < 0) cropIndex = 0;
         var mask = CloneMaskSnapshot();
         return new EditState(
-            Brightness, Contrast, Gamma, Exposure, Saturation, Temperature, Tint,
-            Shadows, Highlights, Clarity, Blur, Sharpen, Vignette,
+            BuildAdjustmentValues(),
             IsCropActive, CropX, CropY, CropWidth, CropHeight, cropIndex,
             _rotationDegrees, _flipHorizontal, _flipVertical,
             IsMaskEnabled, mask.SelectedIndex, mask.Layers);
@@ -64,19 +63,7 @@ public partial class MainViewModel
         _isRestoringState = true;
         try
         {
-            Brightness = state.Brightness;
-            Contrast = state.Contrast;
-            Gamma = state.Gamma;
-            Exposure = state.Exposure;
-            Saturation = state.Saturation;
-            Temperature = state.Temperature;
-            Tint = state.Tint;
-            Shadows = state.Shadows;
-            Highlights = state.Highlights;
-            Clarity = state.Clarity;
-            Blur = state.Blur;
-            Sharpen = state.Sharpen;
-            Vignette = state.Vignette;
+            RestoreAdjustmentValues(state.Adjustments);
 
             _rotationDegrees = state.RotationDegrees;
             _flipHorizontal = state.FlipHorizontal;

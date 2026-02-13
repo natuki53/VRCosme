@@ -158,19 +158,20 @@ public partial class MaskAdjustmentsDialog : Window
 
     private MaskAdjustmentValues BuildValues() =>
         new(
-            BrightnessSlider.Value,
-            ContrastSlider.Value,
-            GammaSlider.Value,
-            ExposureSlider.Value,
-            SaturationSlider.Value,
-            TemperatureSlider.Value,
-            TintSlider.Value,
-            ShadowsSlider.Value,
-            HighlightsSlider.Value,
-            ClaritySlider.Value,
-            BlurSlider.Value,
-            SharpenSlider.Value,
-            VignetteSlider.Value,
+            new AdjustmentValues(
+                BrightnessSlider.Value,
+                ContrastSlider.Value,
+                GammaSlider.Value,
+                ExposureSlider.Value,
+                SaturationSlider.Value,
+                TemperatureSlider.Value,
+                TintSlider.Value,
+                ShadowsSlider.Value,
+                HighlightsSlider.Value,
+                ClaritySlider.Value,
+                BlurSlider.Value,
+                SharpenSlider.Value,
+                VignetteSlider.Value),
             NaturalizeBoundaryCheckBox.IsChecked == true
         );
 }

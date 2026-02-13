@@ -11,6 +11,7 @@ public static class LogService
         Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "VRCosme");
     private static readonly string LogDir = Path.Combine(DataDir, "logs");
     private static readonly object Lock = new();
+    private static bool _directoryEnsured;
 
     /// <summary>ログディレクトリを作成し、起動ログを記録</summary>
     public static void Initialize()
@@ -18,8 +19,10 @@ public static class LogService
         try
         {
             Directory.CreateDirectory(LogDir);
+            _directoryEnsured = true;
             var version = Assembly.GetEntryAssembly()?.GetName().Version?.ToString() ?? "unknown";
             Info($"VRCosme {version} 起動 ({Environment.OSVersion}, .NET {Environment.Version})");
+            CleanupOldLogs();
         }
         catch
         {
@@ -65,6 +68,26 @@ public static class LogService
 
     public static string GetLogDirectory() => LogDir;
 
+    /// <summary>保持期間を超えた古いログファイルを削除</summary>
+    private static void CleanupOldLogs(int retentionDays = 7)
+    {
+        try
+        {
+            if (!Directory.Exists(LogDir)) return;
+
+            var cutoff = DateTime.Now.AddDays(-retentionDays);
+            foreach (var file in Directory.GetFiles(LogDir, "*.log"))
+            {
+                if (File.GetLastWriteTime(file) < cutoff)
+                    File.Delete(file);
+            }
+        }
+        catch
+        {
+            // クリーンアップ失敗はアプリを止めない
+        }
+    }
+
     private static void Write(string level, string message)
     {
         try
@@ -75,7 +98,11 @@ public static class LogService
 
             lock (Lock)
             {
-                Directory.CreateDirectory(LogDir);
+                if (!_directoryEnsured)
+                {
+                    Directory.CreateDirectory(LogDir);
+                    _directoryEnsured = true;
+                }
                 File.AppendAllText(filePath, line);
             }
         }
