@@ -54,7 +54,7 @@ public partial class MainViewModel
             _hasSelectedMaskAdjustmentPreview = false;
         }
 
-        if (value is null)
+        if (value is null && !_isRestoringState)
         {
             IsMaskEditing = false;
             IsMaskColorAutoSelectMode = false;

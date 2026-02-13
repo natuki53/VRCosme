@@ -266,7 +266,15 @@ public partial class MainViewModel
             previewHeight,
             requireMaskEnabled: false);
 
-        StatusMessage = LocalizationService.GetString("Status.RenderingPreview", "Rendering preview...");
+        var renderingStatus = LocalizationService.GetString("Status.RenderingPreview", "Rendering preview...");
+        var previousStatus = StatusMessage;
+        bool shouldManagePreviewStatus =
+            !IsProcessing
+            || string.IsNullOrWhiteSpace(previousStatus)
+            || previousStatus == renderingStatus;
+        if (shouldManagePreviewStatus)
+            StatusMessage = renderingStatus;
+
         var result = await Task.Run(() =>
         {
             Image<Rgba32>? current = null;
@@ -291,7 +299,12 @@ public partial class MainViewModel
         });
 
         PreviewBitmap = result;
-        StatusMessage = BuildReadyStatusMessage();
+        if (shouldManagePreviewStatus)
+        {
+            StatusMessage = IsProcessing
+                ? previousStatus
+                : BuildReadyStatusMessage();
+        }
     }
 
     private async Task GenerateBeforeBitmapAsync()

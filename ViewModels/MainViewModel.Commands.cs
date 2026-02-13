@@ -145,8 +145,14 @@ public partial class MainViewModel
 
         try
         {
+            EditState? snapshotBeforeOperation = null;
+            bool createdMaskLayer = false;
             if (SelectedMaskLayer is null)
+            {
+                snapshotBeforeOperation = CreateSnapshot();
                 AddMaskLayerInternal(pushUndoSnapshot: false);
+                createdMaskLayer = true;
+            }
 
             var input = _transformedImage.Clone();
             var result = await Task.Run(() =>
@@ -162,6 +168,8 @@ public partial class MainViewModel
             });
 
             ApplySelectedMaskFromBinary(result.Mask, result.Width, result.Height);
+            if (createdMaskLayer && snapshotBeforeOperation is not null)
+                ReplaceLatestUndoState(snapshotBeforeOperation);
             StatusMessage = BuildReadyStatusMessage();
         }
         catch (Exception ex)
@@ -203,8 +211,14 @@ public partial class MainViewModel
 
         try
         {
+            EditState? snapshotBeforeOperation = null;
+            bool createdMaskLayer = false;
             if (SelectedMaskLayer is null)
+            {
+                snapshotBeforeOperation = CreateSnapshot();
                 AddMaskLayerInternal(pushUndoSnapshot: false);
+                createdMaskLayer = true;
+            }
 
             var input = _transformedImage.Clone();
             var result = await Task.Run(() =>
@@ -222,6 +236,8 @@ public partial class MainViewModel
             bool changed = IsMaskEraseMode
                 ? SubtractSelectedMaskFromBinary(result.Mask, result.Width, result.Height)
                 : MergeSelectedMaskFromBinary(result.Mask, result.Width, result.Height);
+            if (changed && createdMaskLayer && snapshotBeforeOperation is not null)
+                ReplaceLatestUndoState(snapshotBeforeOperation);
             StatusMessage = BuildReadyStatusMessage();
             return changed;
         }
@@ -263,8 +279,14 @@ public partial class MainViewModel
 
         try
         {
+            EditState? snapshotBeforeOperation = null;
+            bool createdMaskLayer = false;
             if (SelectedMaskLayer is null)
+            {
+                snapshotBeforeOperation = CreateSnapshot();
                 AddMaskLayerInternal(pushUndoSnapshot: false);
+                createdMaskLayer = true;
+            }
 
             var input = _transformedImage.Clone();
             var mask = await Task.Run(() =>
@@ -289,6 +311,8 @@ public partial class MainViewModel
             bool changed = IsMaskEraseMode
                 ? SubtractSelectedMaskFromBinary(mask, ImageWidth, ImageHeight)
                 : AppendSelectedMaskFromBinary(mask, ImageWidth, ImageHeight);
+            if (changed && createdMaskLayer && snapshotBeforeOperation is not null)
+                ReplaceLatestUndoState(snapshotBeforeOperation);
             StatusMessage = BuildReadyStatusMessage();
             return changed;
         }
