@@ -6,8 +6,8 @@
     <sys:String x:Key="Error.Unexpected">An unexpected error occurred.&#10;You can export logs from "Help &gt; Export Logs".&#10;&#10;{0}</sys:String>
 
     <sys:String x:Key="Window.TitleWithFile">VRCosme - {0}</sys:String>
-    <sys:String x:Key="Status.Ready">Ready</sys:String>
-    <sys:String x:Key="Status.ReadyWithSize">{0} × {1} px  Ready</sys:String>
+    <sys:String x:Key="Status.Ready"></sys:String>
+    <sys:String x:Key="Status.ReadyWithSize"></sys:String>
     <sys:String x:Key="Status.LoadingImage">Loading image...</sys:String>
     <sys:String x:Key="Status.LoadError">Load error</sys:String>
     <sys:String x:Key="Status.ApplyingTransform">Applying transform...</sys:String>
@@ -17,8 +17,10 @@
     <sys:String x:Key="Status.ExportComplete">Export complete</sys:String>
     <sys:String x:Key="Status.ExportError">Export error</sys:String>
     <sys:String x:Key="Status.AutoSelectingMask">Selecting mask with AI...</sys:String>
+    <sys:String x:Key="Status.AutoSelectingMaskByColor">Selecting mask by color...</sys:String>
     <sys:String x:Key="Status.DownloadingAutoMaskModel">Downloading AI auto mask model...</sys:String>
     <sys:String x:Key="Status.AIAutoMaskError">AI auto mask error</sys:String>
+    <sys:String x:Key="Status.AutoMaskByColorError">Auto select error</sys:String>
 
     <sys:String x:Key="Dialog.ErrorTitle">Error</sys:String>
     <sys:String x:Key="Dialog.OpenImage.Filter">Image Files|*.png;*.jpg;*.jpeg;*.bmp;*.tiff;*.tif;*.webp|All Files|*.*</sys:String>
@@ -35,6 +37,7 @@
     <sys:String x:Key="Dialog.LogExport.Failed">Failed to export logs:&#10;{0}</sys:String>
     <sys:String x:Key="Dialog.SelectExportDirectory.Title">Select default export directory</sys:String>
     <sys:String x:Key="Dialog.AIAutoMask.Failed">Failed to select mask with AI:&#10;{0}</sys:String>
+    <sys:String x:Key="Dialog.AutoMaskByColor.Failed">Failed to auto-select mask by color:&#10;{0}</sys:String>
     <sys:String x:Key="Dialog.AIAutoMask.DownloadFailed">Failed to download AI auto mask model:&#10;{0}</sys:String>
     <sys:String x:Key="Dialog.AIAutoMask.DeleteFailed">Failed to delete AI auto mask model:&#10;{0}</sys:String>
     <sys:String x:Key="Dialog.AIAutoMask.ModelFilter">ONNX Model|*.onnx|All Files|*.*</sys:String>
@@ -56,7 +59,7 @@
     <sys:String x:Key="Menu.View.Grid">Rule of Thirds Grid</sys:String>
     <sys:String x:Key="Menu.View.Ruler">Ruler</sys:String>
     <sys:String x:Key="Menu.AI">AI Tools(_A)</sys:String>
-    <sys:String x:Key="Menu.AI.AutoMaskSelect">Auto Select Mask</sys:String>
+    <sys:String x:Key="Menu.AI.AutoMaskSelect">AI Auto Select (Beta)</sys:String>
     <sys:String x:Key="Menu.AI.AutoAdjustWip">Auto Adjust  (Coming soon)</sys:String>
     <sys:String x:Key="Menu.AI.DenoiseWip">AI Denoise  (Coming soon)</sys:String>
     <sys:String x:Key="Menu.AI.UpscaleWip">AI Upscale  (Coming soon)</sys:String>
@@ -116,28 +119,37 @@
     <sys:String x:Key="Button.AdjustAvatarWip">Adjust Avatar Only (Coming soon)</sys:String>
     <sys:String x:Key="Button.InvertMask">Invert Mask</sys:String>
     <sys:String x:Key="Button.ClearMask">Clear Mask</sys:String>
-    <sys:String x:Key="Button.AutoMaskSettings">Auto Select Settings</sys:String>
-    <sys:String x:Key="Button.AutoMaskSelect">AI Auto Select</sys:String>
+    <sys:String x:Key="Button.AutoMaskSettings">AI Auto Select Settings</sys:String>
+    <sys:String x:Key="Button.AutoMaskSelect">AI Auto Select (Beta)</sys:String>
     <sys:String x:Key="Button.AddMaskLayer">Add Layer</sys:String>
     <sys:String x:Key="Button.RemoveMaskLayer">Remove Layer</sys:String>
     <sys:String x:Key="Button.RenameMaskLayer">Rename</sys:String>
     <sys:String x:Key="Button.EditMaskAdjustments">Mask Adjustments...</sys:String>
     <sys:String x:Key="Button.Export">Export</sys:String>
 
-    <sys:String x:Key="Mask.Description">Create mask areas with manual lasso editing or AI auto selection from a clicked point.</sys:String>
+    <sys:String x:Key="Mask.Description">Create mask areas with Manual Select (lasso), Auto Select (color + threshold), or AI Auto Select (Beta).</sys:String>
     <sys:String x:Key="Mask.Layers">Mask Layers</sys:String>
     <sys:String x:Key="Mask.Enable">Enable mask-based adjustments</sys:String>
-    <sys:String x:Key="Mask.EditMode">Manual Mask Edit</sys:String>
-    <sys:String x:Key="Mask.AutoSelectMode">Auto Mask Select</sys:String>
+    <sys:String x:Key="Mask.EditMode">Manual Select</sys:String>
+    <sys:String x:Key="Mask.AutoSelectMode">Auto Select</sys:String>
+    <sys:String x:Key="Mask.AIAutoSelectMode">AI Auto Select (Beta)</sys:String>
+    <sys:String x:Key="Mask.AutoSelectColorError">Color Error</sys:String>
+    <sys:String x:Key="Mask.AutoSelectGapClosing">Gap Closing</sys:String>
+    <sys:String x:Key="Mask.AutoSelectThreshold">Threshold</sys:String>
+    <sys:String x:Key="Mask.AutoSelectConnectivity">Connectivity</sys:String>
+    <sys:String x:Key="Mask.AutoSelectConnectivity4">4-neighbor (up/down/left/right)</sys:String>
+    <sys:String x:Key="Mask.AutoSelectConnectivity8">8-neighbor (including diagonals)</sys:String>
+    <sys:String x:Key="Mask.AutoSelectAntialias">Antialias</sys:String>
     <sys:String x:Key="Mask.EraseMode">Eraser mode</sys:String>
     <sys:String x:Key="Mask.BrushSize">Brush Size</sys:String>
     <sys:String x:Key="Mask.Softness">Softness</sys:String>
     <sys:String x:Key="Mask.OverlayOpacity">Overlay</sys:String>
     <sys:String x:Key="Mask.ShowOverlay">Show mask overlay</sys:String>
     <sys:String x:Key="Mask.Coverage">Coverage:</sys:String>
-    <sys:String x:Key="Mask.Hint">Manual edit uses a lasso on the preview. Auto select uses the clicked point as the AI seed, and subsequent clicks expand from the current selection instead of replacing it.</sys:String>
+    <sys:String x:Key="Mask.Hint">Manual Select uses a lasso on the preview. Auto Select performs seed fill from the clicked color using Color Error, Gap Closing, Connectivity (4/8-neighbor), and Antialias settings. AI Auto Select (Beta) uses the clicked point as the AI seed, and subsequent clicks expand from the current selection.</sys:String>
     <sys:String x:Key="Mask.RenameTitle">Rename Mask Layer</sys:String>
     <sys:String x:Key="Mask.RenamePrompt">Mask layer name:</sys:String>
+    <sys:String x:Key="Mask.AdjustButton">Adjust</sys:String>
     <sys:String x:Key="Mask.AdjustmentsTitle">Mask Layer Adjustments</sys:String>
     <sys:String x:Key="Mask.NaturalizeBoundary">Naturalize mask boundary</sys:String>
 
@@ -151,7 +163,7 @@
     <sys:String x:Key="Settings.Label.DefaultJpegQuality">Default JPEG Quality</sys:String>
     <sys:String x:Key="Settings.Label.AutoMaskSettings">AI Auto Select</sys:String>
     <sys:String x:Key="Settings.Button.Browse">Browse...</sys:String>
-    <sys:String x:Key="Settings.Button.OpenAutoMaskSettings">Open Auto Select Settings...</sys:String>
+    <sys:String x:Key="Settings.Button.OpenAutoMaskSettings">Open AI Auto Select Settings...</sys:String>
     <sys:String x:Key="Settings.Option.Grid">Rule of Thirds Grid</sys:String>
     <sys:String x:Key="Settings.Option.Ruler">Ruler</sys:String>
     <sys:String x:Key="Settings.RestartRequired">Restart VRCosme to apply the language change.</sys:String>
@@ -160,6 +172,9 @@
     <sys:String x:Key="AutoMaskSettings.Title">AI Auto Select Settings</sys:String>
     <sys:String x:Key="AutoMaskSettings.Description">Switch models based on the target you want to select. You can download or delete each model from the list below.</sys:String>
     <sys:String x:Key="AutoMaskSettings.TargetLabel">Selection Target</sys:String>
+    <sys:String x:Key="AutoMaskSettings.ExecutionDeviceLabel">Inference Device</sys:String>
+    <sys:String x:Key="AutoMaskSettings.ExecutionDevice.Cpu">CPU</sys:String>
+    <sys:String x:Key="AutoMaskSettings.ExecutionDevice.Gpu">GPU (DirectML)</sys:String>
     <sys:String x:Key="AutoMaskSettings.SelectedModelLabel">Active Model</sys:String>
     <sys:String x:Key="AutoMaskSettings.MultiPass">Run AI auto select multiple times for higher precision (slower)</sys:String>
     <sys:String x:Key="AutoMaskSettings.ModelManagerTitle">Model Management</sys:String>

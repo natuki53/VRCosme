@@ -6,8 +6,8 @@
     <sys:String x:Key="Error.Unexpected">發生未預期的錯誤。&#10;可從「說明 &gt; 匯出日誌」匯出日誌。&#10;&#10;{0}</sys:String>
 
     <sys:String x:Key="Window.TitleWithFile">VRCosme - {0}</sys:String>
-    <sys:String x:Key="Status.Ready">準備完成</sys:String>
-    <sys:String x:Key="Status.ReadyWithSize">{0} × {1} px  準備完成</sys:String>
+    <sys:String x:Key="Status.Ready"></sys:String>
+    <sys:String x:Key="Status.ReadyWithSize"></sys:String>
     <sys:String x:Key="Status.LoadingImage">正在載入影像...</sys:String>
     <sys:String x:Key="Status.LoadError">載入錯誤</sys:String>
     <sys:String x:Key="Status.ApplyingTransform">正在套用轉換...</sys:String>
@@ -17,8 +17,10 @@
     <sys:String x:Key="Status.ExportComplete">匯出完成</sys:String>
     <sys:String x:Key="Status.ExportError">匯出錯誤</sys:String>
     <sys:String x:Key="Status.AutoSelectingMask">正在使用 AI 自動選取遮罩...</sys:String>
+    <sys:String x:Key="Status.AutoSelectingMaskByColor">正在以色彩自動選取遮罩...</sys:String>
     <sys:String x:Key="Status.DownloadingAutoMaskModel">正在下載 AI 自動遮罩模型...</sys:String>
     <sys:String x:Key="Status.AIAutoMaskError">AI 自動遮罩錯誤</sys:String>
+    <sys:String x:Key="Status.AutoMaskByColorError">自動選取錯誤</sys:String>
 
     <sys:String x:Key="Dialog.ErrorTitle">錯誤</sys:String>
     <sys:String x:Key="Dialog.OpenImage.Filter">影像檔案|*.png;*.jpg;*.jpeg;*.bmp;*.tiff;*.tif;*.webp|所有檔案|*.*</sys:String>
@@ -35,6 +37,7 @@
     <sys:String x:Key="Dialog.LogExport.Failed">匯出日誌失敗：&#10;{0}</sys:String>
     <sys:String x:Key="Dialog.SelectExportDirectory.Title">選擇預設匯出資料夾</sys:String>
     <sys:String x:Key="Dialog.AIAutoMask.Failed">AI 自動選取遮罩失敗：&#10;{0}</sys:String>
+    <sys:String x:Key="Dialog.AutoMaskByColor.Failed">以色彩自動選取失敗：&#10;{0}</sys:String>
     <sys:String x:Key="Dialog.AIAutoMask.DownloadFailed">下載 AI 自動遮罩模型失敗：&#10;{0}</sys:String>
     <sys:String x:Key="Dialog.AIAutoMask.DeleteFailed">刪除 AI 自動遮罩模型失敗：&#10;{0}</sys:String>
     <sys:String x:Key="Dialog.AIAutoMask.ModelFilter">ONNX 模型|*.onnx|所有檔案|*.*</sys:String>
@@ -56,7 +59,7 @@
     <sys:String x:Key="Menu.View.Grid">三分法格線</sys:String>
     <sys:String x:Key="Menu.View.Ruler">尺規</sys:String>
     <sys:String x:Key="Menu.AI">AI 工具(_A)</sys:String>
-    <sys:String x:Key="Menu.AI.AutoMaskSelect">自動選取遮罩</sys:String>
+    <sys:String x:Key="Menu.AI.AutoMaskSelect">AI 自動選取（測試版）</sys:String>
     <sys:String x:Key="Menu.AI.AutoAdjustWip">自動調整  (開發中)</sys:String>
     <sys:String x:Key="Menu.AI.DenoiseWip">AI 降噪  (開發中)</sys:String>
     <sys:String x:Key="Menu.AI.UpscaleWip">AI 超解析度  (開發中)</sys:String>
@@ -116,28 +119,37 @@
     <sys:String x:Key="Button.AdjustAvatarWip">僅調整角色 (開發中)</sys:String>
     <sys:String x:Key="Button.InvertMask">反轉遮罩</sys:String>
     <sys:String x:Key="Button.ClearMask">清除遮罩</sys:String>
-    <sys:String x:Key="Button.AutoMaskSettings">自動選取設定</sys:String>
-    <sys:String x:Key="Button.AutoMaskSelect">AI 自動選取</sys:String>
+    <sys:String x:Key="Button.AutoMaskSettings">AI 自動選取設定</sys:String>
+    <sys:String x:Key="Button.AutoMaskSelect">AI 自動選取（測試版）</sys:String>
     <sys:String x:Key="Button.AddMaskLayer">新增圖層</sys:String>
     <sys:String x:Key="Button.RemoveMaskLayer">刪除圖層</sys:String>
     <sys:String x:Key="Button.RenameMaskLayer">重新命名</sys:String>
     <sys:String x:Key="Button.EditMaskAdjustments">遮罩調整...</sys:String>
     <sys:String x:Key="Button.Export">匯出</sys:String>
 
-    <sys:String x:Key="Mask.Description">可透過手動編輯（套索）或自動選取（點擊）建立需要套用調整的遮罩區域。</sys:String>
+    <sys:String x:Key="Mask.Description">可透過手動選取（套索）、自動選取（色彩+閾值）或 AI 自動選取（測試版）建立需要套用調整的遮罩區域。</sys:String>
     <sys:String x:Key="Mask.Layers">遮罩圖層</sys:String>
     <sys:String x:Key="Mask.Enable">啟用遮罩調整</sys:String>
-    <sys:String x:Key="Mask.EditMode">遮罩手動編輯</sys:String>
-    <sys:String x:Key="Mask.AutoSelectMode">遮罩自動選取</sys:String>
+    <sys:String x:Key="Mask.EditMode">手動選取</sys:String>
+    <sys:String x:Key="Mask.AutoSelectMode">自動選取</sys:String>
+    <sys:String x:Key="Mask.AIAutoSelectMode">AI 自動選取（測試版）</sys:String>
+    <sys:String x:Key="Mask.AutoSelectColorError">色彩誤差</sys:String>
+    <sys:String x:Key="Mask.AutoSelectGapClosing">縫隙閉合</sys:String>
+    <sys:String x:Key="Mask.AutoSelectThreshold">閾值</sys:String>
+    <sys:String x:Key="Mask.AutoSelectConnectivity">鄰接像素</sys:String>
+    <sys:String x:Key="Mask.AutoSelectConnectivity4">4 鄰域（上/下/左/右）</sys:String>
+    <sys:String x:Key="Mask.AutoSelectConnectivity8">8 鄰域（含對角線）</sys:String>
+    <sys:String x:Key="Mask.AutoSelectAntialias">抗鋸齒</sys:String>
     <sys:String x:Key="Mask.EraseMode">橡皮擦模式</sys:String>
     <sys:String x:Key="Mask.BrushSize">筆刷大小</sys:String>
     <sys:String x:Key="Mask.Softness">柔邊</sys:String>
     <sys:String x:Key="Mask.OverlayOpacity">覆蓋層</sys:String>
     <sys:String x:Key="Mask.ShowOverlay">顯示遮罩覆蓋層</sys:String>
     <sys:String x:Key="Mask.Coverage">覆蓋率:</sys:String>
-    <sys:String x:Key="Mask.Hint">手動編輯可在預覽上以套索圈選。自動選取會以點擊位置作為 AI 種子擷取範圍，後續點擊會在目前選取基礎上持續擴張。</sys:String>
+    <sys:String x:Key="Mask.Hint">手動選取可在預覽上以套索圈選。自動選取會以點擊色彩為種子，依據色彩誤差、縫隙閉合、鄰接像素（4/8 鄰域）與抗鋸齒設定擴張連通區域。AI 自動選取（測試版）會以點擊位置作為 AI 種子擷取，後續點擊會在目前選取基礎上持續擴張。</sys:String>
     <sys:String x:Key="Mask.RenameTitle">重新命名遮罩圖層</sys:String>
     <sys:String x:Key="Mask.RenamePrompt">圖層名稱:</sys:String>
+    <sys:String x:Key="Mask.AdjustButton">調整</sys:String>
     <sys:String x:Key="Mask.AdjustmentsTitle">遮罩圖層調整</sys:String>
     <sys:String x:Key="Mask.NaturalizeBoundary">讓邊界更自然</sys:String>
 
@@ -151,7 +163,7 @@
     <sys:String x:Key="Settings.Label.DefaultJpegQuality">預設 JPEG 品質</sys:String>
     <sys:String x:Key="Settings.Label.AutoMaskSettings">AI 自動選取</sys:String>
     <sys:String x:Key="Settings.Button.Browse">瀏覽...</sys:String>
-    <sys:String x:Key="Settings.Button.OpenAutoMaskSettings">開啟自動選取設定...</sys:String>
+    <sys:String x:Key="Settings.Button.OpenAutoMaskSettings">開啟 AI 自動選取設定...</sys:String>
     <sys:String x:Key="Settings.Option.Grid">三分法格線</sys:String>
     <sys:String x:Key="Settings.Option.Ruler">尺規</sys:String>
     <sys:String x:Key="Settings.RestartRequired">請重新啟動 VRCosme 以套用語言變更。</sys:String>
@@ -160,6 +172,9 @@
     <sys:String x:Key="AutoMaskSettings.Title">AI 自動選取設定</sys:String>
     <sys:String x:Key="AutoMaskSettings.Description">可依要選取的目標切換模型。可在下方清單下載或刪除各模型。</sys:String>
     <sys:String x:Key="AutoMaskSettings.TargetLabel">選取目標</sys:String>
+    <sys:String x:Key="AutoMaskSettings.ExecutionDeviceLabel">推論裝置</sys:String>
+    <sys:String x:Key="AutoMaskSettings.ExecutionDevice.Cpu">CPU</sys:String>
+    <sys:String x:Key="AutoMaskSettings.ExecutionDevice.Gpu">GPU (DirectML)</sys:String>
     <sys:String x:Key="AutoMaskSettings.SelectedModelLabel">目前模型</sys:String>
     <sys:String x:Key="AutoMaskSettings.MultiPass">多次執行 AI 自動選取以提高精度（速度較慢）</sys:String>
     <sys:String x:Key="AutoMaskSettings.ModelManagerTitle">模型管理</sys:String>
