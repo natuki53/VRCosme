@@ -13,21 +13,7 @@ public partial class MainViewModel
 {
     // ───────── 補正パラメータ生成 ─────────
 
-    private AdjustmentParams BuildParams() => new(
-        Brightness: 1.0f + (float)(Brightness / 100.0),
-        Contrast: 1.0f + (float)(Contrast / 100.0),
-        Gamma: (float)Gamma,
-        Exposure: (float)Exposure,
-        Saturation: 1.0f + (float)(Saturation / 100.0),
-        Temperature: (float)Temperature,
-        Tint: (float)Tint,
-        Shadows: (float)Shadows,
-        Highlights: (float)Highlights,
-        Clarity: (float)Clarity,
-        Sharpen: (float)Sharpen,
-        Vignette: (float)Vignette,
-        Blur: (float)Blur
-    );
+    private AdjustmentParams BuildParams() => BuildAdjustmentValues().ToParams();
 
     // ───────── トリミング ─────────
 

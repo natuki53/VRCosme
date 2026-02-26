@@ -11,19 +11,7 @@ public partial class MaskLayer : ObservableObject
     public int Height { get; private set; }
     public int NonZeroCount { get; private set; }
 
-    public double Brightness { get; set; }
-    public double Contrast { get; set; }
-    public double Gamma { get; set; } = 1.0;
-    public double Exposure { get; set; }
-    public double Saturation { get; set; }
-    public double Temperature { get; set; }
-    public double Tint { get; set; }
-    public double Shadows { get; set; }
-    public double Highlights { get; set; }
-    public double Clarity { get; set; }
-    public double Blur { get; set; }
-    public double Sharpen { get; set; }
-    public double Vignette { get; set; }
+    public AdjustmentValues Adjustments { get; set; } = AdjustmentValues.Default;
     public bool NaturalizeBoundary { get; set; }
 
     public byte[] MaskData { get; private set; }
@@ -88,19 +76,7 @@ public partial class MaskLayer : ObservableObject
             Width,
             Height,
             NonZeroCount,
-            Brightness,
-            Contrast,
-            Gamma,
-            Exposure,
-            Saturation,
-            Temperature,
-            Tint,
-            Shadows,
-            Highlights,
-            Clarity,
-            Blur,
-            Sharpen,
-            Vignette,
+            Adjustments,
             NaturalizeBoundary
         );
 
@@ -108,19 +84,7 @@ public partial class MaskLayer : ObservableObject
     {
         var layer = new MaskLayer(state.Name, state.Width, state.Height)
         {
-            Brightness = state.Brightness,
-            Contrast = state.Contrast,
-            Gamma = state.Gamma,
-            Exposure = state.Exposure,
-            Saturation = state.Saturation,
-            Temperature = state.Temperature,
-            Tint = state.Tint,
-            Shadows = state.Shadows,
-            Highlights = state.Highlights,
-            Clarity = state.Clarity,
-            Blur = state.Blur,
-            Sharpen = state.Sharpen,
-            Vignette = state.Vignette,
+            Adjustments = state.Adjustments,
             NaturalizeBoundary = state.NaturalizeBoundary
         };
         layer.SetMaskData(state.MaskData, state.Width, state.Height, state.NonZeroCount);

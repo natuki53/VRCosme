@@ -202,4 +202,27 @@ public partial class MainViewModel : ObservableObject
         new(LocalizationService.GetString("Crop.Tall3by4X", "3:4 (Portrait, good for X posts)"), 3, 4),
         new(LocalizationService.GetString("Crop.Header3by1", "3:1 (Header)"), 3, 1),
     ];
+
+    // ───────── 補正値ヘルパー ─────────
+
+    internal AdjustmentValues BuildAdjustmentValues() => new(
+        Brightness, Contrast, Gamma, Exposure, Saturation, Temperature, Tint,
+        Shadows, Highlights, Clarity, Blur, Sharpen, Vignette);
+
+    internal void RestoreAdjustmentValues(AdjustmentValues v)
+    {
+        Brightness = v.Brightness;
+        Contrast = v.Contrast;
+        Gamma = v.Gamma;
+        Exposure = v.Exposure;
+        Saturation = v.Saturation;
+        Temperature = v.Temperature;
+        Tint = v.Tint;
+        Shadows = v.Shadows;
+        Highlights = v.Highlights;
+        Clarity = v.Clarity;
+        Blur = v.Blur;
+        Sharpen = v.Sharpen;
+        Vignette = v.Vignette;
+    }
 }
