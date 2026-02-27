@@ -10,6 +10,7 @@ public partial class MainViewModel
     {
         if (_isRestoringState || !HasImage) return;
         _undoStack.Push(snapshot);
+        MarkCurrentSessionDirty();
         if (_undoStack.Count > MaxUndoCount)
         {
             var list = _undoStack.ToList();
@@ -99,6 +100,7 @@ public partial class MainViewModel
         var toRestore = _undoStack.Pop();
         _redoStack.Push(stateBefore);
         await RestoreStateAsync(toRestore);
+        MarkCurrentSessionDirty();
     }
 
     [RelayCommand(CanExecute = nameof(CanRedo))]
@@ -110,5 +112,6 @@ public partial class MainViewModel
         var toRestore = _redoStack.Pop();
         _undoStack.Push(stateBefore);
         await RestoreStateAsync(toRestore);
+        MarkCurrentSessionDirty();
     }
 }

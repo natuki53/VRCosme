@@ -18,20 +18,28 @@ public partial class MainViewModel
     [RelayCommand]
     private async Task OpenImageAsync()
     {
+        if (!ConfirmDiscardChangesOrSaveIfNeeded())
+            return;
+
         var dialog = new OpenFileDialog
         {
             Filter = LocalizationService.GetString("Dialog.OpenImage.Filter",
                 "Image Files|*.png;*.jpg;*.jpeg;*.bmp;*.tiff;*.tif;*.webp|All Files|*.*"),
             Title = LocalizationService.GetString("Dialog.OpenImage.Title", "Open Image")
         };
-        if (dialog.ShowDialog() == true) await LoadImageAsync(dialog.FileName);
+        if (dialog.ShowDialog() == true)
+            await LoadImageAsync(dialog.FileName, confirmDiscardUnsavedChanges: false);
     }
 
     [RelayCommand]
     private async Task OpenRecentAsync(string? filePath)
     {
-        if (!string.IsNullOrEmpty(filePath) && File.Exists(filePath))
-            await LoadImageAsync(filePath);
+        if (string.IsNullOrEmpty(filePath) || !File.Exists(filePath))
+            return;
+        if (!ConfirmDiscardChangesOrSaveIfNeeded())
+            return;
+
+        await LoadImageAsync(filePath, confirmDiscardUnsavedChanges: false);
     }
 
     [RelayCommand]

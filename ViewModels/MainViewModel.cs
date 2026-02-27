@@ -36,6 +36,8 @@ public partial class MainViewModel : ObservableObject
     [NotifyPropertyChangedFor(nameof(HasImage))]
     [NotifyPropertyChangedFor(nameof(CanUndo))]
     [NotifyPropertyChangedFor(nameof(CanRedo))]
+    [NotifyCanExecuteChangedFor(nameof(SaveSessionCommand))]
+    [NotifyCanExecuteChangedFor(nameof(SaveSessionAsCommand))]
     private string? _sourceFilePath;
 
     [ObservableProperty] private bool _isProcessing;
@@ -106,6 +108,11 @@ public partial class MainViewModel : ObservableObject
     [ObservableProperty] private bool _showRuleOfThirdsGrid;
     [ObservableProperty] private bool _showRuler;
 
+    // ───────── セッション保存 ─────────
+
+    [ObservableProperty] private string? _currentSessionPath;
+    [ObservableProperty] private bool _isDirty;
+
     // ───────── 書き出し ─────────
 
     [ObservableProperty] private string _selectedExportFormat = "PNG";
@@ -156,11 +163,14 @@ public partial class MainViewModel : ObservableObject
 
     public string BuildWindowTitle(string? filePath = null)
     {
+        string title;
         if (string.IsNullOrWhiteSpace(filePath))
-            return LocalizationService.GetString("App.Name", "VRCosme");
+            title = LocalizationService.GetString("App.Name", "VRCosme");
+        else
+            title = LocalizationService.Format("Window.TitleWithFile", "VRCosme - {0}",
+                Path.GetFileName(filePath));
 
-        return LocalizationService.Format("Window.TitleWithFile", "VRCosme - {0}",
-            Path.GetFileName(filePath));
+        return IsDirty ? $"{title} *" : title;
     }
 
     public string BuildReadyStatusMessage()

@@ -16,6 +16,8 @@
     <sys:String x:Key="Status.Exporting">Exporting...</sys:String>
     <sys:String x:Key="Status.ExportComplete">Export complete</sys:String>
     <sys:String x:Key="Status.ExportError">Export error</sys:String>
+    <sys:String x:Key="Status.SessionSaved">Session saved</sys:String>
+    <sys:String x:Key="Status.SessionLoaded">Session loaded</sys:String>
     <sys:String x:Key="Status.AutoSelectingMask">Selecting mask with AI...</sys:String>
     <sys:String x:Key="Status.AutoSelectingMaskByColor">Selecting mask by color...</sys:String>
     <sys:String x:Key="Status.DownloadingAutoMaskModel">Downloading AI auto mask model...</sys:String>
@@ -42,10 +44,27 @@
     <sys:String x:Key="Dialog.AIAutoMask.DeleteFailed">Failed to delete AI auto mask model:&#10;{0}</sys:String>
     <sys:String x:Key="Dialog.AIAutoMask.ModelFilter">ONNX Model|*.onnx|All Files|*.*</sys:String>
     <sys:String x:Key="Dialog.AIAutoMask.ModelTitle">Select an ONNX model for AI auto mask</sys:String>
+    <sys:String x:Key="Dialog.Session.Filter">VRCosme Session|*.vrcproj|All Files|*.*</sys:String>
+    <sys:String x:Key="Dialog.Session.OpenTitle">Open Session</sys:String>
+    <sys:String x:Key="Dialog.Session.SaveTitle">Save Session</sys:String>
+    <sys:String x:Key="Dialog.Session.SaveSuccess">Session saved successfully.</sys:String>
+    <sys:String x:Key="Dialog.Session.SaveFailed">Failed to save session:&#10;{0}</sys:String>
+    <sys:String x:Key="Dialog.Session.LoadFailed">Failed to load session:&#10;{0}</sys:String>
+    <sys:String x:Key="Dialog.Session.ImageMissing">The source image was not found:&#10;{0}&#10;&#10;Please select the source image file.</sys:String>
+    <sys:String x:Key="Dialog.Session.ImageMissingTitle">Source Image Not Found</sys:String>
+    <sys:String x:Key="Dialog.Session.SelectSourceImageTitle">Select Source Image</sys:String>
+    <sys:String x:Key="Dialog.UnsavedChanges.Title">Unsaved Changes</sys:String>
+    <sys:String x:Key="Dialog.UnsavedChanges.Message">You have unsaved changes.&#10;Choose what to do before continuing.</sys:String>
+    <sys:String x:Key="Dialog.UnsavedChanges.ButtonSave">Save and Continue(_S)</sys:String>
+    <sys:String x:Key="Dialog.UnsavedChanges.ButtonDiscard">Continue Without Saving(_D)</sys:String>
+    <sys:String x:Key="Dialog.UnsavedChanges.ButtonCancel">Cancel</sys:String>
 
     <sys:String x:Key="Menu.File">File(_F)</sys:String>
     <sys:String x:Key="Menu.File.OpenImage">Open Image(_O)</sys:String>
+    <sys:String x:Key="Menu.File.OpenSession">Open Session...</sys:String>
     <sys:String x:Key="Menu.File.RecentFiles">Recent Images</sys:String>
+    <sys:String x:Key="Menu.File.SaveSession">Save Session</sys:String>
+    <sys:String x:Key="Menu.File.SaveSessionAs">Save Session As...</sys:String>
     <sys:String x:Key="Menu.File.Export">Export(_E)</sys:String>
     <sys:String x:Key="Menu.File.Exit">Exit(_X)</sys:String>
     <sys:String x:Key="Menu.Edit">Edit(_E)</sys:String>

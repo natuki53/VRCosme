@@ -35,8 +35,11 @@ public partial class MainViewModel
 
     // ───────── 画像読み込み ─────────
 
-    public async Task LoadImageAsync(string filePath)
+    public async Task LoadImageAsync(string filePath, bool confirmDiscardUnsavedChanges = true)
     {
+        if (confirmDiscardUnsavedChanges && !ConfirmDiscardChangesOrSaveIfNeeded())
+            return;
+
         IsProcessing = true;
         StatusMessage = LocalizationService.GetString("Status.LoadingImage", "Loading image...");
         try
@@ -99,6 +102,7 @@ public partial class MainViewModel
             _undoStack.Clear();
             _redoStack.Clear();
             NotifyUndoRedoChanged();
+            MarkCurrentSessionClean(sessionPath: null);
 
             LogService.Info($"画像読み込み完了: {ImageWidth}×{ImageHeight} px, プレビュースケール={PreviewScale:F3}");
             StatusMessage = BuildReadyStatusMessage();

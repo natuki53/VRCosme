@@ -16,6 +16,8 @@
     <sys:String x:Key="Status.Exporting">書き出し中...</sys:String>
     <sys:String x:Key="Status.ExportComplete">書き出し完了</sys:String>
     <sys:String x:Key="Status.ExportError">書き出しエラー</sys:String>
+    <sys:String x:Key="Status.SessionSaved">作業状態を保存しました</sys:String>
+    <sys:String x:Key="Status.SessionLoaded">作業状態を読み込みました</sys:String>
     <sys:String x:Key="Status.AutoSelectingMask">AIでマスクを自動選択中...</sys:String>
     <sys:String x:Key="Status.AutoSelectingMaskByColor">色でマスクを自動選択中...</sys:String>
     <sys:String x:Key="Status.DownloadingAutoMaskModel">AI自動選択モデルをダウンロード中...</sys:String>
@@ -42,10 +44,27 @@
     <sys:String x:Key="Dialog.AIAutoMask.DeleteFailed">AI自動選択モデルの削除に失敗しました:&#10;{0}</sys:String>
     <sys:String x:Key="Dialog.AIAutoMask.ModelFilter">ONNX モデル|*.onnx|すべてのファイル|*.*</sys:String>
     <sys:String x:Key="Dialog.AIAutoMask.ModelTitle">AI自動選択モデル(ONNX)を選択</sys:String>
+    <sys:String x:Key="Dialog.Session.Filter">VRCosme 作業ファイル|*.vrcproj|すべてのファイル|*.*</sys:String>
+    <sys:String x:Key="Dialog.Session.OpenTitle">作業状態を開く</sys:String>
+    <sys:String x:Key="Dialog.Session.SaveTitle">作業状態を保存</sys:String>
+    <sys:String x:Key="Dialog.Session.SaveSuccess">作業状態を保存しました。</sys:String>
+    <sys:String x:Key="Dialog.Session.SaveFailed">作業状態の保存に失敗しました:&#10;{0}</sys:String>
+    <sys:String x:Key="Dialog.Session.LoadFailed">作業状態の読み込みに失敗しました:&#10;{0}</sys:String>
+    <sys:String x:Key="Dialog.Session.ImageMissing">元画像が見つかりませんでした:&#10;{0}&#10;&#10;続行する画像ファイルを選択してください。</sys:String>
+    <sys:String x:Key="Dialog.Session.ImageMissingTitle">元画像が見つかりません</sys:String>
+    <sys:String x:Key="Dialog.Session.SelectSourceImageTitle">元画像を選択</sys:String>
+    <sys:String x:Key="Dialog.UnsavedChanges.Title">未保存の変更があります</sys:String>
+    <sys:String x:Key="Dialog.UnsavedChanges.Message">未保存の変更があります。&#10;続行する前に、変更内容をどうするか選んでください。</sys:String>
+    <sys:String x:Key="Dialog.UnsavedChanges.ButtonSave">保存して続行(_S)</sys:String>
+    <sys:String x:Key="Dialog.UnsavedChanges.ButtonDiscard">保存せず続行(_D)</sys:String>
+    <sys:String x:Key="Dialog.UnsavedChanges.ButtonCancel">キャンセル</sys:String>
 
     <sys:String x:Key="Menu.File">ファイル(_F)</sys:String>
     <sys:String x:Key="Menu.File.OpenImage">画像を開く(_O)</sys:String>
+    <sys:String x:Key="Menu.File.OpenSession">作業状態を開く...</sys:String>
     <sys:String x:Key="Menu.File.RecentFiles">最近使った画像</sys:String>
+    <sys:String x:Key="Menu.File.SaveSession">作業状態を保存</sys:String>
+    <sys:String x:Key="Menu.File.SaveSessionAs">名前を付けて作業状態を保存...</sys:String>
     <sys:String x:Key="Menu.File.Export">書き出し(_E)</sys:String>
     <sys:String x:Key="Menu.File.Exit">終了(_X)</sys:String>
     <sys:String x:Key="Menu.Edit">編集(_E)</sys:String>

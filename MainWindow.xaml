@@ -20,7 +20,9 @@
 
     <Window.InputBindings>
         <KeyBinding Key="O"      Modifiers="Ctrl"       Command="{Binding OpenImageCommand}"/>
-        <KeyBinding Key="S"      Modifiers="Ctrl+Shift" Command="{Binding ExportCommand}"/>
+        <KeyBinding Key="S"      Modifiers="Ctrl"       Command="{Binding SaveSessionCommand}"/>
+        <KeyBinding Key="S"      Modifiers="Ctrl+Shift" Command="{Binding SaveSessionAsCommand}"/>
+        <KeyBinding Key="E"      Modifiers="Ctrl"       Command="{Binding ExportCommand}"/>
         <KeyBinding Key="Z"      Modifiers="Ctrl"       Command="{Binding UndoCommand}"/>
         <KeyBinding Key="Y"      Modifiers="Ctrl"       Command="{Binding RedoCommand}"/>
         <KeyBinding Key="Z"      Modifiers="Ctrl+Shift" Command="{Binding RedoCommand}"/>
@@ -472,6 +474,7 @@
         <Menu DockPanel.Dock="Top" Background="{DynamicResource MenuBarBackgroundBrush}" Padding="4,2">
             <MenuItem Header="{DynamicResource Menu.File}">
                 <MenuItem Header="{DynamicResource Menu.File.OpenImage}" Command="{Binding OpenImageCommand}" InputGestureText="Ctrl+O"/>
+                <MenuItem Header="{DynamicResource Menu.File.OpenSession}" Command="{Binding OpenSessionCommand}"/>
                 <MenuItem Header="{DynamicResource Menu.File.RecentFiles}" x:Name="RecentFilesMenu" ItemsSource="{Binding RecentFiles}">
                     <MenuItem.ItemContainerStyle>
                         <Style TargetType="MenuItem" BasedOn="{StaticResource {x:Type MenuItem}}">
@@ -482,7 +485,10 @@
                     </MenuItem.ItemContainerStyle>
                 </MenuItem>
                 <Separator/>
-                <MenuItem Header="{DynamicResource Menu.File.Export}" Command="{Binding ExportCommand}" InputGestureText="Ctrl+Shift+S"/>
+                <MenuItem Header="{DynamicResource Menu.File.SaveSession}" Command="{Binding SaveSessionCommand}" InputGestureText="Ctrl+S"/>
+                <MenuItem Header="{DynamicResource Menu.File.SaveSessionAs}" Command="{Binding SaveSessionAsCommand}" InputGestureText="Ctrl+Shift+S"/>
+                <Separator/>
+                <MenuItem Header="{DynamicResource Menu.File.Export}" Command="{Binding ExportCommand}" InputGestureText="Ctrl+E"/>
                 <Separator/>
                 <MenuItem Header="{DynamicResource Menu.File.Exit}" Click="MenuExit_Click"/>
             </MenuItem>

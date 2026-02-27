@@ -106,6 +106,12 @@ public partial class MainWindow : Window
 
     private void MainWindow_Closing(object? sender, System.ComponentModel.CancelEventArgs e)
     {
+        if (!ViewModel.ConfirmDiscardChangesOrSaveIfNeeded())
+        {
+            e.Cancel = true;
+            return;
+        }
+
         if (_maskAdjustmentsDialog != null)
             _maskAdjustmentsDialog.Close();
 

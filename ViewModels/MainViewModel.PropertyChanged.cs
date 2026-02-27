@@ -20,7 +20,17 @@ public partial class MainViewModel
     partial void OnBlurChanged(double value) => SchedulePreviewUpdate();
     partial void OnSharpenChanged(double value) => SchedulePreviewUpdate();
     partial void OnVignetteChanged(double value) => SchedulePreviewUpdate();
-    partial void OnIsMaskEnabledChanged(bool value) => SchedulePreviewUpdate();
+    partial void OnIsMaskEnabledChanged(bool value)
+    {
+        MarkCurrentSessionDirty();
+        SchedulePreviewUpdate();
+    }
+
+    partial void OnSourceFilePathChanged(string? value) =>
+        WindowTitle = BuildWindowTitle(value);
+
+    partial void OnIsDirtyChanged(bool value) =>
+        WindowTitle = BuildWindowTitle(SourceFilePath);
 
     partial void OnSelectedExportFormatChanged(string value) =>
         OnPropertyChanged(nameof(IsJpegSelected));

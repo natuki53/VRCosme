@@ -21,6 +21,15 @@ public partial class App : Application
         // ログ初期化
         LogService.Initialize();
 
+        try
+        {
+            SessionService.EnsureDefaultSessionDirectory();
+        }
+        catch (Exception ex)
+        {
+            LogService.Error("作業ファイル既定フォルダの作成に失敗", ex);
+        }
+
         // グローバル例外ハンドラ
         AppDomain.CurrentDomain.UnhandledException += (_, args) =>
         {
