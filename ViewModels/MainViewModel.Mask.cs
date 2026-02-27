@@ -634,6 +634,8 @@ public partial class MainViewModel
     {
         if (pushUndoSnapshot)
             PushUndoSnapshot();
+        else
+            MarkCurrentSessionDirty();
 
         MaskLayer layer;
         lock (_maskSync)

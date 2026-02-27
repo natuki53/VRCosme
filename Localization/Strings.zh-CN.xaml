@@ -16,6 +16,8 @@
     <sys:String x:Key="Status.Exporting">正在导出...</sys:String>
     <sys:String x:Key="Status.ExportComplete">导出完成</sys:String>
     <sys:String x:Key="Status.ExportError">导出错误</sys:String>
+    <sys:String x:Key="Status.SessionSaved">已保存编辑状态</sys:String>
+    <sys:String x:Key="Status.SessionLoaded">已加载编辑状态</sys:String>
     <sys:String x:Key="Status.AutoSelectingMask">正在使用 AI 自动选择蒙版...</sys:String>
     <sys:String x:Key="Status.AutoSelectingMaskByColor">正在按颜色自动选择蒙版...</sys:String>
     <sys:String x:Key="Status.DownloadingAutoMaskModel">正在下载 AI 自动蒙版模型...</sys:String>
@@ -42,10 +44,27 @@
     <sys:String x:Key="Dialog.AIAutoMask.DeleteFailed">删除 AI 自动蒙版模型失败：&#10;{0}</sys:String>
     <sys:String x:Key="Dialog.AIAutoMask.ModelFilter">ONNX 模型|*.onnx|所有文件|*.*</sys:String>
     <sys:String x:Key="Dialog.AIAutoMask.ModelTitle">选择用于 AI 自动蒙版的 ONNX 模型</sys:String>
+    <sys:String x:Key="Dialog.Session.Filter">VRCosme 工程文件|*.vrcproj|所有文件|*.*</sys:String>
+    <sys:String x:Key="Dialog.Session.OpenTitle">打开编辑状态</sys:String>
+    <sys:String x:Key="Dialog.Session.SaveTitle">保存编辑状态</sys:String>
+    <sys:String x:Key="Dialog.Session.SaveSuccess">编辑状态已保存。</sys:String>
+    <sys:String x:Key="Dialog.Session.SaveFailed">保存编辑状态失败：&#10;{0}</sys:String>
+    <sys:String x:Key="Dialog.Session.LoadFailed">加载编辑状态失败：&#10;{0}</sys:String>
+    <sys:String x:Key="Dialog.Session.ImageMissing">未找到源图像文件：&#10;{0}&#10;&#10;请选择继续使用的源图像文件。</sys:String>
+    <sys:String x:Key="Dialog.Session.ImageMissingTitle">未找到源图像</sys:String>
+    <sys:String x:Key="Dialog.Session.SelectSourceImageTitle">选择源图像</sys:String>
+    <sys:String x:Key="Dialog.UnsavedChanges.Title">有未保存的更改</sys:String>
+    <sys:String x:Key="Dialog.UnsavedChanges.Message">当前有未保存的更改。&#10;继续前请选择处理方式。</sys:String>
+    <sys:String x:Key="Dialog.UnsavedChanges.ButtonSave">保存并继续(_S)</sys:String>
+    <sys:String x:Key="Dialog.UnsavedChanges.ButtonDiscard">不保存并继续(_D)</sys:String>
+    <sys:String x:Key="Dialog.UnsavedChanges.ButtonCancel">取消</sys:String>
 
     <sys:String x:Key="Menu.File">文件(_F)</sys:String>
     <sys:String x:Key="Menu.File.OpenImage">打开图像(_O)</sys:String>
+    <sys:String x:Key="Menu.File.OpenSession">打开编辑状态...</sys:String>
     <sys:String x:Key="Menu.File.RecentFiles">最近图像</sys:String>
+    <sys:String x:Key="Menu.File.SaveSession">保存编辑状态</sys:String>
+    <sys:String x:Key="Menu.File.SaveSessionAs">编辑状态另存为...</sys:String>
     <sys:String x:Key="Menu.File.Export">导出(_E)</sys:String>
     <sys:String x:Key="Menu.File.Exit">退出(_X)</sys:String>
     <sys:String x:Key="Menu.Edit">编辑(_E)</sys:String>
