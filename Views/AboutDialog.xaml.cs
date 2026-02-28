@@ -44,6 +44,8 @@ public partial class AboutDialog : Window
 
     private void GitHub_Link_Click(object sender, RoutedEventArgs e) => OpenUrl(GitHubUrl);
 
+    private void ThirdPartyNotices_Click(object sender, RoutedEventArgs e) => ThirdPartyNoticesService.Open(this);
+
     private static void OpenUrl(string url)
     {
         Process.Start(new ProcessStartInfo

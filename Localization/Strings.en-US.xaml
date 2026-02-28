@@ -37,6 +37,8 @@
     <sys:String x:Key="Dialog.LogExport.Title">Export Logs</sys:String>
     <sys:String x:Key="Dialog.LogExport.Success">Log export completed successfully.</sys:String>
     <sys:String x:Key="Dialog.LogExport.Failed">Failed to export logs:&#10;{0}</sys:String>
+    <sys:String x:Key="ThirdPartyNotices.NotFound">Could not find "{0}" in the app folder.</sys:String>
+    <sys:String x:Key="ThirdPartyNotices.OpenFailed">Failed to open "{0}".&#10;{1}</sys:String>
     <sys:String x:Key="Dialog.SelectExportDirectory.Title">Select default export directory</sys:String>
     <sys:String x:Key="Dialog.AIAutoMask.Failed">Failed to select mask with AI:&#10;{0}</sys:String>
     <sys:String x:Key="Dialog.AutoMaskByColor.Failed">Failed to auto-select mask by color:&#10;{0}</sys:String>
@@ -92,6 +94,7 @@
     <sys:String x:Key="Theme.Dark">Dark</sys:String>
     <sys:String x:Key="Menu.Help">Help(_H)</sys:String>
     <sys:String x:Key="Menu.Help.ExportLogs">Export Logs...</sys:String>
+    <sys:String x:Key="Menu.Help.ThirdPartyNotices">Open Third-Party Notices...</sys:String>
     <sys:String x:Key="Menu.Help.About">About</sys:String>
 
     <sys:String x:Key="DropHint.Line1">Drop an image here</sys:String>
@@ -232,6 +235,7 @@
     <sys:String x:Key="About.VersionUnknown">Unknown</sys:String>
     <sys:String x:Key="About.Tooltip.X">X (Twitter)</sys:String>
     <sys:String x:Key="About.Tooltip.GitHub">GitHub</sys:String>
+    <sys:String x:Key="About.ThirdPartyNotices">Open Third-Party Notices</sys:String>
 
     <sys:String x:Key="Crop.None">None</sys:String>
     <sys:String x:Key="Crop.Square">1:1 (Square)</sys:String>

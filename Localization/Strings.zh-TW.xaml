@@ -37,6 +37,8 @@
     <sys:String x:Key="Dialog.LogExport.Title">匯出日誌</sys:String>
     <sys:String x:Key="Dialog.LogExport.Success">日誌匯出已完成。</sys:String>
     <sys:String x:Key="Dialog.LogExport.Failed">匯出日誌失敗：&#10;{0}</sys:String>
+    <sys:String x:Key="ThirdPartyNotices.NotFound">在應用程式資料夾中找不到「{0}」。</sys:String>
+    <sys:String x:Key="ThirdPartyNotices.OpenFailed">無法開啟「{0}」。&#10;{1}</sys:String>
     <sys:String x:Key="Dialog.SelectExportDirectory.Title">選擇預設匯出資料夾</sys:String>
     <sys:String x:Key="Dialog.AIAutoMask.Failed">AI 自動選取遮罩失敗：&#10;{0}</sys:String>
     <sys:String x:Key="Dialog.AutoMaskByColor.Failed">以色彩自動選取失敗：&#10;{0}</sys:String>
@@ -92,6 +94,7 @@
     <sys:String x:Key="Theme.Dark">深色</sys:String>
     <sys:String x:Key="Menu.Help">說明(_H)</sys:String>
     <sys:String x:Key="Menu.Help.ExportLogs">匯出日誌...</sys:String>
+    <sys:String x:Key="Menu.Help.ThirdPartyNotices">開啟第三方授權聲明...</sys:String>
     <sys:String x:Key="Menu.Help.About">關於</sys:String>
 
     <sys:String x:Key="DropHint.Line1">將影像拖放到這裡</sys:String>
@@ -232,6 +235,7 @@
     <sys:String x:Key="About.VersionUnknown">未知</sys:String>
     <sys:String x:Key="About.Tooltip.X">X (Twitter)</sys:String>
     <sys:String x:Key="About.Tooltip.GitHub">GitHub</sys:String>
+    <sys:String x:Key="About.ThirdPartyNotices">開啟第三方授權聲明</sys:String>
 
     <sys:String x:Key="Crop.None">無</sys:String>
     <sys:String x:Key="Crop.Square">1:1 (正方形)</sys:String>

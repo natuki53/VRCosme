@@ -37,6 +37,8 @@
     <sys:String x:Key="Dialog.LogExport.Title">ログの書き出し</sys:String>
     <sys:String x:Key="Dialog.LogExport.Success">ログの書き出しが完了しました。</sys:String>
     <sys:String x:Key="Dialog.LogExport.Failed">ログの書き出しに失敗しました:&#10;{0}</sys:String>
+    <sys:String x:Key="ThirdPartyNotices.NotFound">アプリフォルダーに「{0}」が見つかりません。</sys:String>
+    <sys:String x:Key="ThirdPartyNotices.OpenFailed">「{0}」を開けませんでした。&#10;{1}</sys:String>
     <sys:String x:Key="Dialog.SelectExportDirectory.Title">初期書き出しディレクトリを選択</sys:String>
     <sys:String x:Key="Dialog.AIAutoMask.Failed">AI自動選択に失敗しました:&#10;{0}</sys:String>
     <sys:String x:Key="Dialog.AutoMaskByColor.Failed">色による自動選択に失敗しました:&#10;{0}</sys:String>
@@ -92,6 +94,7 @@
     <sys:String x:Key="Theme.Dark">ダーク</sys:String>
     <sys:String x:Key="Menu.Help">ヘルプ(_H)</sys:String>
     <sys:String x:Key="Menu.Help.ExportLogs">ログの書き出し...</sys:String>
+    <sys:String x:Key="Menu.Help.ThirdPartyNotices">サードパーティライセンスを表示...</sys:String>
     <sys:String x:Key="Menu.Help.About">バージョン情報</sys:String>
 
     <sys:String x:Key="DropHint.Line1">画像をここにドロップ</sys:String>
@@ -232,6 +235,7 @@
     <sys:String x:Key="About.VersionUnknown">不明</sys:String>
     <sys:String x:Key="About.Tooltip.X">X (Twitter)</sys:String>
     <sys:String x:Key="About.Tooltip.GitHub">GitHub</sys:String>
+    <sys:String x:Key="About.ThirdPartyNotices">サードパーティライセンスを開く</sys:String>
 
     <sys:String x:Key="Crop.None">なし</sys:String>
     <sys:String x:Key="Crop.Square">1:1 (正方形)</sys:String>

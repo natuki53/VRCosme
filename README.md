@@ -35,6 +35,9 @@ dotnet run
 
 ```powershell
 dotnet publish -c Release -r win-x64 --self-contained true /p:PublishSingleFile=true
+./scripts/Generate-ThirdPartyNotices.ps1
+Copy-Item THIRD-PARTY-NOTICES.txt bin/Release/net10.0-windows/win-x64/publish/
+Copy-Item third_party_notices bin/Release/net10.0-windows/win-x64/publish/ -Recurse
 ```
 
 ### インストーラー作成（Inno Setup）
@@ -58,6 +61,11 @@ iscc Installer/VRCosme.iss
 - 한국어: `Installer/LICENSE.ko-KR.txt`
 - 简体中文: `Installer/LICENSE.zh-CN.txt`
 - 繁體中文: `Installer/LICENSE.zh-TW.txt`
+
+## Third-party notices
+
+配布物に含まれる NuGet 依存ライブラリのライセンス情報は `THIRD-PARTY-NOTICES.txt` を参照してください。  
+上流パッケージ同梱の NOTICE は `third_party_notices/` に抽出して配布物へ同梱してください。
 
 ## フィードバック
 

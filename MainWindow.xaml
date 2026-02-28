@@ -530,6 +530,7 @@
             </MenuItem>
             <MenuItem Header="{DynamicResource Menu.Help}">
                 <MenuItem Header="{DynamicResource Menu.Help.ExportLogs}" Click="ExportLog_Click"/>
+                <MenuItem Header="{DynamicResource Menu.Help.ThirdPartyNotices}" Click="ThirdPartyNotices_Click"/>
                 <Separator/>
                 <MenuItem Header="{DynamicResource Menu.Help.About}" Click="About_Click"/>
             </MenuItem>
