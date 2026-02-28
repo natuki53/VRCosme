@@ -2,7 +2,7 @@
 ; 自己完結型の単体 exe をインストーラーで配布する
 
 #define MyAppName "VRCosme"
-#define MyAppVersion "1.0.0"
+#define MyAppVersion "1.0.1"
 #define MyAppPublisher "VRCosme"
 #define MyAppExeName "VRCosme.exe"
 
@@ -44,6 +44,8 @@ Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{
 ; 自己完結型の単体 exe とデバッグシンボルを含める (.lib は除外)
 Source: "..\bin\Release\net10.0-windows\win-x64\publish\VRCosme.exe"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\bin\Release\net10.0-windows\win-x64\publish\VRCosme.pdb"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\THIRD-PARTY-NOTICES.txt"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\third_party_notices\*"; DestDir: "{app}\third_party_notices"; Flags: ignoreversion recursesubdirs createallsubdirs skipifsourcedoesntexist
 
 [Icons]
 Name: "{group}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"

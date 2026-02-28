@@ -1,6 +1,6 @@
 VRCosme Terms of Use
 
-Last Updated: February 12, 2026
+Last Updated: February 28, 2026
 
 Please read the following Terms of Use carefully before installing or using this software, "VRCosme" (the "Software"). By installing the Software, you are deemed to have agreed to these Terms.
 
@@ -24,8 +24,11 @@ The Software is provided "as is." The Author makes no warranties of any kind, wh
 Article 5 (Intellectual Property Rights)
 All intellectual property rights related to the Software belong to the Author. The source code of the Software is published on GitHub for viewing purposes, and such publication does not permit modification or redistribution.
 
-Article 6 (Changes to Terms)
+Article 6 (Third-Party Libraries)
+The Software uses open-source and third-party libraries for AI features (e.g., auto mask selection) and image processing, obtained through package managers such as NuGet (e.g., Microsoft.ML.OnnxRuntime, SixLabors.ImageSharp, CommunityToolkit.Mvvm, SharpVectors.Wpf). The copyright and licenses of these libraries belong to their respective right holders, and their respective license terms apply. For detailed license information and copyright notices, please refer to the "THIRD-PARTY-NOTICES" file bundled with the Software.
+
+Article 7 (Changes to Terms)
 The Author may change these Terms without prior notice. The revised Terms will be presented when the Software is updated or on the GitHub repository.
 
-Article 7 (Governing Law)
+Article 8 (Governing Law)
 These Terms are governed by and interpreted in accordance with the laws of Japan.

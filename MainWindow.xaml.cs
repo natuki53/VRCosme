@@ -144,6 +144,11 @@ public partial class MainWindow : Window
         new AboutDialog { Owner = this }.ShowDialog();
     }
 
+    private void ThirdPartyNotices_Click(object sender, RoutedEventArgs e)
+    {
+        ThirdPartyNoticesService.Open(this);
+    }
+
     private void ExportLog_Click(object sender, RoutedEventArgs e)
     {
         var dialog = new Microsoft.Win32.SaveFileDialog
