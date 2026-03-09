@@ -1,3 +1,4 @@
+using System.Globalization;
 using System.IO;
 using System.Text.Json;
 using System.Windows;
@@ -135,6 +136,109 @@ public static class ThemeService
             Directory.CreateDirectory(DataDir);
             var settings = LoadSettings();
             settings.ShowRuler = value;
+            SaveSettings(settings);
+        }
+        catch
+        {
+            // 保存失敗は無視
+        }
+    }
+
+    /// <summary>自動更新機能の有効/無効を取得</summary>
+    public static bool GetAutoUpdateEnabled()
+    {
+        try { return LoadSettings().AutoUpdateEnabled; }
+        catch { return true; }
+    }
+
+    /// <summary>自動更新機能の有効/無効を保存</summary>
+    public static void SaveAutoUpdateEnabled(bool value)
+    {
+        try
+        {
+            Directory.CreateDirectory(DataDir);
+            var settings = LoadSettings();
+            settings.AutoUpdateEnabled = value;
+            SaveSettings(settings);
+        }
+        catch
+        {
+            // 保存失敗は無視
+        }
+    }
+
+    /// <summary>起動時の更新チェック有効/無効を取得</summary>
+    public static bool GetAutoUpdateCheckOnStartup()
+    {
+        try { return LoadSettings().AutoUpdateCheckOnStartup; }
+        catch { return true; }
+    }
+
+    /// <summary>起動時の更新チェック有効/無効を保存</summary>
+    public static void SaveAutoUpdateCheckOnStartup(bool value)
+    {
+        try
+        {
+            Directory.CreateDirectory(DataDir);
+            var settings = LoadSettings();
+            settings.AutoUpdateCheckOnStartup = value;
+            SaveSettings(settings);
+        }
+        catch
+        {
+            // 保存失敗は無視
+        }
+    }
+
+    /// <summary>スキップ済みの更新バージョンを取得</summary>
+    public static string GetSkippedUpdateVersion()
+    {
+        try { return LoadSettings().SkippedUpdateVersion; }
+        catch { return ""; }
+    }
+
+    /// <summary>スキップ済みの更新バージョンを保存</summary>
+    public static void SaveSkippedUpdateVersion(string value)
+    {
+        try
+        {
+            Directory.CreateDirectory(DataDir);
+            var settings = LoadSettings();
+            settings.SkippedUpdateVersion = value ?? "";
+            SaveSettings(settings);
+        }
+        catch
+        {
+            // 保存失敗は無視
+        }
+    }
+
+    /// <summary>最終更新チェック日時 (UTC) を取得</summary>
+    public static DateTime? GetLastUpdateCheckUtc()
+    {
+        try
+        {
+            var raw = LoadSettings().LastUpdateCheckUtc;
+            return DateTime.TryParse(raw, CultureInfo.InvariantCulture, DateTimeStyles.RoundtripKind, out var parsed)
+                ? parsed
+                : null;
+        }
+        catch
+        {
+            return null;
+        }
+    }
+
+    /// <summary>最終更新チェック日時 (UTC) を保存</summary>
+    public static void SaveLastUpdateCheckUtc(DateTime? value)
+    {
+        try
+        {
+            Directory.CreateDirectory(DataDir);
+            var settings = LoadSettings();
+            settings.LastUpdateCheckUtc = value.HasValue
+                ? value.Value.ToUniversalTime().ToString("O", CultureInfo.InvariantCulture)
+                : "";
             SaveSettings(settings);
         }
         catch
@@ -416,6 +520,10 @@ public static class ThemeService
         public double RightPanelWidth { get; set; }
         public bool ShowRuleOfThirdsGrid { get; set; }
         public bool ShowRuler { get; set; }
+        public bool AutoUpdateEnabled { get; set; } = true;
+        public bool AutoUpdateCheckOnStartup { get; set; } = true;
+        public string SkippedUpdateVersion { get; set; } = "";
+        public string LastUpdateCheckUtc { get; set; } = "";
         public string DefaultExportDirectory { get; set; } = "";
         public string DefaultExportFormat { get; set; } = "PNG";
         public int DefaultJpegQuality { get; set; } = 90;

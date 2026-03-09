@@ -37,6 +37,21 @@
     <sys:String x:Key="Dialog.LogExport.Title">ログの書き出し</sys:String>
     <sys:String x:Key="Dialog.LogExport.Success">ログの書き出しが完了しました。</sys:String>
     <sys:String x:Key="Dialog.LogExport.Failed">ログの書き出しに失敗しました:&#10;{0}</sys:String>
+    <sys:String x:Key="Update.Title">VRCosme - 更新</sys:String>
+    <sys:String x:Key="Update.Heading">新しいバージョンがあります</sys:String>
+    <sys:String x:Key="Update.CurrentVersionLabel">現在のバージョン</sys:String>
+    <sys:String x:Key="Update.LatestVersionLabel">最新バージョン</sys:String>
+    <sys:String x:Key="Update.ReleaseNotes">リリースノート</sys:String>
+    <sys:String x:Key="Update.ReleaseNotesEmpty">リリースノートはありません。</sys:String>
+    <sys:String x:Key="Update.Button.Download">ダウンロードして更新</sys:String>
+    <sys:String x:Key="Update.Button.Skip">このバージョンをスキップ</sys:String>
+    <sys:String x:Key="Update.Button.Later">後で</sys:String>
+    <sys:String x:Key="Update.Button.OpenReleasePage">リリースページを開く</sys:String>
+    <sys:String x:Key="Update.Status.Downloading">ダウンロード中...</sys:String>
+    <sys:String x:Key="Update.NoDownload">ダウンロードが見つかりません。</sys:String>
+    <sys:String x:Key="Update.DownloadFailed">ダウンロードに失敗しました:&#10;{0}</sys:String>
+    <sys:String x:Key="Update.InstallConfirm">インストーラーを起動しますか？&#10;起動すると VRCosme は終了します。</sys:String>
+    <sys:String x:Key="Update.InstallTitle">更新の確認</sys:String>
     <sys:String x:Key="ThirdPartyNotices.NotFound">アプリフォルダーに「{0}」が見つかりません。</sys:String>
     <sys:String x:Key="ThirdPartyNotices.OpenFailed">「{0}」を開けませんでした。&#10;{1}</sys:String>
     <sys:String x:Key="Dialog.SelectExportDirectory.Title">初期書き出しディレクトリを選択</sys:String>
@@ -188,6 +203,9 @@
     <sys:String x:Key="Settings.Button.OpenAutoMaskSettings">AI自動選択の設定を開く...</sys:String>
     <sys:String x:Key="Settings.Option.Grid">グリッド線（三分割法）</sys:String>
     <sys:String x:Key="Settings.Option.Ruler">ルーラー</sys:String>
+    <sys:String x:Key="Settings.Section.Update">更新</sys:String>
+    <sys:String x:Key="Settings.Option.AutoUpdateEnabled">更新機能を有効にする</sys:String>
+    <sys:String x:Key="Settings.Option.AutoUpdateCheckOnStartup">起動時に更新をチェック</sys:String>
     <sys:String x:Key="Settings.RestartRequired">言語設定を反映するにはアプリの再起動が必要です。</sys:String>
     <sys:String x:Key="Settings.RestartTitle">VRCosme</sys:String>
 

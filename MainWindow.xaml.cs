@@ -7,6 +7,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using VRCosme.Models;
 using VRCosme.Services;
+using VRCosme.Services.Update;
 using VRCosme.ViewModels;
 using VRCosme.Views;
 
@@ -18,6 +19,7 @@ public partial class MainWindow : Window
 
     private const double RightPanelMinWidth = 220;
     private const double RightPanelMaxWidth = 600;
+    private bool _updateCheckStarted;
 
     public MainWindow()
     {
@@ -98,6 +100,12 @@ public partial class MainWindow : Window
         GridOverlayCanvas.SizeChanged += (_, _) => UpdateGridOverlay();
         RulerHorizontal.SizeChanged += (_, _) => UpdateRulerOverlay();
         RulerVertical.SizeChanged += (_, _) => UpdateRulerOverlay();
+
+        if (!_updateCheckStarted)
+        {
+            _updateCheckStarted = true;
+            _ = UpdateCheckService.CheckForUpdatesOnStartupAsync(this);
+        }
     }
 
     // ============================================================

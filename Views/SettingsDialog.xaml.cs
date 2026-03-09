@@ -22,6 +22,10 @@ public partial class SettingsDialog : Window
         LoadCurrentSettings();
         JpegQualitySlider.ValueChanged += (_, _) =>
             JpegQualityLabel.Text = ((int)JpegQualitySlider.Value).ToString();
+
+        AutoUpdateEnabledCheckBox.Checked += (_, _) => AutoUpdateCheckOnStartupCheckBox.IsEnabled = true;
+        AutoUpdateEnabledCheckBox.Unchecked += (_, _) => AutoUpdateCheckOnStartupCheckBox.IsEnabled = false;
+        AutoUpdateCheckOnStartupCheckBox.IsEnabled = AutoUpdateEnabledCheckBox.IsChecked == true;
     }
 
     private void LoadCurrentSettings()
@@ -70,6 +74,10 @@ public partial class SettingsDialog : Window
 
         // ルーラー
         RulerCheckBox.IsChecked = ThemeService.GetShowRuler();
+
+        // 更新
+        AutoUpdateEnabledCheckBox.IsChecked = ThemeService.GetAutoUpdateEnabled();
+        AutoUpdateCheckOnStartupCheckBox.IsChecked = ThemeService.GetAutoUpdateCheckOnStartup();
     }
 
     private void BrowseDir_Click(object sender, RoutedEventArgs e)
@@ -122,6 +130,10 @@ public partial class SettingsDialog : Window
 
         // ルーラー
         ThemeService.SaveShowRuler(RulerCheckBox.IsChecked == true);
+
+        // 更新
+        ThemeService.SaveAutoUpdateEnabled(AutoUpdateEnabledCheckBox.IsChecked == true);
+        ThemeService.SaveAutoUpdateCheckOnStartup(AutoUpdateCheckOnStartupCheckBox.IsChecked == true);
 
         if (!string.Equals(selectedLanguage, _currentLanguageCode, StringComparison.OrdinalIgnoreCase))
         {

@@ -138,6 +138,18 @@
                     </Button>
                 </Grid>
 
+                <!-- 更新 -->
+                <TextBlock Text="{DynamicResource Settings.Section.Update}" FontSize="14" FontWeight="SemiBold"
+                           Margin="0,14,0,8" Foreground="{DynamicResource WindowForegroundBrush}"/>
+                <CheckBox x:Name="AutoUpdateEnabledCheckBox"
+                          Content="{DynamicResource Settings.Option.AutoUpdateEnabled}"
+                          Margin="0,0,0,6"
+                          Foreground="{DynamicResource WindowForegroundBrush}" Cursor="Hand"/>
+                <CheckBox x:Name="AutoUpdateCheckOnStartupCheckBox"
+                          Content="{DynamicResource Settings.Option.AutoUpdateCheckOnStartup}"
+                          Margin="0,0,0,6"
+                          Foreground="{DynamicResource WindowForegroundBrush}" Cursor="Hand"/>
+
                 <!-- ──── 区切り ──── -->
                 <Separator Margin="0,6,0,14" Background="{DynamicResource SeparatorBrush}"/>
 

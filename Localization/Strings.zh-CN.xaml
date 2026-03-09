@@ -37,6 +37,21 @@
     <sys:String x:Key="Dialog.LogExport.Title">导出日志</sys:String>
     <sys:String x:Key="Dialog.LogExport.Success">日志导出已完成。</sys:String>
     <sys:String x:Key="Dialog.LogExport.Failed">导出日志失败：&#10;{0}</sys:String>
+    <sys:String x:Key="Update.Title">VRCosme - 更新</sys:String>
+    <sys:String x:Key="Update.Heading">发现新版本</sys:String>
+    <sys:String x:Key="Update.CurrentVersionLabel">当前版本</sys:String>
+    <sys:String x:Key="Update.LatestVersionLabel">最新版本</sys:String>
+    <sys:String x:Key="Update.ReleaseNotes">更新说明</sys:String>
+    <sys:String x:Key="Update.ReleaseNotesEmpty">没有更新说明。</sys:String>
+    <sys:String x:Key="Update.Button.Download">下载并更新</sys:String>
+    <sys:String x:Key="Update.Button.Skip">跳过此版本</sys:String>
+    <sys:String x:Key="Update.Button.Later">稍后</sys:String>
+    <sys:String x:Key="Update.Button.OpenReleasePage">打开发布页面</sys:String>
+    <sys:String x:Key="Update.Status.Downloading">正在下载...</sys:String>
+    <sys:String x:Key="Update.NoDownload">下载不可用。</sys:String>
+    <sys:String x:Key="Update.DownloadFailed">下载失败：&#10;{0}</sys:String>
+    <sys:String x:Key="Update.InstallConfirm">现在启动安装程序吗？&#10;启动后 VRCosme 将退出。</sys:String>
+    <sys:String x:Key="Update.InstallTitle">更新确认</sys:String>
     <sys:String x:Key="ThirdPartyNotices.NotFound">在应用程序文件夹中找不到“{0}”。</sys:String>
     <sys:String x:Key="ThirdPartyNotices.OpenFailed">无法打开“{0}”。&#10;{1}</sys:String>
     <sys:String x:Key="Dialog.SelectExportDirectory.Title">选择默认导出目录</sys:String>
@@ -188,6 +203,9 @@
     <sys:String x:Key="Settings.Button.OpenAutoMaskSettings">打开 AI 自动选择设置...</sys:String>
     <sys:String x:Key="Settings.Option.Grid">三分法网格</sys:String>
     <sys:String x:Key="Settings.Option.Ruler">标尺</sys:String>
+    <sys:String x:Key="Settings.Section.Update">更新</sys:String>
+    <sys:String x:Key="Settings.Option.AutoUpdateEnabled">启用更新功能</sys:String>
+    <sys:String x:Key="Settings.Option.AutoUpdateCheckOnStartup">启动时检查更新</sys:String>
     <sys:String x:Key="Settings.RestartRequired">重启 VRCosme 以应用语言更改。</sys:String>
     <sys:String x:Key="Settings.RestartTitle">VRCosme</sys:String>
 

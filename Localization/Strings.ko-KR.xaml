@@ -37,6 +37,21 @@
     <sys:String x:Key="Dialog.LogExport.Title">로그 내보내기</sys:String>
     <sys:String x:Key="Dialog.LogExport.Success">로그 내보내기가 완료되었습니다.</sys:String>
     <sys:String x:Key="Dialog.LogExport.Failed">로그 내보내기에 실패했습니다:&#10;{0}</sys:String>
+    <sys:String x:Key="Update.Title">VRCosme - 업데이트</sys:String>
+    <sys:String x:Key="Update.Heading">새 버전이 있습니다</sys:String>
+    <sys:String x:Key="Update.CurrentVersionLabel">현재 버전</sys:String>
+    <sys:String x:Key="Update.LatestVersionLabel">최신 버전</sys:String>
+    <sys:String x:Key="Update.ReleaseNotes">릴리스 노트</sys:String>
+    <sys:String x:Key="Update.ReleaseNotesEmpty">릴리스 노트가 없습니다.</sys:String>
+    <sys:String x:Key="Update.Button.Download">다운로드 후 업데이트</sys:String>
+    <sys:String x:Key="Update.Button.Skip">이 버전 건너뛰기</sys:String>
+    <sys:String x:Key="Update.Button.Later">나중에</sys:String>
+    <sys:String x:Key="Update.Button.OpenReleasePage">릴리스 페이지 열기</sys:String>
+    <sys:String x:Key="Update.Status.Downloading">다운로드 중...</sys:String>
+    <sys:String x:Key="Update.NoDownload">다운로드를 사용할 수 없습니다.</sys:String>
+    <sys:String x:Key="Update.DownloadFailed">다운로드에 실패했습니다:&#10;{0}</sys:String>
+    <sys:String x:Key="Update.InstallConfirm">설치 프로그램을 지금 실행할까요?&#10;실행 후 VRCosme가 종료됩니다.</sys:String>
+    <sys:String x:Key="Update.InstallTitle">업데이트 확인</sys:String>
     <sys:String x:Key="ThirdPartyNotices.NotFound">앱 폴더에서 "{0}" 파일을 찾을 수 없습니다.</sys:String>
     <sys:String x:Key="ThirdPartyNotices.OpenFailed">"{0}" 파일을 열지 못했습니다.&#10;{1}</sys:String>
     <sys:String x:Key="Dialog.SelectExportDirectory.Title">기본 내보내기 폴더 선택</sys:String>
@@ -188,6 +203,9 @@
     <sys:String x:Key="Settings.Button.OpenAutoMaskSettings">AI 자동 선택 설정 열기...</sys:String>
     <sys:String x:Key="Settings.Option.Grid">삼분할 그리드</sys:String>
     <sys:String x:Key="Settings.Option.Ruler">눈금자</sys:String>
+    <sys:String x:Key="Settings.Section.Update">업데이트</sys:String>
+    <sys:String x:Key="Settings.Option.AutoUpdateEnabled">업데이트 기능 사용</sys:String>
+    <sys:String x:Key="Settings.Option.AutoUpdateCheckOnStartup">시작 시 업데이트 확인</sys:String>
     <sys:String x:Key="Settings.RestartRequired">언어 변경을 적용하려면 VRCosme를 다시 시작하세요.</sys:String>
     <sys:String x:Key="Settings.RestartTitle">VRCosme</sys:String>
 
