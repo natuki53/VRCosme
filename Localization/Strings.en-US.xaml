@@ -37,6 +37,21 @@
     <sys:String x:Key="Dialog.LogExport.Title">Export Logs</sys:String>
     <sys:String x:Key="Dialog.LogExport.Success">Log export completed successfully.</sys:String>
     <sys:String x:Key="Dialog.LogExport.Failed">Failed to export logs:&#10;{0}</sys:String>
+    <sys:String x:Key="Update.Title">VRCosme - Update</sys:String>
+    <sys:String x:Key="Update.Heading">A new version is available</sys:String>
+    <sys:String x:Key="Update.CurrentVersionLabel">Current version</sys:String>
+    <sys:String x:Key="Update.LatestVersionLabel">Latest version</sys:String>
+    <sys:String x:Key="Update.ReleaseNotes">Release notes</sys:String>
+    <sys:String x:Key="Update.ReleaseNotesEmpty">No release notes.</sys:String>
+    <sys:String x:Key="Update.Button.Download">Download and Update</sys:String>
+    <sys:String x:Key="Update.Button.Skip">Skip this version</sys:String>
+    <sys:String x:Key="Update.Button.Later">Later</sys:String>
+    <sys:String x:Key="Update.Button.OpenReleasePage">Open release page</sys:String>
+    <sys:String x:Key="Update.Status.Downloading">Downloading...</sys:String>
+    <sys:String x:Key="Update.NoDownload">Download is not available.</sys:String>
+    <sys:String x:Key="Update.DownloadFailed">Download failed:&#10;{0}</sys:String>
+    <sys:String x:Key="Update.InstallConfirm">Start the installer now?&#10;VRCosme will close after launching.</sys:String>
+    <sys:String x:Key="Update.InstallTitle">Update confirmation</sys:String>
     <sys:String x:Key="ThirdPartyNotices.NotFound">Could not find "{0}" in the app folder.</sys:String>
     <sys:String x:Key="ThirdPartyNotices.OpenFailed">Failed to open "{0}".&#10;{1}</sys:String>
     <sys:String x:Key="Dialog.SelectExportDirectory.Title">Select default export directory</sys:String>
@@ -188,6 +203,9 @@
     <sys:String x:Key="Settings.Button.OpenAutoMaskSettings">Open AI Auto Select Settings...</sys:String>
     <sys:String x:Key="Settings.Option.Grid">Rule of Thirds Grid</sys:String>
     <sys:String x:Key="Settings.Option.Ruler">Ruler</sys:String>
+    <sys:String x:Key="Settings.Section.Update">Updates</sys:String>
+    <sys:String x:Key="Settings.Option.AutoUpdateEnabled">Enable update checks</sys:String>
+    <sys:String x:Key="Settings.Option.AutoUpdateCheckOnStartup">Check for updates on startup</sys:String>
     <sys:String x:Key="Settings.RestartRequired">Restart VRCosme to apply the language change.</sys:String>
     <sys:String x:Key="Settings.RestartTitle">VRCosme</sys:String>
 

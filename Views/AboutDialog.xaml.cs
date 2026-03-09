@@ -15,15 +15,36 @@ public partial class AboutDialog : Window
     {
         InitializeComponent();
 
-        var version = Assembly.GetEntryAssembly()?
+        var rawVersion = Assembly.GetEntryAssembly()?
             .GetCustomAttribute<AssemblyInformationalVersionAttribute>()?
             .InformationalVersion
             ?? Assembly.GetEntryAssembly()?.GetName().Version?.ToString()
             ?? LocalizationService.GetString("About.VersionUnknown", "Unknown");
+        var version = NormalizeDisplayVersion(rawVersion);
 
         VersionText.Text = LocalizationService.Format("About.VersionFormat", "Version {0}", version);
 
         ApplyThemeIcons();
+    }
+
+    private static string NormalizeDisplayVersion(string rawVersion)
+    {
+        if (string.IsNullOrWhiteSpace(rawVersion))
+            return rawVersion;
+
+        var value = rawVersion.Trim();
+        if (value.StartsWith("v", StringComparison.OrdinalIgnoreCase))
+            value = value[1..];
+
+        var metadataIndex = value.IndexOf('+');
+        if (metadataIndex >= 0)
+            value = value[..metadataIndex];
+
+        var prereleaseIndex = value.IndexOf('-');
+        if (prereleaseIndex >= 0)
+            value = value[..prereleaseIndex];
+
+        return string.IsNullOrWhiteSpace(value) ? rawVersion : value;
     }
 
     private void ApplyThemeIcons()
