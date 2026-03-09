@@ -11,6 +11,8 @@ namespace VRCosme.ViewModels;
 public partial class MainViewModel
 {
     private const string SessionFileExtension = "vrcproj";
+    private const double StateCompareEpsilon = 0.0001;
+    private EditState? _cleanEditState;
 
     [RelayCommand]
     private async Task OpenSessionAsync()
@@ -57,7 +59,11 @@ public partial class MainViewModel
 
     public bool ConfirmDiscardChangesOrSaveIfNeeded()
     {
-        if (!HasImage || !IsDirty)
+        if (!HasImage)
+            return true;
+
+        ReconcileDirtyStateIfNeeded();
+        if (!IsDirty)
             return true;
 
         var dialog = new UnsavedChangesDialog();
@@ -254,6 +260,7 @@ public partial class MainViewModel
             CropY = snapshot.CropY,
             CropWidth = snapshot.CropWidth,
             CropHeight = snapshot.CropHeight,
+            IsCropApplied = snapshot.IsCropApplied,
             SelectedCropRatioIndex = snapshot.SelectedCropRatioIndex,
             RotationDegrees = snapshot.RotationDegrees,
             FlipHorizontal = snapshot.FlipHorizontal,
@@ -267,6 +274,9 @@ public partial class MainViewModel
     private static EditState BuildEditState(SessionDocument document)
     {
         var layers = document.MaskLayers.Select(CloneMaskLayerState).ToList();
+        var isCropApplied = document.Version <= 1
+            ? document.IsCropActive
+            : document.IsCropApplied;
         return new EditState(
             document.Adjustments,
             document.IsCropActive,
@@ -274,6 +284,7 @@ public partial class MainViewModel
             document.CropY,
             document.CropWidth,
             document.CropHeight,
+            isCropApplied,
             document.SelectedCropRatioIndex,
             document.RotationDegrees,
             document.FlipHorizontal,
@@ -296,6 +307,7 @@ public partial class MainViewModel
     private void MarkCurrentSessionClean(string? sessionPath)
     {
         CurrentSessionPath = sessionPath;
+        _cleanEditState = HasImage ? CreateSnapshot() : null;
         IsDirty = false;
     }
 
@@ -318,4 +330,100 @@ public partial class MainViewModel
             return null;
         }
     }
+
+    private void ReconcileDirtyStateIfNeeded()
+    {
+        if (!IsDirty || !HasImage || _cleanEditState is null || _isRestoringState)
+            return;
+
+        var current = CreateSnapshot();
+        if (AreEditStatesEquivalent(current, _cleanEditState))
+            IsDirty = false;
+    }
+
+    private static bool AreEditStatesEquivalent(EditState a, EditState b)
+    {
+        if (!AreAdjustmentValuesEquivalent(a.Adjustments, b.Adjustments))
+            return false;
+
+        bool aCropActive = a.IsCropActive;
+        bool bCropActive = b.IsCropActive;
+        bool aCropApplied = a.IsCropActive && a.IsCropApplied;
+        bool bCropApplied = b.IsCropActive && b.IsCropApplied;
+
+        if (aCropActive != bCropActive
+            || aCropApplied != bCropApplied
+            || a.RotationDegrees != b.RotationDegrees
+            || a.FlipHorizontal != b.FlipHorizontal
+            || a.FlipVertical != b.FlipVertical
+            || a.IsMaskEnabled != b.IsMaskEnabled
+            || a.SelectedMaskLayerIndex != b.SelectedMaskLayerIndex)
+        {
+            return false;
+        }
+
+        // Crop が無効のときは座標/比率の保持値差分は未保存判定に使わない。
+        if (aCropActive
+            && (a.SelectedCropRatioIndex != b.SelectedCropRatioIndex
+                || !AreClose(a.CropX, b.CropX)
+                || !AreClose(a.CropY, b.CropY)
+                || !AreClose(a.CropWidth, b.CropWidth)
+                || !AreClose(a.CropHeight, b.CropHeight)))
+        {
+            return false;
+        }
+
+        if (a.MaskLayers.Count != b.MaskLayers.Count)
+            return false;
+
+        for (int i = 0; i < a.MaskLayers.Count; i++)
+        {
+            if (!AreMaskLayerStatesEquivalent(a.MaskLayers[i], b.MaskLayers[i]))
+                return false;
+        }
+
+        return true;
+    }
+
+    private static bool AreMaskLayerStatesEquivalent(MaskLayerState a, MaskLayerState b)
+    {
+        if (!string.Equals(a.Name, b.Name, StringComparison.Ordinal)
+            || a.Width != b.Width
+            || a.Height != b.Height
+            || a.NonZeroCount != b.NonZeroCount
+            || !AreAdjustmentValuesEquivalent(a.Adjustments, b.Adjustments)
+            || a.NaturalizeBoundary != b.NaturalizeBoundary
+            || a.MaskData.Length != b.MaskData.Length)
+        {
+            return false;
+        }
+
+        for (int i = 0; i < a.MaskData.Length; i++)
+        {
+            if (a.MaskData[i] != b.MaskData[i])
+                return false;
+        }
+
+        return true;
+    }
+
+    private static bool AreAdjustmentValuesEquivalent(AdjustmentValues a, AdjustmentValues b)
+    {
+        return AreClose(a.Brightness, b.Brightness)
+            && AreClose(a.Contrast, b.Contrast)
+            && AreClose(a.Gamma, b.Gamma)
+            && AreClose(a.Exposure, b.Exposure)
+            && AreClose(a.Saturation, b.Saturation)
+            && AreClose(a.Temperature, b.Temperature)
+            && AreClose(a.Tint, b.Tint)
+            && AreClose(a.Shadows, b.Shadows)
+            && AreClose(a.Highlights, b.Highlights)
+            && AreClose(a.Clarity, b.Clarity)
+            && AreClose(a.Blur, b.Blur)
+            && AreClose(a.Sharpen, b.Sharpen)
+            && AreClose(a.Vignette, b.Vignette);
+    }
+
+    private static bool AreClose(double a, double b) =>
+        Math.Abs(a - b) <= StateCompareEpsilon;
 }

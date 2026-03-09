@@ -47,12 +47,43 @@ public partial class MainViewModel
     partial void OnShowRulerChanged(bool value) =>
         ThemeService.SaveShowRuler(value);
 
+    partial void OnIsCropActiveChanged(bool value)
+    {
+        if (!value)
+            InvalidateCropApplyState();
+    }
+
+    partial void OnCropXChanged(double value) => InvalidateCropApplyState();
+    partial void OnCropYChanged(double value) => InvalidateCropApplyState();
+    partial void OnCropWidthChanged(double value) => InvalidateCropApplyState();
+    partial void OnCropHeightChanged(double value) => InvalidateCropApplyState();
+
+    private void InvalidateCropApplyState()
+    {
+        if (_isRestoringState || !HasImage)
+            return;
+
+        if (IsCropApplied)
+            IsCropApplied = false;
+    }
+
     partial void OnSelectedCropRatioChanged(CropRatioItem value)
     {
         if (_isRelocalizing) return;
         if (!HasImage) return;
         PushUndoSnapshot();
-        if (value.IsFree) { IsCropActive = false; }
-        else { IsCropActive = true; InitializeCropRect(value); }
+        if (value.IsNone)
+        {
+            IsCropActive = false;
+        }
+        else
+        {
+            IsCropActive = true;
+            if (value.IsFree)
+                InitializeFreeCropRect();
+            else
+                InitializeCropRect(value);
+        }
+        InvalidateCropApplyState();
     }
 }

@@ -6,7 +6,7 @@ namespace VRCosme.Services;
 
 public static class SessionService
 {
-    private const int CurrentVersion = 1;
+    private const int CurrentVersion = 2;
     private const string AppDirectoryName = "VRCosme";
     private const string SessionDirectoryName = "Sessions";
     private static readonly JsonSerializerOptions SerializerOptions = new()

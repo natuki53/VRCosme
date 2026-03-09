@@ -33,6 +33,15 @@ public partial class MainViewModel
         CropHeight = cropH;
     }
 
+    public void InitializeFreeCropRect()
+    {
+        if (_transformedImage == null) return;
+        CropX = 0;
+        CropY = 0;
+        CropWidth = ImageWidth;
+        CropHeight = ImageHeight;
+    }
+
     // ───────── 画像読み込み ─────────
 
     public async Task LoadImageAsync(string filePath, bool confirmDiscardUnsavedChanges = true)
@@ -155,7 +164,13 @@ public partial class MainViewModel
             ImageHeight = transformed.Height;
             PreviewScale = (double)preview.Width / transformed.Width;
 
-            if (IsCropActive) InitializeCropRect(SelectedCropRatio);
+            if (IsCropActive)
+            {
+                if (SelectedCropRatio.IsFree)
+                    InitializeFreeCropRect();
+                else
+                    InitializeCropRect(SelectedCropRatio);
+            }
 
             await UpdatePreviewAsync();
             await GenerateBeforeBitmapAsync();

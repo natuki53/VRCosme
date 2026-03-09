@@ -48,7 +48,7 @@ public partial class MainViewModel
         var mask = CloneMaskSnapshot();
         return new EditState(
             BuildAdjustmentValues(),
-            IsCropActive, CropX, CropY, CropWidth, CropHeight, cropIndex,
+            IsCropActive, CropX, CropY, CropWidth, CropHeight, IsCropApplied, cropIndex,
             _rotationDegrees, _flipHorizontal, _flipVertical,
             IsMaskEnabled, mask.SelectedIndex, mask.Layers);
     }
@@ -83,6 +83,7 @@ public partial class MainViewModel
             CropY = state.CropY;
             CropWidth = state.CropWidth;
             CropHeight = state.CropHeight;
+            IsCropApplied = state.IsCropApplied;
         }
         finally
         {

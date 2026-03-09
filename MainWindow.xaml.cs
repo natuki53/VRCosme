@@ -46,10 +46,12 @@ public partial class MainWindow : Window
         {
             if (args.PropertyName is nameof(MainViewModel.IsCropActive)
                 or nameof(MainViewModel.CropX) or nameof(MainViewModel.CropY)
-                or nameof(MainViewModel.CropWidth) or nameof(MainViewModel.CropHeight))
+                or nameof(MainViewModel.CropWidth) or nameof(MainViewModel.CropHeight)
+                or nameof(MainViewModel.IsCropApplied))
             {
                 UpdateCropOverlay();
                 UpdateGridOverlay();
+                UpdatePreviewCropClips();
             }
 
             if (args.PropertyName == nameof(MainViewModel.ShowRuleOfThirdsGrid))
@@ -65,6 +67,7 @@ public partial class MainWindow : Window
                     _maskAdjustmentsDialog.Close();
                 CancelMaskLasso();
                 ResetZoomPan();
+                UpdatePreviewCropClips();
             }
 
             if ((args.PropertyName is nameof(MainViewModel.IsMaskEditing)
@@ -291,6 +294,7 @@ public partial class MainWindow : Window
         UpdateMaskLassoOverlay();
         UpdateGridOverlay();
         UpdateRulerOverlay();
+        UpdatePreviewCropClips();
         if (ViewModel.CompareMode == CompareMode.Split)
             UpdateSplitView();
     }
@@ -302,6 +306,7 @@ public partial class MainWindow : Window
         UpdateMaskLassoOverlay();
         UpdateGridOverlay();
         UpdateRulerOverlay();
+        UpdatePreviewCropClips();
         if (ViewModel.CompareMode == CompareMode.Split)
             UpdateSplitView();
     }

@@ -2,6 +2,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using VRCosme.ViewModels;
 
@@ -28,14 +29,14 @@ public partial class MainWindow
         {
             case CompareMode.After:
                 BeforePreviewImage.Visibility = Visibility.Collapsed;
-                BeforePreviewImage.Clip = null;
                 SplitLineCanvas.Visibility = Visibility.Collapsed;
+                UpdatePreviewCropClips();
                 break;
 
             case CompareMode.Before:
                 BeforePreviewImage.Visibility = Visibility.Visible;
-                BeforePreviewImage.Clip = null;
                 SplitLineCanvas.Visibility = Visibility.Collapsed;
+                UpdatePreviewCropClips();
                 break;
 
             case CompareMode.Split:
@@ -112,9 +113,7 @@ public partial class MainWindow
 
         double splitFraction = ViewModel.SplitPosition;
         double splitX = w * splitFraction;
-
-        // Before画像を左半分にクリップ (左=Before, 右=After)
-        BeforePreviewImage.Clip = new RectangleGeometry(new Rect(0, 0, splitX, h));
+        UpdatePreviewCropClips();
 
         // 分割線を配置
         if (_splitLine != null)
@@ -144,6 +143,78 @@ public partial class MainWindow
                 Canvas.SetLeft(_splitKnob, offset.X - knobW / 2);
                 Canvas.SetTop(_splitKnob, canvasH / 2 - knobH / 2);
             }
+        }
+    }
+
+    private Rect? GetAppliedCropLocalRect(Image targetImage)
+    {
+        if (!ViewModel.IsCropActive || !ViewModel.IsCropApplied || ViewModel.ImageWidth <= 0 || ViewModel.ImageHeight <= 0)
+            return null;
+        if (targetImage.Source is not BitmapSource source)
+            return null;
+
+        double cw = targetImage.ActualWidth;
+        double ch = targetImage.ActualHeight;
+        if (cw <= 0 || ch <= 0 || source.PixelWidth <= 0 || source.PixelHeight <= 0)
+            return null;
+
+        double imgA = (double)source.PixelWidth / source.PixelHeight;
+        double ctlA = cw / ch;
+        double rw, rh;
+        if (imgA > ctlA) { rw = cw; rh = cw / imgA; }
+        else { rh = ch; rw = ch * imgA; }
+
+        double localX = (cw - rw) / 2;
+        double localY = (ch - rh) / 2;
+        double scaleX = rw / ViewModel.ImageWidth;
+        double scaleY = rh / ViewModel.ImageHeight;
+
+        var cropRect = new Rect(
+            localX + ViewModel.CropX * scaleX,
+            localY + ViewModel.CropY * scaleY,
+            Math.Max(1, ViewModel.CropWidth * scaleX),
+            Math.Max(1, ViewModel.CropHeight * scaleY));
+
+        var imageRect = new Rect(localX, localY, rw, rh);
+        cropRect.Intersect(imageRect);
+        return cropRect.IsEmpty ? null : cropRect;
+    }
+
+    private void UpdatePreviewCropClips()
+    {
+        var afterCropRect = GetAppliedCropLocalRect(PreviewImage);
+        PreviewImage.Clip = afterCropRect is Rect afterRect
+            ? new RectangleGeometry(afterRect)
+            : null;
+
+        var beforeCropRect = GetAppliedCropLocalRect(BeforePreviewImage);
+        switch (ViewModel.CompareMode)
+        {
+            case CompareMode.Split:
+            {
+                double w = BeforePreviewImage.ActualWidth;
+                double h = BeforePreviewImage.ActualHeight;
+                if (w <= 0 || h <= 0)
+                {
+                    BeforePreviewImage.Clip = null;
+                    return;
+                }
+
+                var splitRect = new Rect(0, 0, w * ViewModel.SplitPosition, h);
+                if (beforeCropRect is Rect cropRect)
+                    splitRect.Intersect(cropRect);
+
+                BeforePreviewImage.Clip = new RectangleGeometry(splitRect);
+                break;
+            }
+            case CompareMode.Before:
+                BeforePreviewImage.Clip = beforeCropRect is Rect beforeRect
+                    ? new RectangleGeometry(beforeRect)
+                    : null;
+                break;
+            default:
+                BeforePreviewImage.Clip = null;
+                break;
         }
     }
 
