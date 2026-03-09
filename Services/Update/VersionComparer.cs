@@ -41,7 +41,11 @@ public static class VersionComparer
         if (!TryNormalizeVersion(raw, out normalized))
             return false;
 
-        return Version.TryParse(normalized, out version);
+        if (!Version.TryParse(normalized, out var parsed) || parsed is null)
+            return false;
+
+        version = parsed;
+        return true;
     }
 
     private static bool TryNormalizeVersion(string? raw, out string normalized)
