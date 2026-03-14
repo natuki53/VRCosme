@@ -150,6 +150,7 @@
     <sys:String x:Key="Button.RotateCounterClockwise">↺ Left 90°</sys:String>
     <sys:String x:Key="Button.FlipHorizontal">↔ Horizontal</sys:String>
     <sys:String x:Key="Button.FlipVertical">↕ Vertical</sys:String>
+    <sys:String x:Key="Button.ApplyCrop">Apply Crop</sys:String>
     <sys:String x:Key="Button.ResetCrop">Reset Crop</sys:String>
     <sys:String x:Key="Button.SelectSubjectWip">Select Subject (Coming soon)</sys:String>
     <sys:String x:Key="Button.AdjustBackgroundWip">Adjust Background Only (Coming soon)</sys:String>
@@ -256,6 +257,7 @@
     <sys:String x:Key="About.ThirdPartyNotices">Open Third-Party Notices</sys:String>
 
     <sys:String x:Key="Crop.None">None</sys:String>
+    <sys:String x:Key="Crop.Free">Free</sys:String>
     <sys:String x:Key="Crop.Square">1:1 (Square)</sys:String>
     <sys:String x:Key="Crop.Wide16by9">16:9 (Landscape)</sys:String>
     <sys:String x:Key="Crop.Tall9by16">9:16 (Portrait)</sys:String>

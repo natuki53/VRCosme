@@ -5,7 +5,7 @@ namespace VRCosme.Models;
 /// </summary>
 public sealed class SessionDocument
 {
-    public int Version { get; set; } = 1;
+    public int Version { get; set; } = 2;
     public string SourceFilePath { get; set; } = "";
     public string SourceFilePathRelative { get; set; } = "";
 
@@ -15,6 +15,7 @@ public sealed class SessionDocument
     public double CropY { get; set; }
     public double CropWidth { get; set; }
     public double CropHeight { get; set; }
+    public bool IsCropApplied { get; set; }
     public int SelectedCropRatioIndex { get; set; }
     public int RotationDegrees { get; set; }
     public bool FlipHorizontal { get; set; }

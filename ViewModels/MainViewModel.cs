@@ -38,6 +38,7 @@ public partial class MainViewModel : ObservableObject
     [NotifyPropertyChangedFor(nameof(CanRedo))]
     [NotifyCanExecuteChangedFor(nameof(SaveSessionCommand))]
     [NotifyCanExecuteChangedFor(nameof(SaveSessionAsCommand))]
+    [NotifyCanExecuteChangedFor(nameof(ApplyCropCommand))]
     private string? _sourceFilePath;
 
     [ObservableProperty] private bool _isProcessing;
@@ -68,11 +69,16 @@ public partial class MainViewModel : ObservableObject
     // ───────── トリミング ─────────
 
     [ObservableProperty] private CropRatioItem _selectedCropRatio;
-    [ObservableProperty] private bool _isCropActive;
+    [ObservableProperty]
+    [NotifyCanExecuteChangedFor(nameof(ApplyCropCommand))]
+    private bool _isCropActive;
     [ObservableProperty] private double _cropX;
     [ObservableProperty] private double _cropY;
     [ObservableProperty] private double _cropWidth;
     [ObservableProperty] private double _cropHeight;
+    [ObservableProperty]
+    [NotifyCanExecuteChangedFor(nameof(ApplyCropCommand))]
+    private bool _isCropApplied;
 
     // ───────── 比較モード ─────────
 
@@ -211,6 +217,7 @@ public partial class MainViewModel : ObservableObject
         new(LocalizationService.GetString("Crop.Wide4by3", "4:3 (Landscape)"), 4, 3),
         new(LocalizationService.GetString("Crop.Tall3by4X", "3:4 (Portrait, good for X posts)"), 3, 4),
         new(LocalizationService.GetString("Crop.Header3by1", "3:1 (Header)"), 3, 1),
+        new(LocalizationService.GetString("Crop.Free", "Free"), -1, -1),
     ];
 
     // ───────── 補正値ヘルパー ─────────

@@ -150,6 +150,7 @@
     <sys:String x:Key="Button.RotateCounterClockwise">↺ 左90°</sys:String>
     <sys:String x:Key="Button.FlipHorizontal">↔ 左右</sys:String>
     <sys:String x:Key="Button.FlipVertical">↕ 上下</sys:String>
+    <sys:String x:Key="Button.ApplyCrop">トリミングを適用</sys:String>
     <sys:String x:Key="Button.ResetCrop">トリミングをリセット</sys:String>
     <sys:String x:Key="Button.SelectSubjectWip">被写体を選択 (準備中)</sys:String>
     <sys:String x:Key="Button.AdjustBackgroundWip">背景のみ補正 (準備中)</sys:String>
@@ -256,6 +257,7 @@
     <sys:String x:Key="About.ThirdPartyNotices">サードパーティライセンスを開く</sys:String>
 
     <sys:String x:Key="Crop.None">なし</sys:String>
+    <sys:String x:Key="Crop.Free">自由</sys:String>
     <sys:String x:Key="Crop.Square">1:1 (正方形)</sys:String>
     <sys:String x:Key="Crop.Wide16by9">16:9 (横長)</sys:String>
     <sys:String x:Key="Crop.Tall9by16">9:16 (縦長)</sys:String>

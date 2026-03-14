@@ -10,6 +10,7 @@ public record EditState(
     double CropY,
     double CropWidth,
     double CropHeight,
+    bool IsCropApplied,
     int SelectedCropRatioIndex,
     int RotationDegrees,
     bool FlipHorizontal,

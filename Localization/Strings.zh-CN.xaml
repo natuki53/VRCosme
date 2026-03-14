@@ -150,6 +150,7 @@
     <sys:String x:Key="Button.RotateCounterClockwise">↺ 左转 90°</sys:String>
     <sys:String x:Key="Button.FlipHorizontal">↔ 水平翻转</sys:String>
     <sys:String x:Key="Button.FlipVertical">↕ 垂直翻转</sys:String>
+    <sys:String x:Key="Button.ApplyCrop">应用裁剪</sys:String>
     <sys:String x:Key="Button.ResetCrop">重置裁剪</sys:String>
     <sys:String x:Key="Button.SelectSubjectWip">选择主体 (开发中)</sys:String>
     <sys:String x:Key="Button.AdjustBackgroundWip">仅调整背景 (开发中)</sys:String>
@@ -256,6 +257,7 @@
     <sys:String x:Key="About.ThirdPartyNotices">打开第三方许可说明</sys:String>
 
     <sys:String x:Key="Crop.None">无</sys:String>
+    <sys:String x:Key="Crop.Free">自由</sys:String>
     <sys:String x:Key="Crop.Square">1:1 (正方形)</sys:String>
     <sys:String x:Key="Crop.Wide16by9">16:9 (横向)</sys:String>
     <sys:String x:Key="Crop.Tall9by16">9:16 (纵向)</sys:String>

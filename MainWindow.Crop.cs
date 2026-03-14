@@ -58,7 +58,9 @@ public partial class MainWindow
 
     private void UpdateCropOverlay()
     {
-        if (!ViewModel.IsCropActive || _dimOverlay == null || _cropBorder == null)
+        bool isCropEditing = ViewModel.IsCropActive && !ViewModel.IsCropApplied;
+        CropCanvas.IsHitTestVisible = isCropEditing;
+        if (!isCropEditing || _dimOverlay == null || _cropBorder == null)
         {
             SetOverlayVisibility(Visibility.Collapsed);
             return;
@@ -109,7 +111,7 @@ public partial class MainWindow
 
     private void CropCanvas_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
     {
-        if (!ViewModel.IsCropActive) return;
+        if (!ViewModel.IsCropActive || ViewModel.IsCropApplied) return;
         var pos = e.GetPosition(CropCanvas);
         var cropScreen = GetCropScreenRect();
         _dragMode = HitTest(pos, cropScreen);
@@ -126,7 +128,7 @@ public partial class MainWindow
 
     private void CropCanvas_MouseMove(object sender, MouseEventArgs e)
     {
-        if (!ViewModel.IsCropActive) return;
+        if (!ViewModel.IsCropActive || ViewModel.IsCropApplied) return;
         var pos = e.GetPosition(CropCanvas);
 
         if (_dragMode == DragMode.None)

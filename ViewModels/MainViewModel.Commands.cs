@@ -66,11 +66,12 @@ public partial class MainViewModel
 
         IsProcessing = true;
         StatusMessage = LocalizationService.GetString("Status.Exporting", "Exporting...");
-        LogService.Info($"書き出し開始: {dialog.FileName} (形式={SelectedExportFormat}, クロップ={IsCropActive})");
+        LogService.Info(
+            $"書き出し開始: {dialog.FileName} (形式={SelectedExportFormat}, クロップ={IsCropActive}, 適用済み={IsCropApplied})");
         try
         {
             var p = BuildParams();
-            var cropActive = IsCropActive;
+            var cropActive = IsCropActive && IsCropApplied;
             var cropRect = new SixLabors.ImageSharp.Rectangle(
                 (int)CropX, (int)CropY, (int)CropWidth, (int)CropHeight);
             var path = dialog.FileName;
@@ -352,6 +353,16 @@ public partial class MainViewModel
     {
         PushUndoSnapshot();
         SelectedCropRatio = CropRatios[0];
+    }
+
+    private bool CanApplyCrop() => HasImage && IsCropActive && !IsCropApplied;
+
+    [RelayCommand(CanExecute = nameof(CanApplyCrop))]
+    private void ApplyCrop()
+    {
+        PushUndoSnapshot();
+        IsCropApplied = true;
+        LogService.Info($"トリミング適用: X={CropX:F1}, Y={CropY:F1}, W={CropWidth:F1}, H={CropHeight:F1}");
     }
 
     [RelayCommand]

@@ -2,7 +2,7 @@
 ; 自己完結型の単体 exe をインストーラーで配布する
 
 #define MyAppName "VRCosme"
-#define MyAppVersion "1.1.0"
+#define MyAppVersion "1.2.0"
 #define MyAppPublisher "VRCosme"
 #define MyAppExeName "VRCosme.exe"
 
@@ -29,6 +29,7 @@ ArchitecturesInstallIn64BitMode=x64compatible
 UninstallDisplayIcon={app}\{#MyAppExeName}
 LicenseFile=LICENSE.txt
 MinVersion=10.0
+CloseApplications=yes
 
 [Languages]
 Name: "english"; MessagesFile: "compiler:Default.isl"; LicenseFile: "LICENSE.en-US.txt"
@@ -56,8 +57,8 @@ Name: "{autodesktop}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; Tasks: de
 Filename: "{app}\{#MyAppExeName}"; Description: "{cm:LaunchProgram,{#MyAppName}}"; Flags: nowait postinstall skipifsilent
 
 [UninstallDelete]
-; アンインストール時にアプリフォルダを完全に削除
-Type: filesandordirs; Name: "{app}"
+; 空になったインストール先フォルダだけを削除する
+Type: dirifempty; Name: "{app}"
 
 [Code]
 procedure InitializeWizard;

@@ -150,6 +150,7 @@
     <sys:String x:Key="Button.RotateCounterClockwise">↺ 왼쪽 90°</sys:String>
     <sys:String x:Key="Button.FlipHorizontal">↔ 좌우 반전</sys:String>
     <sys:String x:Key="Button.FlipVertical">↕ 상하 반전</sys:String>
+    <sys:String x:Key="Button.ApplyCrop">자르기 적용</sys:String>
     <sys:String x:Key="Button.ResetCrop">자르기 초기화</sys:String>
     <sys:String x:Key="Button.SelectSubjectWip">피사체 선택 (준비 중)</sys:String>
     <sys:String x:Key="Button.AdjustBackgroundWip">배경만 보정 (준비 중)</sys:String>
@@ -256,6 +257,7 @@
     <sys:String x:Key="About.ThirdPartyNotices">서드파티 라이선스 열기</sys:String>
 
     <sys:String x:Key="Crop.None">없음</sys:String>
+    <sys:String x:Key="Crop.Free">자유</sys:String>
     <sys:String x:Key="Crop.Square">1:1 (정사각형)</sys:String>
     <sys:String x:Key="Crop.Wide16by9">16:9 (가로)</sys:String>
     <sys:String x:Key="Crop.Tall9by16">9:16 (세로)</sys:String>
