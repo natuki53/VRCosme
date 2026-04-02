@@ -148,6 +148,7 @@
 
     <sys:String x:Key="Button.ResetAdjustments">Reset Adjustments</sys:String>
     <sys:String x:Key="Button.ApplyPresetWip">Apply Preset</sys:String>
+    <sys:String x:Key="Button.RevertPreset">Revert Preset</sys:String>
     <sys:String x:Key="Button.RotateClockwise">↻ Right 90°</sys:String>
     <sys:String x:Key="Button.RotateCounterClockwise">↺ Left 90°</sys:String>
     <sys:String x:Key="Button.FlipHorizontal">↔ Horizontal</sys:String>

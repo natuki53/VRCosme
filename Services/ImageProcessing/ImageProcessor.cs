@@ -26,7 +26,7 @@ public record AdjustmentParams(
     float Clarity,       // -100–100 (0 = 変化なし)
     float Sharpen,       // 0–100 (0 = 変化なし)
     float Vignette,      // -100–100 (0 = 変化なし)
-    float Blur = 0f      // 0–100 (0 = 変化なし)
+    float Blur = 0f      // 0–300 (0 = 変化なし)
 )
 {
     public static AdjustmentParams Default { get; } =

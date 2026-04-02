@@ -107,6 +107,13 @@ public partial class MainViewModel : ObservableObject
     private AdjustmentValues? _lastAppliedPresetAdjustments;
     private string? _presetBaseKey;
 
+    private void ClearPresetApplicationContext()
+    {
+        _presetBaseAdjustments = null;
+        _lastAppliedPresetAdjustments = null;
+        _presetBaseKey = null;
+    }
+
     public bool CanUndo => _undoStack.Count > 0 && HasImage;
     public bool CanRedo => _redoStack.Count > 0 && HasImage;
 
@@ -133,7 +140,7 @@ public partial class MainViewModel : ObservableObject
     [ObservableProperty]
     [NotifyCanExecuteChangedFor(nameof(ApplyPresetCommand))]
     private PresetItem? _selectedPreset;
-    [ObservableProperty] private double _presetStrength = 100.0;
+    [ObservableProperty] private double _presetStrength = 50.0;
 
     // ───────── 算出プロパティ ─────────
 
@@ -168,6 +175,7 @@ public partial class MainViewModel : ObservableObject
         _jpegQuality = ThemeService.GetDefaultJpegQuality();
         Presets = BuildPresets();
         _selectedPreset = Presets.FirstOrDefault();
+        SyncPresetSelectionFlags();
         LoadRecentFiles();
     }
 
@@ -282,6 +290,12 @@ public partial class MainViewModel : ObservableObject
             Adjustments = new AdjustmentValues(-2, 24, 0.96, 0.0, 4, 0, 0, -20, -10, 22, 0, 20, -18)
         },
     ];
+
+    private void SyncPresetSelectionFlags()
+    {
+        foreach (var preset in Presets)
+            preset.IsSelected = ReferenceEquals(preset, SelectedPreset);
+    }
 
     // ───────── 補正値ヘルパー ─────────
 

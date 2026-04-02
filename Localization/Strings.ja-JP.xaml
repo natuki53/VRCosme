@@ -148,6 +148,7 @@
 
     <sys:String x:Key="Button.ResetAdjustments">補正をリセット</sys:String>
     <sys:String x:Key="Button.ApplyPresetWip">プリセットを適用</sys:String>
+    <sys:String x:Key="Button.RevertPreset">適用前に戻す</sys:String>
     <sys:String x:Key="Button.RotateClockwise">↻ 右90°</sys:String>
     <sys:String x:Key="Button.RotateCounterClockwise">↺ 左90°</sys:String>
     <sys:String x:Key="Button.FlipHorizontal">↔ 左右</sys:String>

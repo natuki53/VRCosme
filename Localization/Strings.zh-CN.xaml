@@ -148,6 +148,7 @@
 
     <sys:String x:Key="Button.ResetAdjustments">重置调整</sys:String>
     <sys:String x:Key="Button.ApplyPresetWip">应用预设</sys:String>
+    <sys:String x:Key="Button.RevertPreset">恢复到应用前</sys:String>
     <sys:String x:Key="Button.RotateClockwise">↻ 右转 90°</sys:String>
     <sys:String x:Key="Button.RotateCounterClockwise">↺ 左转 90°</sys:String>
     <sys:String x:Key="Button.FlipHorizontal">↔ 水平翻转</sys:String>

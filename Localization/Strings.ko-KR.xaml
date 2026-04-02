@@ -148,6 +148,7 @@
 
     <sys:String x:Key="Button.ResetAdjustments">보정 초기화</sys:String>
     <sys:String x:Key="Button.ApplyPresetWip">프리셋 적용</sys:String>
+    <sys:String x:Key="Button.RevertPreset">적용 전으로 되돌리기</sys:String>
     <sys:String x:Key="Button.RotateClockwise">↻ 오른쪽 90°</sys:String>
     <sys:String x:Key="Button.RotateCounterClockwise">↺ 왼쪽 90°</sys:String>
     <sys:String x:Key="Button.FlipHorizontal">↔ 좌우 반전</sys:String>

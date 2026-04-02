@@ -383,11 +383,23 @@ public partial class MainViewModel
     // ───────── コマンド: プリセット ─────────
 
     private bool CanApplyPreset(PresetItem? preset) => HasImage && preset is not null;
+    private bool CanRevertPreset() => HasImage && _presetBaseAdjustments is not null;
+
+    [RelayCommand]
+    private void SelectPreset(PresetItem? preset)
+    {
+        if (preset == null)
+            return;
+
+        SelectedPreset = preset;
+    }
 
     [RelayCommand(CanExecute = nameof(CanApplyPreset))]
     private void ApplyPreset(PresetItem? preset)
     {
         if (preset == null) return;
+        if (!ReferenceEquals(SelectedPreset, preset))
+            SelectedPreset = preset;
 
         var current = BuildAdjustmentValues();
         var presetKey = preset.Name;
@@ -408,12 +420,34 @@ public partial class MainViewModel
         var blend = Math.Clamp(PresetStrength / 100.0, 0.0, 1.0);
         var blended = BlendAdjustmentValues(baseAdjustments, preset.Adjustments, blend);
         if (AreAdjustmentValuesEquivalent(current, blended))
+        {
+            RevertPresetCommand.NotifyCanExecuteChanged();
             return;
+        }
 
         LogService.Info($"プリセット適用: {preset.Name} (強さ={PresetStrength:F0}%)");
         PushUndoSnapshot();
         RestoreAdjustmentValues(blended);
         _lastAppliedPresetAdjustments = blended;
+        RevertPresetCommand.NotifyCanExecuteChanged();
+    }
+
+    [RelayCommand(CanExecute = nameof(CanRevertPreset))]
+    private void RevertPreset()
+    {
+        if (_presetBaseAdjustments is not AdjustmentValues baseAdjustments)
+            return;
+
+        var current = BuildAdjustmentValues();
+        if (!AreAdjustmentValuesEquivalent(current, baseAdjustments))
+        {
+            LogService.Info("プリセット適用を取り消し、適用前の補正値へ復元");
+            PushUndoSnapshot();
+            RestoreAdjustmentValues(baseAdjustments);
+        }
+
+        ClearPresetApplicationContext();
+        RevertPresetCommand.NotifyCanExecuteChanged();
     }
 
     private static AdjustmentValues BlendAdjustmentValues(AdjustmentValues current, AdjustmentValues target, double blend) =>
