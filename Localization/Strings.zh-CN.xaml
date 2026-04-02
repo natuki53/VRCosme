@@ -87,7 +87,7 @@
     <sys:String x:Key="Menu.Edit">编辑(_E)</sys:String>
     <sys:String x:Key="Menu.Edit.Undo">撤销(_U)</sys:String>
     <sys:String x:Key="Menu.Edit.Redo">重做(_R)</sys:String>
-    <sys:String x:Key="Menu.Edit.PresetWip">预设  (开发中)</sys:String>
+    <sys:String x:Key="Menu.Edit.PresetWip">预设</sys:String>
     <sys:String x:Key="Menu.Edit.ResetAdjustments">重置基础调整（不应用掩码）</sys:String>
     <sys:String x:Key="Menu.Edit.ResetDetailedAdjustments">重置详细调整（不应用掩码）</sys:String>
     <sys:String x:Key="Menu.Edit.ResetAll">全部重置</sys:String>
@@ -120,7 +120,7 @@
     <sys:String x:Key="Compare.Split">分割</sys:String>
 
     <sys:String x:Key="Panel.BasicAdjustments">基础调整</sys:String>
-    <sys:String x:Key="Panel.PresetWip">VRChat 预设 (开发中)</sys:String>
+    <sys:String x:Key="Panel.PresetWip">VRChat 预设</sys:String>
     <sys:String x:Key="Panel.CropComposition">裁剪与构图</sys:String>
     <sys:String x:Key="Panel.DetailedAdjustments">高级调整</sys:String>
     <sys:String x:Key="Panel.Mask">蒙版</sys:String>
@@ -133,6 +133,8 @@
     <sys:String x:Key="Field.Saturation">饱和度</sys:String>
     <sys:String x:Key="Field.Temperature">色温</sys:String>
     <sys:String x:Key="Field.Tint">色调偏移</sys:String>
+    <sys:String x:Key="Field.Preset">预设</sys:String>
+    <sys:String x:Key="Field.PresetStrength">强度</sys:String>
     <sys:String x:Key="Field.AspectRatio">宽高比</sys:String>
     <sys:String x:Key="Field.RotateFlip">旋转 / 翻转</sys:String>
     <sys:String x:Key="Field.Shadows">阴影</sys:String>
@@ -145,7 +147,7 @@
     <sys:String x:Key="Field.JpegQuality">JPEG 质量</sys:String>
 
     <sys:String x:Key="Button.ResetAdjustments">重置调整</sys:String>
-    <sys:String x:Key="Button.ApplyPresetWip">应用预设 (开发中)</sys:String>
+    <sys:String x:Key="Button.ApplyPresetWip">应用预设</sys:String>
     <sys:String x:Key="Button.RotateClockwise">↻ 右转 90°</sys:String>
     <sys:String x:Key="Button.RotateCounterClockwise">↺ 左转 90°</sys:String>
     <sys:String x:Key="Button.FlipHorizontal">↔ 水平翻转</sys:String>
@@ -190,6 +192,19 @@
     <sys:String x:Key="Mask.AdjustButton">调整</sys:String>
     <sys:String x:Key="Mask.AdjustmentsTitle">蒙版图层调整</sys:String>
     <sys:String x:Key="Mask.NaturalizeBoundary">让边界更自然</sys:String>
+
+    <sys:String x:Key="Preset.SoftPortrait.Name">柔和人像</sys:String>
+    <sys:String x:Key="Preset.SoftPortrait.Description">让人像更明亮柔和，并带一点暖色氛围。</sys:String>
+    <sys:String x:Key="Preset.NeonNight.Name">霓虹夜景</sys:String>
+    <sys:String x:Key="Preset.NeonNight.Description">偏冷、高饱和风格，适合夜景和霓虹画面。</sys:String>
+    <sys:String x:Key="Preset.SunsetFilm.Name">日落胶片</sys:String>
+    <sys:String x:Key="Preset.SunsetFilm.Description">偏暖的电影感色调，适合黄昏场景。</sys:String>
+    <sys:String x:Key="Preset.CoolClear.Name">冷调清晰</sys:String>
+    <sys:String x:Key="Preset.CoolClear.Description">强化清晰度与层次，整体风格更冷静通透。</sys:String>
+    <sys:String x:Key="Preset.MatteSoft.Name">柔雾哑光</sys:String>
+    <sys:String x:Key="Preset.MatteSoft.Description">降低对比，营造柔和的哑光质感。</sys:String>
+    <sys:String x:Key="Preset.PunchyDetail.Name">高冲击细节</sys:String>
+    <sys:String x:Key="Preset.PunchyDetail.Description">提升对比和细节力度，画面更有冲击感。</sys:String>
 
     <sys:String x:Key="Settings.Title">应用设置</sys:String>
     <sys:String x:Key="Settings.Section.General">常规</sys:String>

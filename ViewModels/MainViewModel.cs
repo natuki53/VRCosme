@@ -3,6 +3,7 @@ using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
 using System.Collections.ObjectModel;
 using System.IO;
+using System.Linq;
 using System.Windows.Media.Imaging;
 using VRCosme.Models;
 using VRCosme.Services;
@@ -39,6 +40,7 @@ public partial class MainViewModel : ObservableObject
     [NotifyCanExecuteChangedFor(nameof(SaveSessionCommand))]
     [NotifyCanExecuteChangedFor(nameof(SaveSessionAsCommand))]
     [NotifyCanExecuteChangedFor(nameof(ApplyCropCommand))]
+    [NotifyCanExecuteChangedFor(nameof(ApplyPresetCommand))]
     private string? _sourceFilePath;
 
     [ObservableProperty] private bool _isProcessing;
@@ -101,6 +103,9 @@ public partial class MainViewModel : ObservableObject
     private readonly Stack<EditState> _redoStack = new();
     private bool _isRestoringState;
     private bool _isRelocalizing;
+    private AdjustmentValues? _presetBaseAdjustments;
+    private AdjustmentValues? _lastAppliedPresetAdjustments;
+    private string? _presetBaseKey;
 
     public bool CanUndo => _undoStack.Count > 0 && HasImage;
     public bool CanRedo => _redoStack.Count > 0 && HasImage;
@@ -125,6 +130,10 @@ public partial class MainViewModel : ObservableObject
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(IsJpegSelected))]
     private int _jpegQuality = 90;
+    [ObservableProperty]
+    [NotifyCanExecuteChangedFor(nameof(ApplyPresetCommand))]
+    private PresetItem? _selectedPreset;
+    [ObservableProperty] private double _presetStrength = 100.0;
 
     // ───────── 算出プロパティ ─────────
 
@@ -137,7 +146,7 @@ public partial class MainViewModel : ObservableObject
     public List<CropRatioItem> CropRatios { get; private set; } = [];
 
     public List<string> ExportFormats { get; } = ["PNG", "JPEG"];
-    public List<PresetItem> Presets { get; } = [];
+    public List<PresetItem> Presets { get; private set; } = [];
     public ObservableCollection<string> RecentFiles { get; } = [];
 
     // ───────── イベント ─────────
@@ -157,6 +166,8 @@ public partial class MainViewModel : ObservableObject
         _showRuler = ThemeService.GetShowRuler();
         _selectedExportFormat = ThemeService.GetDefaultExportFormat();
         _jpegQuality = ThemeService.GetDefaultJpegQuality();
+        Presets = BuildPresets();
+        _selectedPreset = Presets.FirstOrDefault();
         LoadRecentFiles();
     }
 
@@ -188,6 +199,8 @@ public partial class MainViewModel : ObservableObject
     {
         var selectedIndex = CropRatios.IndexOf(SelectedCropRatio);
         if (selectedIndex < 0) selectedIndex = 0;
+        var selectedPresetIndex = SelectedPreset is null ? 0 : Presets.IndexOf(SelectedPreset);
+        if (selectedPresetIndex < 0) selectedPresetIndex = 0;
 
         _isRelocalizing = true;
         try
@@ -197,6 +210,16 @@ public partial class MainViewModel : ObservableObject
 
             selectedIndex = Math.Clamp(selectedIndex, 0, CropRatios.Count - 1);
             SelectedCropRatio = CropRatios[selectedIndex];
+
+            Presets = BuildPresets();
+            OnPropertyChanged(nameof(Presets));
+            if (Presets.Count == 0)
+                SelectedPreset = null;
+            else
+            {
+                selectedPresetIndex = Math.Clamp(selectedPresetIndex, 0, Presets.Count - 1);
+                SelectedPreset = Presets[selectedPresetIndex];
+            }
 
             WindowTitle = BuildWindowTitle(SourceFilePath);
             if (!IsProcessing)
@@ -218,6 +241,46 @@ public partial class MainViewModel : ObservableObject
         new(LocalizationService.GetString("Crop.Tall3by4X", "3:4 (Portrait, good for X posts)"), 3, 4),
         new(LocalizationService.GetString("Crop.Header3by1", "3:1 (Header)"), 3, 1),
         new(LocalizationService.GetString("Crop.Free", "Free"), -1, -1),
+    ];
+
+    private static List<PresetItem> BuildPresets() =>
+    [
+        new()
+        {
+            Name = LocalizationService.GetString("Preset.SoftPortrait.Name", "Soft Portrait"),
+            Description = LocalizationService.GetString("Preset.SoftPortrait.Description", "Bright and warm portrait look with gentle contrast."),
+            Adjustments = new AdjustmentValues(6, 8, 1.05, 0.25, 6, 8, 2, 18, -12, 4, 0, 8, -6)
+        },
+        new()
+        {
+            Name = LocalizationService.GetString("Preset.NeonNight.Name", "Neon Night"),
+            Description = LocalizationService.GetString("Preset.NeonNight.Description", "Cool neon atmosphere with stronger contrast and saturation."),
+            Adjustments = new AdjustmentValues(-6, 20, 0.98, 0.1, 24, -12, 10, -14, -20, 18, 0, 14, -22)
+        },
+        new()
+        {
+            Name = LocalizationService.GetString("Preset.SunsetFilm.Name", "Sunset Film"),
+            Description = LocalizationService.GetString("Preset.SunsetFilm.Description", "Warm cinematic tone with soft highlights."),
+            Adjustments = new AdjustmentValues(4, 10, 1.02, 0.2, 12, 18, 4, 10, -14, 6, 0, 10, -14)
+        },
+        new()
+        {
+            Name = LocalizationService.GetString("Preset.CoolClear.Name", "Cool Clear"),
+            Description = LocalizationService.GetString("Preset.CoolClear.Description", "Crisp and cool finish that keeps details sharp."),
+            Adjustments = new AdjustmentValues(2, 14, 1.0, 0.05, 8, -10, -4, 4, -8, 16, 0, 18, -8)
+        },
+        new()
+        {
+            Name = LocalizationService.GetString("Preset.MatteSoft.Name", "Matte Soft"),
+            Description = LocalizationService.GetString("Preset.MatteSoft.Description", "Soft matte vibe with raised shadows and low contrast."),
+            Adjustments = new AdjustmentValues(8, -8, 1.08, 0.35, -6, 6, 0, 22, -4, -8, 2, 4, -4)
+        },
+        new()
+        {
+            Name = LocalizationService.GetString("Preset.PunchyDetail.Name", "Punchy Detail"),
+            Description = LocalizationService.GetString("Preset.PunchyDetail.Description", "High-impact detail and contrast for dramatic shots."),
+            Adjustments = new AdjustmentValues(-2, 24, 0.96, 0.0, 4, 0, 0, -20, -10, 22, 0, 20, -18)
+        },
     ];
 
     // ───────── 補正値ヘルパー ─────────

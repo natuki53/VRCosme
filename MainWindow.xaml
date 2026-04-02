@@ -46,6 +46,7 @@
         <converters:SliderValueConverter x:Key="SliderValueSharpen"/>
         <converters:SliderValueConverter x:Key="SliderValueVignette"/>
         <converters:SliderValueConverter x:Key="SliderValueJpegQuality"/>
+        <converters:SliderValueConverter x:Key="SliderValuePresetStrength"/>
 
         <!-- ═══ ラベルスタイル ═══ -->
         <Style x:Key="ParamLabel" TargetType="TextBlock">
@@ -1114,7 +1115,42 @@
                     <!-- ──── VRChat向けプリセット ──── -->
                     <Expander Header="{DynamicResource Panel.PresetWip}" IsExpanded="False">
                         <StackPanel>
-                            <Button Content="{DynamicResource Button.ApplyPresetWip}" Style="{StaticResource Btn}" IsEnabled="False" HorizontalAlignment="Left"/>
+                            <TextBlock Text="{DynamicResource Field.Preset}" Style="{StaticResource ParamLabel}" Margin="0,0,0,4"/>
+                            <ComboBox ItemsSource="{Binding Presets}"
+                                      SelectedItem="{Binding SelectedPreset}"
+                                      DisplayMemberPath="Name"
+                                      IsEnabled="{Binding HasImage}"
+                                      Margin="0,0,0,4"/>
+                            <TextBlock Text="{Binding SelectedPreset.Description, TargetNullValue=''}"
+                                       Style="{StaticResource ParamLabel}"
+                                       Foreground="{DynamicResource TextSecondaryBrush}"
+                                       TextWrapping="Wrap"
+                                       Margin="0,0,0,8"/>
+                            <Grid Margin="0,0,0,8">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="78"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="34"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Text="{DynamicResource Field.PresetStrength}" Style="{StaticResource ParamLabel}"/>
+                                <Slider Grid.Column="1"
+                                        Tag="NoUndo"
+                                        Value="{Binding PresetStrength}"
+                                        Minimum="0"
+                                        Maximum="100"
+                                        SmallChange="1"
+                                        TickFrequency="1"
+                                        IsSnapToTickEnabled="True"
+                                        IsEnabled="{Binding HasImage}"/>
+                                <TextBox Grid.Column="2"
+                                         Style="{StaticResource ValueTextBox}"
+                                         Text="{Binding PresetStrength, Converter={StaticResource SliderValuePresetStrength}, ConverterParameter='0,100,F0', UpdateSourceTrigger=LostFocus}"/>
+                            </Grid>
+                            <Button Content="{DynamicResource Button.ApplyPresetWip}"
+                                    Style="{StaticResource BtnAccent}"
+                                    HorizontalAlignment="Stretch"
+                                    Command="{Binding ApplyPresetCommand}"
+                                    CommandParameter="{Binding SelectedPreset}"/>
                         </StackPanel>
                     </Expander>
 

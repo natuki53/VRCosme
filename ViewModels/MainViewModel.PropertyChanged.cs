@@ -20,6 +20,13 @@ public partial class MainViewModel
     partial void OnBlurChanged(double value) => SchedulePreviewUpdate();
     partial void OnSharpenChanged(double value) => SchedulePreviewUpdate();
     partial void OnVignetteChanged(double value) => SchedulePreviewUpdate();
+    partial void OnSelectedPresetChanged(PresetItem? value)
+    {
+        _presetBaseAdjustments = null;
+        _lastAppliedPresetAdjustments = null;
+        _presetBaseKey = null;
+        ApplyPresetCommand.NotifyCanExecuteChanged();
+    }
     partial void OnIsMaskEnabledChanged(bool value)
     {
         MarkCurrentSessionDirty();
