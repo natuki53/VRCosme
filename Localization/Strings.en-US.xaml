@@ -222,6 +222,7 @@
     <sys:String x:Key="Settings.Section.Update">Updates</sys:String>
     <sys:String x:Key="Settings.Option.AutoUpdateEnabled">Enable update checks</sys:String>
     <sys:String x:Key="Settings.Option.AutoUpdateCheckOnStartup">Check for updates on startup</sys:String>
+    <sys:String x:Key="Settings.Option.AutoUpdateIncludePrerelease">Include beta (pre-release) updates</sys:String>
     <sys:String x:Key="Settings.RestartRequired">Restart VRCosme to apply the language change.</sys:String>
     <sys:String x:Key="Settings.RestartTitle">VRCosme</sys:String>
 

@@ -222,6 +222,7 @@
     <sys:String x:Key="Settings.Section.Update">更新</sys:String>
     <sys:String x:Key="Settings.Option.AutoUpdateEnabled">更新機能を有効にする</sys:String>
     <sys:String x:Key="Settings.Option.AutoUpdateCheckOnStartup">起動時に更新をチェック</sys:String>
+    <sys:String x:Key="Settings.Option.AutoUpdateIncludePrerelease">ベータ版（プレリリース）も取得する</sys:String>
     <sys:String x:Key="Settings.RestartRequired">言語設定を反映するにはアプリの再起動が必要です。</sys:String>
     <sys:String x:Key="Settings.RestartTitle">VRCosme</sys:String>
 

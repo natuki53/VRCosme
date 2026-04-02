@@ -24,25 +24,22 @@ public sealed class GitHubReleaseAsset
 public static class GitHubReleaseClient
 {
     private const string LatestReleaseUrl = "https://api.github.com/repos/natuki53/VRCosme/releases/latest";
+    private const string ReleasesUrl = "https://api.github.com/repos/natuki53/VRCosme/releases?per_page=20";
     private static readonly HttpClient Client = CreateClient();
     private static readonly JsonSerializerOptions JsonOptions = new()
     {
         PropertyNameCaseInsensitive = true
     };
 
-    public static async Task<GitHubReleaseInfo?> GetLatestReleaseAsync(CancellationToken cancellationToken = default)
+    public static async Task<GitHubReleaseInfo?> GetLatestReleaseAsync(
+        bool includePrerelease = false,
+        CancellationToken cancellationToken = default)
     {
         try
         {
-            using var response = await Client.GetAsync(LatestReleaseUrl, cancellationToken);
-            if (!response.IsSuccessStatusCode)
-            {
-                LogService.Error($"更新チェック失敗: HTTP {(int)response.StatusCode} {response.ReasonPhrase}");
-                return null;
-            }
-
-            await using var stream = await response.Content.ReadAsStreamAsync(cancellationToken);
-            var dto = await JsonSerializer.DeserializeAsync<ReleaseDto>(stream, JsonOptions, cancellationToken);
+            var dto = includePrerelease
+                ? await GetLatestIncludingPrereleaseAsync(cancellationToken)
+                : await GetLatestStableAsync(cancellationToken);
             if (dto == null)
                 return null;
 
@@ -70,6 +67,40 @@ public static class GitHubReleaseClient
             LogService.Error("更新チェック失敗: GitHub Releases 取得に失敗", ex);
             return null;
         }
+    }
+
+    private static async Task<ReleaseDto?> GetLatestStableAsync(CancellationToken cancellationToken)
+    {
+        using var response = await Client.GetAsync(LatestReleaseUrl, cancellationToken);
+        if (!response.IsSuccessStatusCode)
+        {
+            LogService.Error($"更新チェック失敗: HTTP {(int)response.StatusCode} {response.ReasonPhrase}");
+            return null;
+        }
+
+        await using var stream = await response.Content.ReadAsStreamAsync(cancellationToken);
+        return await JsonSerializer.DeserializeAsync<ReleaseDto>(stream, JsonOptions, cancellationToken);
+    }
+
+    private static async Task<ReleaseDto?> GetLatestIncludingPrereleaseAsync(CancellationToken cancellationToken)
+    {
+        using var response = await Client.GetAsync(ReleasesUrl, cancellationToken);
+        if (!response.IsSuccessStatusCode)
+        {
+            LogService.Error($"更新チェック失敗: HTTP {(int)response.StatusCode} {response.ReasonPhrase}");
+            return null;
+        }
+
+        await using var stream = await response.Content.ReadAsStreamAsync(cancellationToken);
+        var dtos = await JsonSerializer.DeserializeAsync<List<ReleaseDto>>(stream, JsonOptions, cancellationToken);
+        if (dtos == null || dtos.Count == 0)
+            return null;
+
+        var latestPrerelease = dtos.FirstOrDefault(r => r is { Draft: false, Prerelease: true });
+        if (latestPrerelease != null)
+            return latestPrerelease;
+
+        return dtos.FirstOrDefault(r => r is { Draft: false, Prerelease: false });
     }
 
     private static HttpClient CreateClient()

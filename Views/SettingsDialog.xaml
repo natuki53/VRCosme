@@ -152,6 +152,10 @@
                           Content="{DynamicResource Settings.Option.AutoUpdateCheckOnStartup}"
                           Margin="0,0,0,6"
                           Foreground="{DynamicResource WindowForegroundBrush}" Cursor="Hand"/>
+                <CheckBox x:Name="AutoUpdateIncludePrereleaseCheckBox"
+                          Content="{DynamicResource Settings.Option.AutoUpdateIncludePrerelease}"
+                          Margin="0,0,0,6"
+                          Foreground="{DynamicResource WindowForegroundBrush}" Cursor="Hand"/>
 
                 <!-- ──── 区切り ──── -->
                 <Separator Margin="0,6,0,14" Background="{DynamicResource SeparatorBrush}"/>
