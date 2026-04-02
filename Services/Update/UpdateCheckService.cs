@@ -19,16 +19,17 @@ public static class UpdateCheckService
 
     private static async Task CheckForUpdatesAsync(Window owner)
     {
+        var includePrerelease = ThemeService.GetAutoUpdateIncludePrerelease();
         LogService.Info("更新チェック開始");
         ThemeService.SaveLastUpdateCheckUtc(DateTime.UtcNow);
 
-        var release = await GitHubReleaseClient.GetLatestReleaseAsync();
+        var release = await GitHubReleaseClient.GetLatestReleaseAsync(includePrerelease);
         if (release == null)
             return;
 
-        if (release.Draft || release.Prerelease)
+        if (release.Draft || (!includePrerelease && release.Prerelease))
         {
-            LogService.Info("更新チェック: 最新リリースが draft/prerelease のためスキップ");
+            LogService.Info("更新チェック: 最新リリースが対象外（draft/prerelease）");
             return;
         }
 
