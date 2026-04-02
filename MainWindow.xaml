@@ -97,10 +97,17 @@
                                                VerticalAlignment="Center" Visibility="Collapsed"/>
                                     <!-- サブメニューでチェック用の幅を常に確保し、文字位置を揃える -->
                                     <Grid x:Name="CheckArea" DockPanel.Dock="Left" Width="20" Visibility="Collapsed">
+                                        <!-- チェック可能・未チェック時の空欄インジケーター -->
+                                        <Border x:Name="CheckBox"
+                                                Width="10" Height="10"
+                                                BorderBrush="{DynamicResource TextSecondaryBrush}"
+                                                BorderThickness="1" CornerRadius="1"
+                                                HorizontalAlignment="Center" VerticalAlignment="Center"
+                                                Visibility="Collapsed"/>
                                         <Path x:Name="CheckMark"
                                               Data="M 0 5 L 2.5 8 L 7 0" Stroke="{DynamicResource WindowForegroundBrush}"
                                               StrokeThickness="1.8" Stretch="Uniform" Width="10" Height="10"
-                                              HorizontalAlignment="Left" VerticalAlignment="Center"
+                                              HorizontalAlignment="Center" VerticalAlignment="Center"
                                               Visibility="Collapsed"/>
                                     </Grid>
                                     <ContentPresenter ContentSource="Header"
@@ -126,29 +133,32 @@
                             </Popup>
                         </Grid>
                         <ControlTemplate.Triggers>
-                            <!-- SubmenuItem: チェック用の幅を確保＋ジェスチャーテキスト表示、パディング調整 -->
+                            <!-- SubmenuItem: チェック列・ジェスチャーテキストを表示 -->
                             <Trigger Property="Role" Value="SubmenuItem">
                                 <Setter TargetName="CheckArea" Property="Visibility" Value="Visible"/>
                                 <Setter TargetName="Gesture" Property="Visibility" Value="Visible"/>
-                                <Setter TargetName="Bd" Property="Padding" Value="28,6,12,6"/>
+                                <Setter TargetName="Bd" Property="Padding" Value="8,6,12,6"/>
                             </Trigger>
-                            <!-- チェック可能な項目でオン時はチェックマークを表示（CheckArea で幅は固定済みなので文字は動かない） -->
-                            <MultiTrigger>
-                                <MultiTrigger.Conditions>
-                                    <Condition Property="Role" Value="SubmenuItem"/>
-                                    <Condition Property="IsChecked" Value="True"/>
-                                </MultiTrigger.Conditions>
-                                <MultiTrigger.Setters>
-                                    <Setter TargetName="CheckMark" Property="Visibility" Value="Visible"/>
-                                </MultiTrigger.Setters>
-                            </MultiTrigger>
-                            <!-- SubmenuHeader: チェック用幅を確保（テキスト揃え）、矢印表示、Popup を右に配置 -->
+                            <!-- SubmenuHeader: チェック列・矢印を表示、Popup を右に配置 -->
                             <Trigger Property="Role" Value="SubmenuHeader">
                                 <Setter TargetName="CheckArea" Property="Visibility" Value="Visible"/>
                                 <Setter TargetName="Arrow" Property="Visibility" Value="Visible"/>
-                                <Setter TargetName="Bd" Property="Padding" Value="28,6,12,6"/>
+                                <Setter TargetName="Bd" Property="Padding" Value="8,6,12,6"/>
                                 <Setter TargetName="PART_Popup" Property="Placement" Value="Right"/>
-                                <Setter TargetName="PART_Popup" Property="HorizontalOffset" Value="-4"/>
+                            </Trigger>
+                            <!-- チェック可能・未チェック: 空欄インジケーターを表示 -->
+                            <MultiTrigger>
+                                <MultiTrigger.Conditions>
+                                    <Condition Property="IsCheckable" Value="True"/>
+                                    <Condition Property="IsChecked" Value="False"/>
+                                </MultiTrigger.Conditions>
+                                <MultiTrigger.Setters>
+                                    <Setter TargetName="CheckBox" Property="Visibility" Value="Visible"/>
+                                </MultiTrigger.Setters>
+                            </MultiTrigger>
+                            <!-- チェックオン: チェックマークを表示 -->
+                            <Trigger Property="IsChecked" Value="True">
+                                <Setter TargetName="CheckMark" Property="Visibility" Value="Visible"/>
                             </Trigger>
                             <!-- ハイライト (サブメニュー内) -->
                             <Trigger Property="IsHighlighted" Value="True">
@@ -471,7 +481,7 @@
 
     <DockPanel>
         <!-- ╔════════════ メニューバー ════════════╗ -->
-        <Menu DockPanel.Dock="Top" Background="{DynamicResource MenuBarBackgroundBrush}" Padding="4,2">
+        <Menu x:Name="MainMenu" DockPanel.Dock="Top" Background="{DynamicResource MenuBarBackgroundBrush}" Padding="4,2">
             <MenuItem Header="{DynamicResource Menu.File}">
                 <MenuItem Header="{DynamicResource Menu.File.OpenImage}" Command="{Binding OpenImageCommand}" InputGestureText="Ctrl+O"/>
                 <MenuItem Header="{DynamicResource Menu.File.OpenSession}" Command="{Binding OpenSessionCommand}"/>

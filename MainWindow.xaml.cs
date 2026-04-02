@@ -41,6 +41,8 @@ public partial class MainWindow : Window
         InitGridOverlay();
         InitMaskOverlayElements();
         UpdateThemeMenuCheckmarks();
+        FixTopLevelMenuPopupPlacement();
+        MainMenu.AddHandler(MenuItem.SubmenuOpenedEvent, new RoutedEventHandler(MainMenu_SubmenuOpened));
 
         ViewModel.PropertyChanged += (_, args) =>
         {
@@ -132,6 +134,34 @@ public partial class MainWindow : Window
             if (w >= RightPanelMinWidth && w <= RightPanelMaxWidth)
                 ThemeService.SaveRightPanelWidth(w);
         }
+    }
+
+    // TopLevelHeader はロード時に事前設定（初回表示のちらつき防止）
+    private void FixTopLevelMenuPopupPlacement()
+    {
+        foreach (var item in MainMenu.Items.OfType<MenuItem>())
+        {
+            item.ApplyTemplate();
+            FixMenuItemPopupPlacement(item);
+        }
+    }
+
+    // SubmenuHeader はバブリングイベントで初回オープン時に設定
+    private void MainMenu_SubmenuOpened(object sender, RoutedEventArgs e)
+    {
+        if (e.OriginalSource is MenuItem { Role: MenuItemRole.SubmenuHeader } mi)
+            FixMenuItemPopupPlacement(mi);
+    }
+
+    private static void FixMenuItemPopupPlacement(MenuItem menuItem)
+    {
+        menuItem.ApplyTemplate();
+        if (menuItem.Template.FindName("PART_Popup", menuItem) is not Popup popup) return;
+        popup.PlacementTarget = menuItem;
+        popup.Placement = PlacementMode.Custom;
+        popup.CustomPopupPlacementCallback = menuItem.Role == MenuItemRole.TopLevelHeader
+            ? (_, targetSize, _) => [new CustomPopupPlacement(new Point(0, targetSize.Height), PopupPrimaryAxis.Horizontal)]
+            : (_, targetSize, _) => [new CustomPopupPlacement(new Point(targetSize.Width, 0), PopupPrimaryAxis.Horizontal)];
     }
 
     private void MenuExit_Click(object sender, RoutedEventArgs e) => Close();
