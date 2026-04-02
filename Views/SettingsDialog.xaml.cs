@@ -23,9 +23,9 @@ public partial class SettingsDialog : Window
         JpegQualitySlider.ValueChanged += (_, _) =>
             JpegQualityLabel.Text = ((int)JpegQualitySlider.Value).ToString();
 
-        AutoUpdateEnabledCheckBox.Checked += (_, _) => AutoUpdateCheckOnStartupCheckBox.IsEnabled = true;
-        AutoUpdateEnabledCheckBox.Unchecked += (_, _) => AutoUpdateCheckOnStartupCheckBox.IsEnabled = false;
-        AutoUpdateCheckOnStartupCheckBox.IsEnabled = AutoUpdateEnabledCheckBox.IsChecked == true;
+        AutoUpdateEnabledCheckBox.Checked += (_, _) => UpdateUpdateSettingsEnabledState();
+        AutoUpdateEnabledCheckBox.Unchecked += (_, _) => UpdateUpdateSettingsEnabledState();
+        UpdateUpdateSettingsEnabledState();
     }
 
     private void LoadCurrentSettings()
@@ -78,6 +78,7 @@ public partial class SettingsDialog : Window
         // 更新
         AutoUpdateEnabledCheckBox.IsChecked = ThemeService.GetAutoUpdateEnabled();
         AutoUpdateCheckOnStartupCheckBox.IsChecked = ThemeService.GetAutoUpdateCheckOnStartup();
+        AutoUpdateIncludePrereleaseCheckBox.IsChecked = ThemeService.GetAutoUpdateIncludePrerelease();
     }
 
     private void BrowseDir_Click(object sender, RoutedEventArgs e)
@@ -134,6 +135,7 @@ public partial class SettingsDialog : Window
         // 更新
         ThemeService.SaveAutoUpdateEnabled(AutoUpdateEnabledCheckBox.IsChecked == true);
         ThemeService.SaveAutoUpdateCheckOnStartup(AutoUpdateCheckOnStartupCheckBox.IsChecked == true);
+        ThemeService.SaveAutoUpdateIncludePrerelease(AutoUpdateIncludePrereleaseCheckBox.IsChecked == true);
 
         if (!string.Equals(selectedLanguage, _currentLanguageCode, StringComparison.OrdinalIgnoreCase))
         {
@@ -148,5 +150,12 @@ public partial class SettingsDialog : Window
     private void Cancel_Click(object sender, RoutedEventArgs e)
     {
         DialogResult = false;
+    }
+
+    private void UpdateUpdateSettingsEnabledState()
+    {
+        var isEnabled = AutoUpdateEnabledCheckBox.IsChecked == true;
+        AutoUpdateCheckOnStartupCheckBox.IsEnabled = isEnabled;
+        AutoUpdateIncludePrereleaseCheckBox.IsEnabled = isEnabled;
     }
 }

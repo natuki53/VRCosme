@@ -190,6 +190,29 @@ public static class ThemeService
         }
     }
 
+    /// <summary>プレリリース更新を含めるかどうかを取得</summary>
+    public static bool GetAutoUpdateIncludePrerelease()
+    {
+        try { return LoadSettings().AutoUpdateIncludePrerelease; }
+        catch { return false; }
+    }
+
+    /// <summary>プレリリース更新を含めるかどうかを保存</summary>
+    public static void SaveAutoUpdateIncludePrerelease(bool value)
+    {
+        try
+        {
+            Directory.CreateDirectory(DataDir);
+            var settings = LoadSettings();
+            settings.AutoUpdateIncludePrerelease = value;
+            SaveSettings(settings);
+        }
+        catch
+        {
+            // 保存失敗は無視
+        }
+    }
+
     /// <summary>スキップ済みの更新バージョンを取得</summary>
     public static string GetSkippedUpdateVersion()
     {
@@ -522,6 +545,7 @@ public static class ThemeService
         public bool ShowRuler { get; set; }
         public bool AutoUpdateEnabled { get; set; } = true;
         public bool AutoUpdateCheckOnStartup { get; set; } = true;
+        public bool AutoUpdateIncludePrerelease { get; set; }
         public string SkippedUpdateVersion { get; set; } = "";
         public string LastUpdateCheckUtc { get; set; } = "";
         public string DefaultExportDirectory { get; set; } = "";

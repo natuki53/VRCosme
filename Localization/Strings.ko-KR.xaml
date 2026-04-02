@@ -207,6 +207,7 @@
     <sys:String x:Key="Settings.Section.Update">업데이트</sys:String>
     <sys:String x:Key="Settings.Option.AutoUpdateEnabled">업데이트 기능 사용</sys:String>
     <sys:String x:Key="Settings.Option.AutoUpdateCheckOnStartup">시작 시 업데이트 확인</sys:String>
+    <sys:String x:Key="Settings.Option.AutoUpdateIncludePrerelease">베타(프리릴리스) 업데이트도 포함</sys:String>
     <sys:String x:Key="Settings.RestartRequired">언어 변경을 적용하려면 VRCosme를 다시 시작하세요.</sys:String>
     <sys:String x:Key="Settings.RestartTitle">VRCosme</sys:String>
 
