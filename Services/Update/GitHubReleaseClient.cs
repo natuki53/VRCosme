@@ -24,7 +24,7 @@ public sealed class GitHubReleaseAsset
 public static class GitHubReleaseClient
 {
     private const string LatestReleaseUrl = "https://api.github.com/repos/natuki53/VRCosme/releases/latest";
-    private const string ReleasesUrl = "https://api.github.com/repos/natuki53/VRCosme/releases?per_page=20";
+    private const string ReleasesUrl = "https://api.github.com/repos/natuki53/VRCosme/releases?per_page=100";
     private static readonly HttpClient Client = CreateClient();
     private static readonly JsonSerializerOptions JsonOptions = new()
     {
@@ -96,11 +96,30 @@ public static class GitHubReleaseClient
         if (dtos == null || dtos.Count == 0)
             return null;
 
-        var latestPrerelease = dtos.FirstOrDefault(r => r is { Draft: false, Prerelease: true });
-        if (latestPrerelease != null)
-            return latestPrerelease;
+        // 安定版がベータより新しい場合があるため、プレリリースを先に返すと更新検知できない。
+        // 公開済み（非 draft）のうち、セマンティックバージョンが最大の 1 件を選ぶ。
+        ReleaseDto? best = null;
+        foreach (var r in dtos)
+        {
+            if (r.Draft || string.IsNullOrWhiteSpace(r.TagName))
+                continue;
+            if (!VersionComparer.TryParseVersion(r.TagName, out _, out _))
+                continue;
 
-        return dtos.FirstOrDefault(r => r is { Draft: false, Prerelease: false });
+            if (best == null)
+            {
+                best = r;
+                continue;
+            }
+
+            if (!VersionComparer.TryCompare(best.TagName!, r.TagName!, out var cmp, out _, out _))
+                continue;
+
+            if (cmp < 0)
+                best = r;
+        }
+
+        return best;
     }
 
     private static HttpClient CreateClient()
