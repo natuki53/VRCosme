@@ -40,10 +40,6 @@ public partial class AboutDialog : Window
         if (metadataIndex >= 0)
             value = value[..metadataIndex];
 
-        var prereleaseIndex = value.IndexOf('-');
-        if (prereleaseIndex >= 0)
-            value = value[..prereleaseIndex];
-
         return string.IsNullOrWhiteSpace(value) ? rawVersion : value;
     }
 
