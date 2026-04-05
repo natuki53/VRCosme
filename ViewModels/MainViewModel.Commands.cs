@@ -382,14 +382,92 @@ public partial class MainViewModel
 
     // ───────── コマンド: プリセット ─────────
 
+    private bool CanApplyPreset(PresetItem? preset) => HasImage && preset is not null;
+    private bool CanRevertPreset() => HasImage && _presetBaseAdjustments is not null;
+
     [RelayCommand]
+    private void SelectPreset(PresetItem? preset)
+    {
+        if (preset == null)
+            return;
+
+        SelectedPreset = preset;
+    }
+
+    [RelayCommand(CanExecute = nameof(CanApplyPreset))]
     private void ApplyPreset(PresetItem? preset)
     {
         if (preset == null) return;
-        LogService.Info($"プリセット適用: {preset.Name}");
+        if (!ReferenceEquals(SelectedPreset, preset))
+            SelectedPreset = preset;
+
+        var current = BuildAdjustmentValues();
+        var presetKey = preset.Name;
+        bool baseNeedsReset =
+            _presetBaseAdjustments is null
+            || !string.Equals(_presetBaseKey, presetKey, StringComparison.Ordinal)
+            || (_lastAppliedPresetAdjustments is not null
+                && !AreAdjustmentValuesEquivalent(current, _lastAppliedPresetAdjustments.Value));
+
+        if (baseNeedsReset)
+        {
+            _presetBaseAdjustments = current;
+            _presetBaseKey = presetKey;
+        }
+
+        if (_presetBaseAdjustments is not AdjustmentValues baseAdjustments)
+            return;
+        var blend = Math.Clamp(PresetStrength / 100.0, 0.0, 1.0);
+        var blended = BlendAdjustmentValues(baseAdjustments, preset.Adjustments, blend);
+        if (AreAdjustmentValuesEquivalent(current, blended))
+        {
+            RevertPresetCommand.NotifyCanExecuteChanged();
+            return;
+        }
+
+        LogService.Info($"プリセット適用: {preset.Name} (強さ={PresetStrength:F0}%)");
         PushUndoSnapshot();
-        RestoreAdjustmentValues(preset.Adjustments);
+        RestoreAdjustmentValues(blended);
+        _lastAppliedPresetAdjustments = blended;
+        RevertPresetCommand.NotifyCanExecuteChanged();
     }
+
+    [RelayCommand(CanExecute = nameof(CanRevertPreset))]
+    private void RevertPreset()
+    {
+        if (_presetBaseAdjustments is not AdjustmentValues baseAdjustments)
+            return;
+
+        var current = BuildAdjustmentValues();
+        if (!AreAdjustmentValuesEquivalent(current, baseAdjustments))
+        {
+            LogService.Info("プリセット適用を取り消し、適用前の補正値へ復元");
+            PushUndoSnapshot();
+            RestoreAdjustmentValues(baseAdjustments);
+        }
+
+        ClearPresetApplicationContext();
+        RevertPresetCommand.NotifyCanExecuteChanged();
+    }
+
+    private static AdjustmentValues BlendAdjustmentValues(AdjustmentValues current, AdjustmentValues target, double blend) =>
+        new(
+            Lerp(current.Brightness, target.Brightness, blend),
+            Lerp(current.Contrast, target.Contrast, blend),
+            Lerp(current.Gamma, target.Gamma, blend),
+            Lerp(current.Exposure, target.Exposure, blend),
+            Lerp(current.Saturation, target.Saturation, blend),
+            Lerp(current.Temperature, target.Temperature, blend),
+            Lerp(current.Tint, target.Tint, blend),
+            Lerp(current.Shadows, target.Shadows, blend),
+            Lerp(current.Highlights, target.Highlights, blend),
+            Lerp(current.Clarity, target.Clarity, blend),
+            Lerp(current.Blur, target.Blur, blend),
+            Lerp(current.Sharpen, target.Sharpen, blend),
+            Lerp(current.Vignette, target.Vignette, blend));
+
+    private static double Lerp(double from, double to, double t) =>
+        from + ((to - from) * t);
 
     // ───────── コマンド: 表示 ─────────
 

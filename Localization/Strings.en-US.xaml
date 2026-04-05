@@ -87,7 +87,7 @@
     <sys:String x:Key="Menu.Edit">Edit(_E)</sys:String>
     <sys:String x:Key="Menu.Edit.Undo">Undo(_U)</sys:String>
     <sys:String x:Key="Menu.Edit.Redo">Redo(_R)</sys:String>
-    <sys:String x:Key="Menu.Edit.PresetWip">Presets  (Coming soon)</sys:String>
+    <sys:String x:Key="Menu.Edit.PresetWip">Presets</sys:String>
     <sys:String x:Key="Menu.Edit.ResetAdjustments">Reset Basic Adjustments (Mask unaffected)</sys:String>
     <sys:String x:Key="Menu.Edit.ResetDetailedAdjustments">Reset Detailed Adjustments (Mask unaffected)</sys:String>
     <sys:String x:Key="Menu.Edit.ResetAll">Reset All</sys:String>
@@ -120,7 +120,7 @@
     <sys:String x:Key="Compare.Split">Split</sys:String>
 
     <sys:String x:Key="Panel.BasicAdjustments">Basic Adjustments</sys:String>
-    <sys:String x:Key="Panel.PresetWip">VRChat Presets (Coming soon)</sys:String>
+    <sys:String x:Key="Panel.PresetWip">VRChat Presets</sys:String>
     <sys:String x:Key="Panel.CropComposition">Crop &amp; Composition</sys:String>
     <sys:String x:Key="Panel.DetailedAdjustments">Detailed Adjustments</sys:String>
     <sys:String x:Key="Panel.Mask">Mask</sys:String>
@@ -133,6 +133,8 @@
     <sys:String x:Key="Field.Saturation">Saturation</sys:String>
     <sys:String x:Key="Field.Temperature">Temperature</sys:String>
     <sys:String x:Key="Field.Tint">Tint</sys:String>
+    <sys:String x:Key="Field.Preset">Preset</sys:String>
+    <sys:String x:Key="Field.PresetStrength">Strength</sys:String>
     <sys:String x:Key="Field.AspectRatio">Aspect Ratio</sys:String>
     <sys:String x:Key="Field.RotateFlip">Rotate / Flip</sys:String>
     <sys:String x:Key="Field.Shadows">Shadows</sys:String>
@@ -145,7 +147,8 @@
     <sys:String x:Key="Field.JpegQuality">JPEG Quality</sys:String>
 
     <sys:String x:Key="Button.ResetAdjustments">Reset Adjustments</sys:String>
-    <sys:String x:Key="Button.ApplyPresetWip">Apply Preset (Coming soon)</sys:String>
+    <sys:String x:Key="Button.ApplyPresetWip">Apply Preset</sys:String>
+    <sys:String x:Key="Button.RevertPreset">Revert Preset</sys:String>
     <sys:String x:Key="Button.RotateClockwise">↻ Right 90°</sys:String>
     <sys:String x:Key="Button.RotateCounterClockwise">↺ Left 90°</sys:String>
     <sys:String x:Key="Button.FlipHorizontal">↔ Horizontal</sys:String>
@@ -190,6 +193,19 @@
     <sys:String x:Key="Mask.AdjustButton">Adjust</sys:String>
     <sys:String x:Key="Mask.AdjustmentsTitle">Mask Layer Adjustments</sys:String>
     <sys:String x:Key="Mask.NaturalizeBoundary">Naturalize mask boundary</sys:String>
+
+    <sys:String x:Key="Preset.SoftPortrait.Name">Soft Portrait</sys:String>
+    <sys:String x:Key="Preset.SoftPortrait.Description">A bright and warm look that keeps portraits soft.</sys:String>
+    <sys:String x:Key="Preset.NeonNight.Name">Neon Night</sys:String>
+    <sys:String x:Key="Preset.NeonNight.Description">A cool, saturated style tuned for neon and night scenes.</sys:String>
+    <sys:String x:Key="Preset.SunsetFilm.Name">Sunset Film</sys:String>
+    <sys:String x:Key="Preset.SunsetFilm.Description">A warm cinematic tone inspired by sunset lighting.</sys:String>
+    <sys:String x:Key="Preset.CoolClear.Name">Cool Clear</sys:String>
+    <sys:String x:Key="Preset.CoolClear.Description">A crisp cool finish with stronger perceived detail.</sys:String>
+    <sys:String x:Key="Preset.MatteSoft.Name">Matte Soft</sys:String>
+    <sys:String x:Key="Preset.MatteSoft.Description">A low-contrast matte vibe with softer texture.</sys:String>
+    <sys:String x:Key="Preset.PunchyDetail.Name">Punchy Detail</sys:String>
+    <sys:String x:Key="Preset.PunchyDetail.Description">A dramatic look with high contrast and detail punch.</sys:String>
 
     <sys:String x:Key="Settings.Title">App Settings</sys:String>
     <sys:String x:Key="Settings.Section.General">General</sys:String>

@@ -46,6 +46,7 @@
         <converters:SliderValueConverter x:Key="SliderValueSharpen"/>
         <converters:SliderValueConverter x:Key="SliderValueVignette"/>
         <converters:SliderValueConverter x:Key="SliderValueJpegQuality"/>
+        <converters:SliderValueConverter x:Key="SliderValuePresetStrength"/>
 
         <!-- ═══ ラベルスタイル ═══ -->
         <Style x:Key="ParamLabel" TargetType="TextBlock">
@@ -216,6 +217,8 @@
             <Setter Property="MinHeight" Value="24"/>
             <Setter Property="VerticalAlignment" Value="Center"/>
             <Setter Property="Margin" Value="6,0"/>
+            <Setter Property="SnapsToDevicePixels" Value="True"/>
+            <Setter Property="UseLayoutRounding" Value="True"/>
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="Slider">
@@ -225,7 +228,9 @@
                                     <RepeatButton Command="Slider.DecreaseLarge" OverridesDefaultStyle="True" Focusable="False">
                                         <RepeatButton.Template>
                                             <ControlTemplate TargetType="RepeatButton">
-                                                <Border Height="3" CornerRadius="1.5" Background="{DynamicResource SliderTrackActiveBrush}"/>
+                                                <Border Height="4" CornerRadius="2" VerticalAlignment="Center"
+                                                        SnapsToDevicePixels="True"
+                                                        Background="{DynamicResource SliderTrackActiveBrush}"/>
                                             </ControlTemplate>
                                         </RepeatButton.Template>
                                     </RepeatButton>
@@ -234,7 +239,9 @@
                                     <RepeatButton Command="Slider.IncreaseLarge" OverridesDefaultStyle="True" Focusable="False">
                                         <RepeatButton.Template>
                                             <ControlTemplate TargetType="RepeatButton">
-                                                <Border Height="3" CornerRadius="1.5" Background="{DynamicResource SliderTrackInactiveBrush}"/>
+                                                <Border Height="4" CornerRadius="2" VerticalAlignment="Center"
+                                                        SnapsToDevicePixels="True"
+                                                        Background="{DynamicResource SliderTrackInactiveBrush}"/>
                                             </ControlTemplate>
                                         </RepeatButton.Template>
                                     </RepeatButton>
@@ -506,7 +513,25 @@
                 <MenuItem Header="{DynamicResource Menu.Edit.Undo}" Command="{Binding UndoCommand}" InputGestureText="Ctrl+Z"/>
                 <MenuItem Header="{DynamicResource Menu.Edit.Redo}" Command="{Binding RedoCommand}" InputGestureText="Ctrl+Y"/>
                 <Separator/>
-                <MenuItem Header="{DynamicResource Menu.Edit.PresetWip}" IsEnabled="False"/>
+                <MenuItem Header="{DynamicResource Menu.Edit.PresetWip}">
+                    <MenuItem Header="{DynamicResource Field.Preset}" ItemsSource="{Binding Presets}">
+                        <MenuItem.ItemContainerStyle>
+                            <Style TargetType="MenuItem" BasedOn="{StaticResource {x:Type MenuItem}}">
+                                <Setter Property="Header" Value="{Binding Name}"/>
+                                <Setter Property="IsCheckable" Value="True"/>
+                                <Setter Property="IsChecked" Value="{Binding IsSelected}"/>
+                                <Setter Property="Command" Value="{Binding DataContext.SelectPresetCommand, RelativeSource={RelativeSource AncestorType=Window}}"/>
+                                <Setter Property="CommandParameter" Value="{Binding}"/>
+                            </Style>
+                        </MenuItem.ItemContainerStyle>
+                    </MenuItem>
+                    <Separator/>
+                    <MenuItem Header="{DynamicResource Button.ApplyPresetWip}"
+                              Command="{Binding ApplyPresetCommand}"
+                              CommandParameter="{Binding SelectedPreset}"/>
+                    <MenuItem Header="{DynamicResource Button.RevertPreset}"
+                              Command="{Binding RevertPresetCommand}"/>
+                </MenuItem>
                 <Separator/>
                 <MenuItem Header="{DynamicResource Menu.Edit.ResetAdjustments}" Command="{Binding ResetAdjustmentsCommand}"/>
                 <MenuItem Header="{DynamicResource Menu.Edit.ResetDetailedAdjustments}" Command="{Binding ResetDetailedAdjustmentsCommand}"/>
@@ -1114,7 +1139,54 @@
                     <!-- ──── VRChat向けプリセット ──── -->
                     <Expander Header="{DynamicResource Panel.PresetWip}" IsExpanded="False">
                         <StackPanel>
-                            <Button Content="{DynamicResource Button.ApplyPresetWip}" Style="{StaticResource Btn}" IsEnabled="False" HorizontalAlignment="Left"/>
+                            <TextBlock Text="{DynamicResource Field.Preset}" Style="{StaticResource ParamLabel}" Margin="0,0,0,4"/>
+                            <ComboBox ItemsSource="{Binding Presets}"
+                                      SelectedItem="{Binding SelectedPreset}"
+                                      DisplayMemberPath="Name"
+                                      Margin="0,0,0,4"/>
+                            <TextBlock Text="{Binding SelectedPreset.Description, TargetNullValue=''}"
+                                       Style="{StaticResource ParamLabel}"
+                                       Foreground="{DynamicResource TextSecondaryBrush}"
+                                       TextWrapping="Wrap"
+                                       Margin="0,0,0,8"/>
+                            <Grid Margin="0,0,0,8">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="78"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="34"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Text="{DynamicResource Field.PresetStrength}" Style="{StaticResource ParamLabel}"/>
+                                <Slider Grid.Column="1"
+                                        Tag="NoUndo"
+                                        Value="{Binding PresetStrength}"
+                                        Minimum="0"
+                                        Maximum="100"
+                                        SmallChange="1"
+                                        TickFrequency="1"
+                                        IsSnapToTickEnabled="True"
+                                        IsEnabled="{Binding HasImage}"/>
+                                <TextBox Grid.Column="2"
+                                         Style="{StaticResource ValueTextBox}"
+                                         Text="{Binding PresetStrength, Converter={StaticResource SliderValuePresetStrength}, ConverterParameter='0,100,F0', UpdateSourceTrigger=LostFocus}"/>
+                            </Grid>
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+                                <Button Grid.Column="0"
+                                        Content="{DynamicResource Button.ApplyPresetWip}"
+                                        Style="{StaticResource BtnAccent}"
+                                        Margin="0,0,6,0"
+                                        HorizontalAlignment="Stretch"
+                                        Command="{Binding ApplyPresetCommand}"
+                                        CommandParameter="{Binding SelectedPreset}"/>
+                                <Button Grid.Column="1"
+                                        Content="{DynamicResource Button.RevertPreset}"
+                                        Style="{StaticResource Btn}"
+                                        HorizontalAlignment="Right"
+                                        Command="{Binding RevertPresetCommand}"/>
+                            </Grid>
                         </StackPanel>
                     </Expander>
 

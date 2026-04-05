@@ -17,17 +17,39 @@ public partial class MainViewModel
     partial void OnShadowsChanged(double value) => SchedulePreviewUpdate();
     partial void OnHighlightsChanged(double value) => SchedulePreviewUpdate();
     partial void OnClarityChanged(double value) => SchedulePreviewUpdate();
-    partial void OnBlurChanged(double value) => SchedulePreviewUpdate();
+    partial void OnBlurChanged(double value)
+    {
+        double clamped = Math.Clamp(value, 0.0, 100.0);
+        if (!AreClose(clamped, value))
+        {
+            Blur = clamped;
+            return;
+        }
+
+        SchedulePreviewUpdate();
+    }
     partial void OnSharpenChanged(double value) => SchedulePreviewUpdate();
     partial void OnVignetteChanged(double value) => SchedulePreviewUpdate();
+    partial void OnSelectedPresetChanged(PresetItem? value)
+    {
+        SyncPresetSelectionFlags();
+        ClearPresetApplicationContext();
+        ApplyPresetCommand.NotifyCanExecuteChanged();
+        RevertPresetCommand.NotifyCanExecuteChanged();
+    }
     partial void OnIsMaskEnabledChanged(bool value)
     {
         MarkCurrentSessionDirty();
         SchedulePreviewUpdate();
     }
 
-    partial void OnSourceFilePathChanged(string? value) =>
+    partial void OnSourceFilePathChanged(string? value)
+    {
         WindowTitle = BuildWindowTitle(value);
+        ClearPresetApplicationContext();
+        ApplyPresetCommand.NotifyCanExecuteChanged();
+        RevertPresetCommand.NotifyCanExecuteChanged();
+    }
 
     partial void OnIsDirtyChanged(bool value) =>
         WindowTitle = BuildWindowTitle(SourceFilePath);

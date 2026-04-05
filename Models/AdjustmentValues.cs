@@ -34,6 +34,7 @@ public readonly record struct AdjustmentValues(
         Clarity: (float)Clarity,
         Sharpen: (float)Sharpen,
         Vignette: (float)Vignette,
-        Blur: (float)Blur
+        // UI の 0–100 を内部処理向けの 0–300 に拡張する
+        Blur: (float)(Math.Clamp(Blur, 0.0, 100.0) * 3.0)
     );
 }

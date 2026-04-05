@@ -87,7 +87,7 @@
     <sys:String x:Key="Menu.Edit">編集(_E)</sys:String>
     <sys:String x:Key="Menu.Edit.Undo">元に戻す(_U)</sys:String>
     <sys:String x:Key="Menu.Edit.Redo">やり直す(_R)</sys:String>
-    <sys:String x:Key="Menu.Edit.PresetWip">プリセット  (準備中)</sys:String>
+    <sys:String x:Key="Menu.Edit.PresetWip">プリセット</sys:String>
     <sys:String x:Key="Menu.Edit.ResetAdjustments">基本補正をリセット（マスクは適用外）</sys:String>
     <sys:String x:Key="Menu.Edit.ResetDetailedAdjustments">詳細補正をリセット（マスクは適用外）</sys:String>
     <sys:String x:Key="Menu.Edit.ResetAll">すべてリセット</sys:String>
@@ -120,7 +120,7 @@
     <sys:String x:Key="Compare.Split">分割</sys:String>
 
     <sys:String x:Key="Panel.BasicAdjustments">基本補正</sys:String>
-    <sys:String x:Key="Panel.PresetWip">VRChat向けプリセット (準備中)</sys:String>
+    <sys:String x:Key="Panel.PresetWip">VRChat向けプリセット</sys:String>
     <sys:String x:Key="Panel.CropComposition">トリミング・構図</sys:String>
     <sys:String x:Key="Panel.DetailedAdjustments">詳細補正</sys:String>
     <sys:String x:Key="Panel.Mask">マスク</sys:String>
@@ -133,6 +133,8 @@
     <sys:String x:Key="Field.Saturation">彩度</sys:String>
     <sys:String x:Key="Field.Temperature">色温度</sys:String>
     <sys:String x:Key="Field.Tint">色かぶり</sys:String>
+    <sys:String x:Key="Field.Preset">プリセット</sys:String>
+    <sys:String x:Key="Field.PresetStrength">強さ</sys:String>
     <sys:String x:Key="Field.AspectRatio">アスペクト比</sys:String>
     <sys:String x:Key="Field.RotateFlip">回転・反転</sys:String>
     <sys:String x:Key="Field.Shadows">シャドウ</sys:String>
@@ -145,7 +147,8 @@
     <sys:String x:Key="Field.JpegQuality">JPEG 品質</sys:String>
 
     <sys:String x:Key="Button.ResetAdjustments">補正をリセット</sys:String>
-    <sys:String x:Key="Button.ApplyPresetWip">プリセット適用 (準備中)</sys:String>
+    <sys:String x:Key="Button.ApplyPresetWip">プリセットを適用</sys:String>
+    <sys:String x:Key="Button.RevertPreset">適用前に戻す</sys:String>
     <sys:String x:Key="Button.RotateClockwise">↻ 右90°</sys:String>
     <sys:String x:Key="Button.RotateCounterClockwise">↺ 左90°</sys:String>
     <sys:String x:Key="Button.FlipHorizontal">↔ 左右</sys:String>
@@ -190,6 +193,19 @@
     <sys:String x:Key="Mask.AdjustButton">補正</sys:String>
     <sys:String x:Key="Mask.AdjustmentsTitle">マスクレイヤー補正</sys:String>
     <sys:String x:Key="Mask.NaturalizeBoundary">境界線を自然にする</sys:String>
+
+    <sys:String x:Key="Preset.SoftPortrait.Name">ソフトポートレート</sys:String>
+    <sys:String x:Key="Preset.SoftPortrait.Description">人物を明るくやわらかく見せる、暖かめの仕上がりです。</sys:String>
+    <sys:String x:Key="Preset.NeonNight.Name">ネオンナイト</sys:String>
+    <sys:String x:Key="Preset.NeonNight.Description">夜景やネオン向けの、冷たさと彩度を強めた雰囲気です。</sys:String>
+    <sys:String x:Key="Preset.SunsetFilm.Name">サンセットフィルム</sys:String>
+    <sys:String x:Key="Preset.SunsetFilm.Description">夕景を意識した、暖色寄りのシネマ風トーンです。</sys:String>
+    <sys:String x:Key="Preset.CoolClear.Name">クールクリア</sys:String>
+    <sys:String x:Key="Preset.CoolClear.Description">青みを少し加え、輪郭をくっきり見せる仕上がりです。</sys:String>
+    <sys:String x:Key="Preset.MatteSoft.Name">マットソフト</sys:String>
+    <sys:String x:Key="Preset.MatteSoft.Description">コントラストを抑えて、ふんわりしたマットな質感にします。</sys:String>
+    <sys:String x:Key="Preset.PunchyDetail.Name">パンチディテール</sys:String>
+    <sys:String x:Key="Preset.PunchyDetail.Description">立体感と解像感を強調した、力強い仕上がりです。</sys:String>
 
     <sys:String x:Key="Settings.Title">アプリ設定</sys:String>
     <sys:String x:Key="Settings.Section.General">一般</sys:String>

@@ -7,11 +7,15 @@ namespace VRCosme.Pipeline;
 
 internal sealed class BlurStep : IAdjustmentStep
 {
+    private const float MaxBlurValue = 300f;
+    private const float MaxSigma = 15f;
+
     public void Apply(Image<Rgba32> image, AdjustmentParams parameters)
     {
         if (parameters.Blur <= 0.5f) return;
 
-        float sigma = parameters.Blur / 100f * 5f + 0.2f;
+        float blur = Math.Clamp(parameters.Blur, 0f, MaxBlurValue);
+        float sigma = blur / MaxBlurValue * MaxSigma + 0.2f;
         image.Mutate(ctx => ctx.GaussianBlur(sigma));
     }
 }

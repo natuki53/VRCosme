@@ -87,7 +87,7 @@
     <sys:String x:Key="Menu.Edit">편집(_E)</sys:String>
     <sys:String x:Key="Menu.Edit.Undo">실행 취소(_U)</sys:String>
     <sys:String x:Key="Menu.Edit.Redo">다시 실행(_R)</sys:String>
-    <sys:String x:Key="Menu.Edit.PresetWip">프리셋  (준비 중)</sys:String>
+    <sys:String x:Key="Menu.Edit.PresetWip">프리셋</sys:String>
     <sys:String x:Key="Menu.Edit.ResetAdjustments">기본 보정 초기화 (마스크는 적용 안 함)</sys:String>
     <sys:String x:Key="Menu.Edit.ResetDetailedAdjustments">상세 보정 초기화 (마스크는 적용 안 함)</sys:String>
     <sys:String x:Key="Menu.Edit.ResetAll">전체 초기화</sys:String>
@@ -120,7 +120,7 @@
     <sys:String x:Key="Compare.Split">분할</sys:String>
 
     <sys:String x:Key="Panel.BasicAdjustments">기본 보정</sys:String>
-    <sys:String x:Key="Panel.PresetWip">VRChat 프리셋 (준비 중)</sys:String>
+    <sys:String x:Key="Panel.PresetWip">VRChat 프리셋</sys:String>
     <sys:String x:Key="Panel.CropComposition">자르기 &amp; 구도</sys:String>
     <sys:String x:Key="Panel.DetailedAdjustments">세부 보정</sys:String>
     <sys:String x:Key="Panel.Mask">마스크</sys:String>
@@ -133,6 +133,8 @@
     <sys:String x:Key="Field.Saturation">채도</sys:String>
     <sys:String x:Key="Field.Temperature">색온도</sys:String>
     <sys:String x:Key="Field.Tint">색조</sys:String>
+    <sys:String x:Key="Field.Preset">프리셋</sys:String>
+    <sys:String x:Key="Field.PresetStrength">강도</sys:String>
     <sys:String x:Key="Field.AspectRatio">종횡비</sys:String>
     <sys:String x:Key="Field.RotateFlip">회전 / 반전</sys:String>
     <sys:String x:Key="Field.Shadows">그림자</sys:String>
@@ -145,7 +147,8 @@
     <sys:String x:Key="Field.JpegQuality">JPEG 품질</sys:String>
 
     <sys:String x:Key="Button.ResetAdjustments">보정 초기화</sys:String>
-    <sys:String x:Key="Button.ApplyPresetWip">프리셋 적용 (준비 중)</sys:String>
+    <sys:String x:Key="Button.ApplyPresetWip">프리셋 적용</sys:String>
+    <sys:String x:Key="Button.RevertPreset">적용 전으로 되돌리기</sys:String>
     <sys:String x:Key="Button.RotateClockwise">↻ 오른쪽 90°</sys:String>
     <sys:String x:Key="Button.RotateCounterClockwise">↺ 왼쪽 90°</sys:String>
     <sys:String x:Key="Button.FlipHorizontal">↔ 좌우 반전</sys:String>
@@ -190,6 +193,19 @@
     <sys:String x:Key="Mask.AdjustButton">보정</sys:String>
     <sys:String x:Key="Mask.AdjustmentsTitle">마스크 레이어 보정</sys:String>
     <sys:String x:Key="Mask.NaturalizeBoundary">경계선을 자연스럽게 하기</sys:String>
+
+    <sys:String x:Key="Preset.SoftPortrait.Name">소프트 포트레이트</sys:String>
+    <sys:String x:Key="Preset.SoftPortrait.Description">인물을 밝고 부드럽게 보이게 하는 따뜻한 톤입니다.</sys:String>
+    <sys:String x:Key="Preset.NeonNight.Name">네온 나이트</sys:String>
+    <sys:String x:Key="Preset.NeonNight.Description">네온/야경에 맞춘 차갑고 선명한 분위기입니다.</sys:String>
+    <sys:String x:Key="Preset.SunsetFilm.Name">선셋 필름</sys:String>
+    <sys:String x:Key="Preset.SunsetFilm.Description">노을 느낌의 따뜻한 시네마 톤입니다.</sys:String>
+    <sys:String x:Key="Preset.CoolClear.Name">쿨 클리어</sys:String>
+    <sys:String x:Key="Preset.CoolClear.Description">시원한 색감과 또렷한 디테일을 강조합니다.</sys:String>
+    <sys:String x:Key="Preset.MatteSoft.Name">매트 소프트</sys:String>
+    <sys:String x:Key="Preset.MatteSoft.Description">대비를 낮춘 부드러운 매트 질감입니다.</sys:String>
+    <sys:String x:Key="Preset.PunchyDetail.Name">펀치 디테일</sys:String>
+    <sys:String x:Key="Preset.PunchyDetail.Description">대비와 디테일을 강하게 살린 드라마틱한 스타일입니다.</sys:String>
 
     <sys:String x:Key="Settings.Title">앱 설정</sys:String>
     <sys:String x:Key="Settings.Section.General">일반</sys:String>
