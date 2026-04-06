@@ -8,6 +8,11 @@ namespace VRCosme.Views;
 
 public partial class AutoMaskSettingsDialog : Window
 {
+    private sealed record SelectionModeOption(AutoMaskSelectionMode Value, string Label)
+    {
+        public override string ToString() => Label;
+    }
+
     private sealed record SelectOption(AutoMaskTargetKind Value, string Label)
     {
         public override string ToString() => Label;
@@ -26,6 +31,8 @@ public partial class AutoMaskSettingsDialog : Window
     public AutoMaskSettingsDialog()
     {
         InitializeComponent();
+        RefreshSamModelName();
+        RefreshSamModelStatus();
 
         _modelUiById = new Dictionary<string, ModelUi>(StringComparer.OrdinalIgnoreCase)
         {
@@ -43,6 +50,22 @@ public partial class AutoMaskSettingsDialog : Window
 
     private void LoadCurrentSettings()
     {
+        SelectionModeComboBox.ItemsSource = new[]
+        {
+            new SelectionModeOption(AutoMaskSelectionMode.Sam,
+                LocalizationService.GetString(
+                    "AutoMaskSettings.SelectionMode.Sam",
+                    "SAM (Segment Anything, click-based)")),
+            new SelectionModeOption(AutoMaskSelectionMode.SalientObjectDetection,
+                LocalizationService.GetString(
+                    "AutoMaskSettings.SelectionMode.SalientObjectDetection",
+                    "Salient Object Detection (legacy)")),
+        };
+        SelectionModeComboBox.SelectedValuePath = nameof(SelectionModeOption.Value);
+        SelectionModeComboBox.SelectedValue = ThemeService.GetAutoMaskSelectionMode();
+        if (SelectionModeComboBox.SelectedIndex < 0)
+            SelectionModeComboBox.SelectedIndex = 0;
+
         TargetComboBox.ItemsSource = new[]
         {
             new SelectOption(AutoMaskTargetKind.Human,
@@ -75,6 +98,85 @@ public partial class AutoMaskSettingsDialog : Window
 
         MultiPassCheckBox.IsChecked = ThemeService.GetAutoMaskMultiPassEnabled();
         UpdateSelectedModelText();
+        UpdateSelectionModeDependentUi();
+    }
+
+    private void RefreshSamModelName()
+    {
+        var def = SamModelCatalog.GetDefault();
+        var label = LocalizationService.GetString(def.DisplayNameKey, def.EncoderFileName);
+        SamModelNameText.Text = label;
+    }
+
+    private void RefreshSamModelStatus()
+    {
+        var def = SamModelCatalog.GetDefault();
+        bool installed = SamModelManager.IsModelInstalled(def);
+        if (installed)
+        {
+            var (encBytes, decBytes) = SamModelManager.GetModelSizeBytes(def);
+            double totalMb = (encBytes + decBytes) / (1024.0 * 1024.0);
+            SamModelStatusText.Text = LocalizationService.Format(
+                "AutoMaskSettings.Status.Installed", "Installed ({0:F1} MB)", totalMb);
+        }
+        else
+        {
+            SamModelStatusText.Text = LocalizationService.GetString(
+                "AutoMaskSettings.Status.NotInstalled", "Not installed");
+        }
+
+        DownloadSamButton.IsEnabled = !_isBusy && !installed;
+        DeleteSamButton.IsEnabled = !_isBusy && installed;
+    }
+
+    private async void DownloadSamModel_Click(object sender, RoutedEventArgs e)
+    {
+        if (_isBusy) return;
+        var def = SamModelCatalog.GetDefault();
+        SetBusy(true);
+        try
+        {
+            await SamModelManager.EnsureModelDownloadedAsync(def);
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show(
+                LocalizationService.Format(
+                    "Dialog.AIAutoMask.DownloadFailed",
+                    "Failed to download AI auto mask model:\n{0}",
+                    ex.Message),
+                LocalizationService.GetString("Dialog.ErrorTitle", "Error"),
+                MessageBoxButton.OK,
+                MessageBoxImage.Error);
+        }
+        finally
+        {
+            SetBusy(false);
+            RefreshSamModelStatus();
+        }
+    }
+
+    private void DeleteSamModel_Click(object sender, RoutedEventArgs e)
+    {
+        if (_isBusy) return;
+        var def = SamModelCatalog.GetDefault();
+        try
+        {
+            SamModelManager.DeleteModel(def);
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show(
+                LocalizationService.Format(
+                    "Dialog.AIAutoMask.DeleteFailed",
+                    "Failed to delete AI auto mask model:\n{0}",
+                    ex.Message),
+                LocalizationService.GetString("Dialog.ErrorTitle", "Error"),
+                MessageBoxButton.OK,
+                MessageBoxImage.Error);
+        }
+
+        RefreshSamModelStatus();
     }
 
     private void RefreshModelNames()
@@ -121,6 +223,23 @@ public partial class AutoMaskSettingsDialog : Window
     private void TargetComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
     {
         UpdateSelectedModelText();
+    }
+
+    private void SelectionModeComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+    {
+        UpdateSelectionModeDependentUi();
+    }
+
+    private void UpdateSelectionModeDependentUi()
+    {
+        bool isSamMode = SelectionModeComboBox.SelectedValue is AutoMaskSelectionMode.Sam;
+        var legacyVisibility = isSamMode ? Visibility.Collapsed : Visibility.Visible;
+
+        LegacyTargetRow.Visibility = legacyVisibility;
+        LegacySelectedModelRow.Visibility = legacyVisibility;
+        MultiPassCheckBox.Visibility = legacyVisibility;
+        LegacyModelManagerSection.Visibility = legacyVisibility;
+        SamSectionPanel.Visibility = isSamMode ? Visibility.Visible : Visibility.Collapsed;
     }
 
     private void UpdateSelectedModelText()
@@ -196,14 +315,19 @@ public partial class AutoMaskSettingsDialog : Window
     {
         _isBusy = value;
         Cursor = value ? System.Windows.Input.Cursors.Wait : null;
+        SelectionModeComboBox.IsEnabled = !value;
         TargetComboBox.IsEnabled = !value;
         ExecutionDeviceComboBox.IsEnabled = !value;
         MultiPassCheckBox.IsEnabled = !value;
         RefreshModelStatus();
+        RefreshSamModelStatus();
     }
 
     private void Ok_Click(object sender, RoutedEventArgs e)
     {
+        if (SelectionModeComboBox.SelectedValue is AutoMaskSelectionMode selectionMode)
+            ThemeService.SaveAutoMaskSelectionMode(selectionMode);
+
         if (TargetComboBox.SelectedValue is AutoMaskTargetKind target)
             ThemeService.SaveAutoMaskTargetKind(target);
 

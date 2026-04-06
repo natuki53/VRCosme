@@ -388,6 +388,36 @@ public static class ThemeService
         }
     }
 
+    public static AutoMaskSelectionMode GetAutoMaskSelectionMode()
+    {
+        try
+        {
+            var value = LoadSettings().AutoMaskSelectionMode;
+            return Enum.TryParse<AutoMaskSelectionMode>(value, ignoreCase: true, out var parsed)
+                ? parsed
+                : AutoMaskSelectionMode.Sam;
+        }
+        catch
+        {
+            return AutoMaskSelectionMode.Sam;
+        }
+    }
+
+    public static void SaveAutoMaskSelectionMode(AutoMaskSelectionMode value)
+    {
+        try
+        {
+            Directory.CreateDirectory(DataDir);
+            var settings = LoadSettings();
+            settings.AutoMaskSelectionMode = value.ToString();
+            SaveSettings(settings);
+        }
+        catch
+        {
+            // 保存失敗は無視
+        }
+    }
+
     public static bool GetAutoMaskMultiPassEnabled()
     {
         try { return LoadSettings().AutoMaskMultiPassEnabled; }
@@ -553,6 +583,7 @@ public static class ThemeService
         public int DefaultJpegQuality { get; set; } = 90;
         public string AutoMaskModelPath { get; set; } = "";
         public string AutoMaskTargetKind { get; set; } = nameof(VRCosme.Models.AutoMaskTargetKind.Human);
+        public string AutoMaskSelectionMode { get; set; } = nameof(VRCosme.Models.AutoMaskSelectionMode.Sam);
         public bool AutoMaskMultiPassEnabled { get; set; } = true;
         public string AutoMaskExecutionDevice { get; set; } = nameof(VRCosme.Models.AutoMaskExecutionDevice.Cpu);
     }

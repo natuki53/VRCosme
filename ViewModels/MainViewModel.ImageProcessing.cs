@@ -90,6 +90,7 @@ public partial class MainViewModel
                 _previewSourceImage = preview;
             }
 
+            _imageVersion = unchecked(_imageVersion + 1);
             SourceFilePath = filePath;
             ImageWidth = transformed.Width;
             ImageHeight = transformed.Height;
@@ -160,6 +161,7 @@ public partial class MainViewModel
             oldTransformed?.Dispose();
             oldPreview?.Dispose();
 
+            _imageVersion = unchecked(_imageVersion + 1);
             ImageWidth = transformed.Width;
             ImageHeight = transformed.Height;
             PreviewScale = (double)preview.Width / transformed.Width;
