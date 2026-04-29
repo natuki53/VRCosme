@@ -77,6 +77,19 @@
                         <ColumnDefinition Width="180"/>
                         <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
+                    <TextBlock Text="{DynamicResource AutoMaskSettings.SelectionModeLabel}"
+                               VerticalAlignment="Center"
+                               Foreground="{DynamicResource LabelForegroundBrush}"/>
+                    <ComboBox x:Name="SelectionModeComboBox"
+                              Grid.Column="1"
+                              SelectionChanged="SelectionModeComboBox_SelectionChanged"/>
+                </Grid>
+
+                <Grid x:Name="LegacyTargetRow" Margin="0,0,0,8">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="180"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
                     <TextBlock Text="{DynamicResource AutoMaskSettings.TargetLabel}"
                                VerticalAlignment="Center"
                                Foreground="{DynamicResource LabelForegroundBrush}"/>
@@ -97,7 +110,7 @@
                               Grid.Column="1"/>
                 </Grid>
 
-                <Grid Margin="0,0,0,8">
+                <Grid x:Name="LegacySelectedModelRow" Margin="0,0,0,8">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="180"/>
                         <ColumnDefinition Width="*"/>
@@ -115,70 +128,104 @@
                           Content="{DynamicResource AutoMaskSettings.MultiPass}"
                           Margin="0,0,0,10"/>
 
-                <Separator Margin="0,4,0,10" Background="{DynamicResource SeparatorBrush}"/>
+                <StackPanel x:Name="SamSectionPanel">
+                    <Separator Margin="0,4,0,10" Background="{DynamicResource SeparatorBrush}"/>
 
-                <TextBlock Text="{DynamicResource AutoMaskSettings.ModelManagerTitle}"
-                           FontSize="13.5"
-                           FontWeight="SemiBold"
-                           Margin="0,0,0,6"/>
+                    <!-- SAM セクション -->
+                    <TextBlock Text="{DynamicResource SamSettings.Title}"
+                               FontSize="13.5"
+                               FontWeight="SemiBold"
+                               Margin="0,0,0,6"/>
 
-                <TextBlock Text="{DynamicResource AutoMaskSettings.ModelManagerHint}"
-                           TextWrapping="Wrap"
-                           Foreground="{DynamicResource TextSecondaryBrush}"
-                           Margin="0,0,0,8"/>
+                    <TextBlock Text="{DynamicResource SamSettings.Description}"
+                               TextWrapping="Wrap"
+                               Foreground="{DynamicResource TextSecondaryBrush}"
+                               Margin="0,0,0,8"/>
 
-                <Border BorderBrush="{DynamicResource ControlBorderBrush}" BorderThickness="1" CornerRadius="6" Padding="8">
-                    <Grid>
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                        </Grid.RowDefinitions>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="200"/>
-                            <ColumnDefinition Width="92"/>
-                            <ColumnDefinition Width="92"/>
-                        </Grid.ColumnDefinitions>
+                    <Border BorderBrush="{DynamicResource ControlBorderBrush}" BorderThickness="1" CornerRadius="6" Padding="8" Margin="0,0,0,12">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="200"/>
+                                <ColumnDefinition Width="92"/>
+                                <ColumnDefinition Width="92"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Grid.Column="0" x:Name="SamModelNameText" Style="{StaticResource ModelNameTextStyle}"/>
+                            <TextBlock Grid.Column="1" x:Name="SamModelStatusText" Style="{StaticResource ModelStatusTextStyle}"/>
+                            <Button Grid.Column="2" x:Name="DownloadSamButton" Style="{StaticResource Btn}" Margin="6,2,2,2"
+                                    Content="{DynamicResource AutoMaskSettings.Download}" Tag="mobile_sam" Click="DownloadSamModel_Click"/>
+                            <Button Grid.Column="3" x:Name="DeleteSamButton" Style="{StaticResource Btn}" Margin="2,2,0,2"
+                                    Content="{DynamicResource AutoMaskSettings.Delete}" Tag="mobile_sam" Click="DeleteSamModel_Click"/>
+                        </Grid>
+                    </Border>
+                </StackPanel>
 
-                        <TextBlock Grid.Row="0" Grid.Column="0" x:Name="ModelNameHumanText" Style="{StaticResource ModelNameTextStyle}"/>
-                        <TextBlock Grid.Row="0" Grid.Column="1" x:Name="ModelStatusHumanText" Style="{StaticResource ModelStatusTextStyle}"/>
-                        <Button Grid.Row="0" Grid.Column="2" x:Name="DownloadHumanButton" Style="{StaticResource Btn}" Margin="6,2,2,2"
-                                Content="{DynamicResource AutoMaskSettings.Download}" Tag="u2net_human_seg" Click="DownloadModel_Click"/>
-                        <Button Grid.Row="0" Grid.Column="3" x:Name="DeleteHumanButton" Style="{StaticResource Btn}" Margin="2,2,0,2"
-                                Content="{DynamicResource AutoMaskSettings.Delete}" Tag="u2net_human_seg" Click="DeleteModel_Click"/>
+                <StackPanel x:Name="LegacyModelManagerSection">
+                    <Separator Margin="0,4,0,10" Background="{DynamicResource SeparatorBrush}"/>
 
-                        <TextBlock Grid.Row="1" Grid.Column="0" x:Name="ModelNameObjectText" Style="{StaticResource ModelNameTextStyle}"/>
-                        <TextBlock Grid.Row="1" Grid.Column="1" x:Name="ModelStatusObjectText" Style="{StaticResource ModelStatusTextStyle}"/>
-                        <Button Grid.Row="1" Grid.Column="2" x:Name="DownloadObjectButton" Style="{StaticResource Btn}" Margin="6,2,2,2"
-                                Content="{DynamicResource AutoMaskSettings.Download}" Tag="isnet_general_use" Click="DownloadModel_Click"/>
-                        <Button Grid.Row="1" Grid.Column="3" x:Name="DeleteObjectButton" Style="{StaticResource Btn}" Margin="2,2,0,2"
-                                Content="{DynamicResource AutoMaskSettings.Delete}" Tag="isnet_general_use" Click="DeleteModel_Click"/>
+                    <TextBlock Text="{DynamicResource AutoMaskSettings.ModelManagerTitle}"
+                               FontSize="13.5"
+                               FontWeight="SemiBold"
+                               Margin="0,0,0,6"/>
 
-                        <TextBlock Grid.Row="2" Grid.Column="0" x:Name="ModelNameBackgroundText" Style="{StaticResource ModelNameTextStyle}"/>
-                        <TextBlock Grid.Row="2" Grid.Column="1" x:Name="ModelStatusBackgroundText" Style="{StaticResource ModelStatusTextStyle}"/>
-                        <Button Grid.Row="2" Grid.Column="2" x:Name="DownloadBackgroundButton" Style="{StaticResource Btn}" Margin="6,2,2,2"
-                                Content="{DynamicResource AutoMaskSettings.Download}" Tag="u2net" Click="DownloadModel_Click"/>
-                        <Button Grid.Row="2" Grid.Column="3" x:Name="DeleteBackgroundButton" Style="{StaticResource Btn}" Margin="2,2,0,2"
-                                Content="{DynamicResource AutoMaskSettings.Delete}" Tag="u2net" Click="DeleteModel_Click"/>
+                    <TextBlock Text="{DynamicResource AutoMaskSettings.ModelManagerHint}"
+                               TextWrapping="Wrap"
+                               Foreground="{DynamicResource TextSecondaryBrush}"
+                               Margin="0,0,0,8"/>
 
-                        <TextBlock Grid.Row="3" Grid.Column="0" x:Name="ModelNameOtherText" Style="{StaticResource ModelNameTextStyle}"/>
-                        <TextBlock Grid.Row="3" Grid.Column="1" x:Name="ModelStatusOtherText" Style="{StaticResource ModelStatusTextStyle}"/>
-                        <Button Grid.Row="3" Grid.Column="2" x:Name="DownloadOtherButton" Style="{StaticResource Btn}" Margin="6,2,2,2"
-                                Content="{DynamicResource AutoMaskSettings.Download}" Tag="isnet_anime" Click="DownloadModel_Click"/>
-                        <Button Grid.Row="3" Grid.Column="3" x:Name="DeleteOtherButton" Style="{StaticResource Btn}" Margin="2,2,0,2"
-                                Content="{DynamicResource AutoMaskSettings.Delete}" Tag="isnet_anime" Click="DeleteModel_Click"/>
+                    <Border BorderBrush="{DynamicResource ControlBorderBrush}" BorderThickness="1" CornerRadius="6" Padding="8">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="200"/>
+                                <ColumnDefinition Width="92"/>
+                                <ColumnDefinition Width="92"/>
+                            </Grid.ColumnDefinitions>
 
-                        <TextBlock Grid.Row="4" Grid.Column="0" x:Name="ModelNameLightweightText" Style="{StaticResource ModelNameTextStyle}"/>
-                        <TextBlock Grid.Row="4" Grid.Column="1" x:Name="ModelStatusLightweightText" Style="{StaticResource ModelStatusTextStyle}"/>
-                        <Button Grid.Row="4" Grid.Column="2" x:Name="DownloadLightweightButton" Style="{StaticResource Btn}" Margin="6,2,2,2"
-                                Content="{DynamicResource AutoMaskSettings.Download}" Tag="silueta" Click="DownloadModel_Click"/>
-                        <Button Grid.Row="4" Grid.Column="3" x:Name="DeleteLightweightButton" Style="{StaticResource Btn}" Margin="2,2,0,2"
-                                Content="{DynamicResource AutoMaskSettings.Delete}" Tag="silueta" Click="DeleteModel_Click"/>
-                    </Grid>
-                </Border>
+                            <TextBlock Grid.Row="0" Grid.Column="0" x:Name="ModelNameHumanText" Style="{StaticResource ModelNameTextStyle}"/>
+                            <TextBlock Grid.Row="0" Grid.Column="1" x:Name="ModelStatusHumanText" Style="{StaticResource ModelStatusTextStyle}"/>
+                            <Button Grid.Row="0" Grid.Column="2" x:Name="DownloadHumanButton" Style="{StaticResource Btn}" Margin="6,2,2,2"
+                                    Content="{DynamicResource AutoMaskSettings.Download}" Tag="u2net_human_seg" Click="DownloadModel_Click"/>
+                            <Button Grid.Row="0" Grid.Column="3" x:Name="DeleteHumanButton" Style="{StaticResource Btn}" Margin="2,2,0,2"
+                                    Content="{DynamicResource AutoMaskSettings.Delete}" Tag="u2net_human_seg" Click="DeleteModel_Click"/>
+
+                            <TextBlock Grid.Row="1" Grid.Column="0" x:Name="ModelNameObjectText" Style="{StaticResource ModelNameTextStyle}"/>
+                            <TextBlock Grid.Row="1" Grid.Column="1" x:Name="ModelStatusObjectText" Style="{StaticResource ModelStatusTextStyle}"/>
+                            <Button Grid.Row="1" Grid.Column="2" x:Name="DownloadObjectButton" Style="{StaticResource Btn}" Margin="6,2,2,2"
+                                    Content="{DynamicResource AutoMaskSettings.Download}" Tag="isnet_general_use" Click="DownloadModel_Click"/>
+                            <Button Grid.Row="1" Grid.Column="3" x:Name="DeleteObjectButton" Style="{StaticResource Btn}" Margin="2,2,0,2"
+                                    Content="{DynamicResource AutoMaskSettings.Delete}" Tag="isnet_general_use" Click="DeleteModel_Click"/>
+
+                            <TextBlock Grid.Row="2" Grid.Column="0" x:Name="ModelNameBackgroundText" Style="{StaticResource ModelNameTextStyle}"/>
+                            <TextBlock Grid.Row="2" Grid.Column="1" x:Name="ModelStatusBackgroundText" Style="{StaticResource ModelStatusTextStyle}"/>
+                            <Button Grid.Row="2" Grid.Column="2" x:Name="DownloadBackgroundButton" Style="{StaticResource Btn}" Margin="6,2,2,2"
+                                    Content="{DynamicResource AutoMaskSettings.Download}" Tag="u2net" Click="DownloadModel_Click"/>
+                            <Button Grid.Row="2" Grid.Column="3" x:Name="DeleteBackgroundButton" Style="{StaticResource Btn}" Margin="2,2,0,2"
+                                    Content="{DynamicResource AutoMaskSettings.Delete}" Tag="u2net" Click="DeleteModel_Click"/>
+
+                            <TextBlock Grid.Row="3" Grid.Column="0" x:Name="ModelNameOtherText" Style="{StaticResource ModelNameTextStyle}"/>
+                            <TextBlock Grid.Row="3" Grid.Column="1" x:Name="ModelStatusOtherText" Style="{StaticResource ModelStatusTextStyle}"/>
+                            <Button Grid.Row="3" Grid.Column="2" x:Name="DownloadOtherButton" Style="{StaticResource Btn}" Margin="6,2,2,2"
+                                    Content="{DynamicResource AutoMaskSettings.Download}" Tag="isnet_anime" Click="DownloadModel_Click"/>
+                            <Button Grid.Row="3" Grid.Column="3" x:Name="DeleteOtherButton" Style="{StaticResource Btn}" Margin="2,2,0,2"
+                                    Content="{DynamicResource AutoMaskSettings.Delete}" Tag="isnet_anime" Click="DeleteModel_Click"/>
+
+                            <TextBlock Grid.Row="4" Grid.Column="0" x:Name="ModelNameLightweightText" Style="{StaticResource ModelNameTextStyle}"/>
+                            <TextBlock Grid.Row="4" Grid.Column="1" x:Name="ModelStatusLightweightText" Style="{StaticResource ModelStatusTextStyle}"/>
+                            <Button Grid.Row="4" Grid.Column="2" x:Name="DownloadLightweightButton" Style="{StaticResource Btn}" Margin="6,2,2,2"
+                                    Content="{DynamicResource AutoMaskSettings.Download}" Tag="silueta" Click="DownloadModel_Click"/>
+                            <Button Grid.Row="4" Grid.Column="3" x:Name="DeleteLightweightButton" Style="{StaticResource Btn}" Margin="2,2,0,2"
+                                    Content="{DynamicResource AutoMaskSettings.Delete}" Tag="silueta" Click="DeleteModel_Click"/>
+                        </Grid>
+                    </Border>
+                </StackPanel>
             </StackPanel>
         </ScrollViewer>
 

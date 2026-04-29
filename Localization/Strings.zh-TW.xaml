@@ -57,6 +57,7 @@
     <sys:String x:Key="Dialog.SelectExportDirectory.Title">選擇預設匯出資料夾</sys:String>
     <sys:String x:Key="Dialog.AIAutoMask.Failed">AI 自動選取遮罩失敗：&#10;{0}</sys:String>
     <sys:String x:Key="Dialog.AutoMaskByColor.Failed">以色彩自動選取失敗：&#10;{0}</sys:String>
+    <sys:String x:Key="Dialog.AIAutoMask.DownloadConfirm">AI 自動遮罩模型「{0}」尚未安裝。&#10;現在下載嗎？</sys:String>
     <sys:String x:Key="Dialog.AIAutoMask.DownloadFailed">下載 AI 自動遮罩模型失敗：&#10;{0}</sys:String>
     <sys:String x:Key="Dialog.AIAutoMask.DeleteFailed">刪除 AI 自動遮罩模型失敗：&#10;{0}</sys:String>
     <sys:String x:Key="Dialog.AIAutoMask.ModelFilter">ONNX 模型|*.onnx|所有檔案|*.*</sys:String>
@@ -229,6 +230,9 @@
 
     <sys:String x:Key="AutoMaskSettings.Title">AI 自動選取設定</sys:String>
     <sys:String x:Key="AutoMaskSettings.Description">可依要選取的目標切換模型。可在下方清單下載或刪除各模型。</sys:String>
+    <sys:String x:Key="AutoMaskSettings.SelectionModeLabel">AI 自動選取方式</sys:String>
+    <sys:String x:Key="AutoMaskSettings.SelectionMode.Sam">SAM（Segment Anything，點擊選取）</sys:String>
+    <sys:String x:Key="AutoMaskSettings.SelectionMode.SalientObjectDetection">顯著物體檢測（Salient Object Detection / 舊版方式）</sys:String>
     <sys:String x:Key="AutoMaskSettings.TargetLabel">選取目標</sys:String>
     <sys:String x:Key="AutoMaskSettings.ExecutionDeviceLabel">推論裝置</sys:String>
     <sys:String x:Key="AutoMaskSettings.ExecutionDevice.Cpu">CPU</sys:String>
@@ -253,6 +257,11 @@
     <sys:String x:Key="AutoMaskSettings.Model.Background">背景模型 (u2net)</sys:String>
     <sys:String x:Key="AutoMaskSettings.Model.Other">其他模型 (isnet-anime)</sys:String>
     <sys:String x:Key="AutoMaskSettings.Model.Lightweight">輕量模型 (silueta)</sys:String>
+
+    <!-- SAM (Segment Anything Model) -->
+    <sys:String x:Key="SamSettings.Title">SAM (Segment Anything) 自動選取</sys:String>
+    <sys:String x:Key="SamSettings.Description">AI 精確辨識並選取您點擊的物件。請下載編碼器（~40 MB）和解碼器（~4 MB）兩個檔案。同一影像的第二次以後點擊將快速處理。</sys:String>
+    <sys:String x:Key="SamSettings.Model.MobileSam">MobileSAM（編碼器 + 解碼器）</sys:String>
 
     <sys:String x:Key="Common.Ok">確定</sys:String>
     <sys:String x:Key="Common.Cancel">取消</sys:String>

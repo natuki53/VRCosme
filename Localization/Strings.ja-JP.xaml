@@ -57,6 +57,7 @@
     <sys:String x:Key="Dialog.SelectExportDirectory.Title">初期書き出しディレクトリを選択</sys:String>
     <sys:String x:Key="Dialog.AIAutoMask.Failed">AI自動選択に失敗しました:&#10;{0}</sys:String>
     <sys:String x:Key="Dialog.AutoMaskByColor.Failed">色による自動選択に失敗しました:&#10;{0}</sys:String>
+    <sys:String x:Key="Dialog.AIAutoMask.DownloadConfirm">AI自動選択モデル「{0}」がインストールされていません。&#10;今すぐダウンロードしますか？</sys:String>
     <sys:String x:Key="Dialog.AIAutoMask.DownloadFailed">AI自動選択モデルのダウンロードに失敗しました:&#10;{0}</sys:String>
     <sys:String x:Key="Dialog.AIAutoMask.DeleteFailed">AI自動選択モデルの削除に失敗しました:&#10;{0}</sys:String>
     <sys:String x:Key="Dialog.AIAutoMask.ModelFilter">ONNX モデル|*.onnx|すべてのファイル|*.*</sys:String>
@@ -229,6 +230,9 @@
 
     <sys:String x:Key="AutoMaskSettings.Title">AI自動選択の設定</sys:String>
     <sys:String x:Key="AutoMaskSettings.Description">選択対象に応じて使用モデルを切り替えます。モデルは下の一覧から事前にダウンロード・削除できます。</sys:String>
+    <sys:String x:Key="AutoMaskSettings.SelectionModeLabel">AI自動選択方式</sys:String>
+    <sys:String x:Key="AutoMaskSettings.SelectionMode.Sam">SAM (Segment Anything, クリック選択)</sys:String>
+    <sys:String x:Key="AutoMaskSettings.SelectionMode.SalientObjectDetection">顕著物体検出 (Salient Object Detection / 従来方式)</sys:String>
     <sys:String x:Key="AutoMaskSettings.TargetLabel">選択対象</sys:String>
     <sys:String x:Key="AutoMaskSettings.ExecutionDeviceLabel">推論デバイス</sys:String>
     <sys:String x:Key="AutoMaskSettings.ExecutionDevice.Cpu">CPU</sys:String>
@@ -253,6 +257,11 @@
     <sys:String x:Key="AutoMaskSettings.Model.Background">背景向け (u2net)</sys:String>
     <sys:String x:Key="AutoMaskSettings.Model.Other">その他向け (isnet-anime)</sys:String>
     <sys:String x:Key="AutoMaskSettings.Model.Lightweight">軽量向け (silueta)</sys:String>
+
+    <!-- SAM (Segment Anything Model) -->
+    <sys:String x:Key="SamSettings.Title">SAM (Segment Anything) による自動選択</sys:String>
+    <sys:String x:Key="SamSettings.Description">クリックした物体を AI が正確に認識して選択します。エンコーダー (~40 MB) とデコーダー (~4 MB) の2つのファイルをダウンロードしてください。同一画像の2回目以降のクリックは高速に処理されます。</sys:String>
+    <sys:String x:Key="SamSettings.Model.MobileSam">MobileSAM (エンコーダー + デコーダー)</sys:String>
 
     <sys:String x:Key="Common.Ok">OK</sys:String>
     <sys:String x:Key="Common.Cancel">キャンセル</sys:String>

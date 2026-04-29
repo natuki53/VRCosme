@@ -57,6 +57,7 @@
     <sys:String x:Key="Dialog.SelectExportDirectory.Title">Select default export directory</sys:String>
     <sys:String x:Key="Dialog.AIAutoMask.Failed">Failed to select mask with AI:&#10;{0}</sys:String>
     <sys:String x:Key="Dialog.AutoMaskByColor.Failed">Failed to auto-select mask by color:&#10;{0}</sys:String>
+    <sys:String x:Key="Dialog.AIAutoMask.DownloadConfirm">The AI auto select model "{0}" is not installed.&#10;Download it now?</sys:String>
     <sys:String x:Key="Dialog.AIAutoMask.DownloadFailed">Failed to download AI auto mask model:&#10;{0}</sys:String>
     <sys:String x:Key="Dialog.AIAutoMask.DeleteFailed">Failed to delete AI auto mask model:&#10;{0}</sys:String>
     <sys:String x:Key="Dialog.AIAutoMask.ModelFilter">ONNX Model|*.onnx|All Files|*.*</sys:String>
@@ -229,6 +230,9 @@
 
     <sys:String x:Key="AutoMaskSettings.Title">AI Auto Select Settings</sys:String>
     <sys:String x:Key="AutoMaskSettings.Description">Switch models based on the target you want to select. You can download or delete each model from the list below.</sys:String>
+    <sys:String x:Key="AutoMaskSettings.SelectionModeLabel">AI Auto Select Method</sys:String>
+    <sys:String x:Key="AutoMaskSettings.SelectionMode.Sam">SAM (Segment Anything, click-based)</sys:String>
+    <sys:String x:Key="AutoMaskSettings.SelectionMode.SalientObjectDetection">Salient Object Detection (legacy)</sys:String>
     <sys:String x:Key="AutoMaskSettings.TargetLabel">Selection Target</sys:String>
     <sys:String x:Key="AutoMaskSettings.ExecutionDeviceLabel">Inference Device</sys:String>
     <sys:String x:Key="AutoMaskSettings.ExecutionDevice.Cpu">CPU</sys:String>
@@ -253,6 +257,11 @@
     <sys:String x:Key="AutoMaskSettings.Model.Background">Background model (u2net)</sys:String>
     <sys:String x:Key="AutoMaskSettings.Model.Other">Other model (isnet-anime)</sys:String>
     <sys:String x:Key="AutoMaskSettings.Model.Lightweight">Lightweight model (silueta)</sys:String>
+
+    <!-- SAM (Segment Anything Model) -->
+    <sys:String x:Key="SamSettings.Title">SAM (Segment Anything) Auto-Select</sys:String>
+    <sys:String x:Key="SamSettings.Description">AI precisely recognizes and selects the object you click on. Download the encoder (~40 MB) and decoder (~4 MB) files. Subsequent clicks on the same image are processed quickly.</sys:String>
+    <sys:String x:Key="SamSettings.Model.MobileSam">MobileSAM (encoder + decoder)</sys:String>
 
     <sys:String x:Key="Common.Ok">OK</sys:String>
     <sys:String x:Key="Common.Cancel">Cancel</sys:String>

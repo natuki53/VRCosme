@@ -222,28 +222,68 @@ public partial class MainViewModel
 
     public async Task<bool> AutoSelectMaskAtAsync(double imageX, double imageY)
     {
-        var targetKind = ThemeService.GetAutoMaskTargetKind();
-        var model = AutoMaskModelCatalog.GetForTarget(targetKind);
-        var modelPath = await EnsureAutoMaskModelPathAsync(model);
-        if (string.IsNullOrWhiteSpace(modelPath))
+        var selectionMode = ThemeService.GetAutoMaskSelectionMode();
+        if (selectionMode == AutoMaskSelectionMode.SalientObjectDetection)
+        {
+            var targetKind = ThemeService.GetAutoMaskTargetKind();
+            var model = AutoMaskModelCatalog.GetForTarget(targetKind);
+            var modelPath = await EnsureAutoMaskModelPathAsync(model);
+            if (string.IsNullOrWhiteSpace(modelPath))
+                return false;
+
+            var legacyExecutionDevice = ThemeService.GetAutoMaskExecutionDevice();
+            bool useMultiPass = ThemeService.GetAutoMaskMultiPassEnabled();
+            int legacySeedX = Math.Clamp((int)Math.Round(imageX), 0, ImageWidth - 1);
+            int legacySeedY = Math.Clamp((int)Math.Round(imageY), 0, ImageHeight - 1);
+
+            return await RunMaskSelectionAsync(
+                "Status.AutoSelectingMask", "Selecting mask with AI...",
+                $"AI自動選択に失敗: x={legacySeedX}, y={legacySeedY}",
+                "Dialog.AIAutoMask.Failed", "Failed to select mask with AI:\n{0}",
+                "Status.AIAutoMaskError", "AI auto mask error",
+                input =>
+                {
+                    try
+                    {
+                        var r = _autoMaskSelector.CreateMask(
+                            input,
+                            modelPath,
+                            legacySeedX,
+                            legacySeedY,
+                            useMultiPass,
+                            legacyExecutionDevice);
+                        return (r.Mask, r.Width, r.Height);
+                    }
+                    finally { input.Dispose(); }
+                },
+                (mask, w, h) => IsMaskEraseMode
+                    ? SubtractSelectedMaskFromBinary(mask, w, h)
+                    : MergeSelectedMaskFromBinary(mask, w, h));
+        }
+
+        var samModel = SamModelCatalog.GetDefault();
+        var (encoderPath, decoderPath) = await EnsureSamModelPathsAsync(samModel);
+        if (encoderPath == null || decoderPath == null)
             return false;
 
         var executionDevice = ThemeService.GetAutoMaskExecutionDevice();
-        bool useMultiPass = ThemeService.GetAutoMaskMultiPassEnabled();
         int seedX = Math.Clamp((int)Math.Round(imageX), 0, ImageWidth - 1);
         int seedY = Math.Clamp((int)Math.Round(imageY), 0, ImageHeight - 1);
+        int capturedVersion = _imageVersion;
 
         return await RunMaskSelectionAsync(
             "Status.AutoSelectingMask", "Selecting mask with AI...",
-            $"AI自動選択に失敗: x={seedX}, y={seedY}",
+            $"SAM自動選択に失敗: x={seedX}, y={seedY}",
             "Dialog.AIAutoMask.Failed", "Failed to select mask with AI:\n{0}",
             "Status.AIAutoMaskError", "AI auto mask error",
             input =>
             {
                 try
                 {
-                    var r = _autoMaskSelector.CreateMask(input, modelPath, seedX, seedY, useMultiPass, executionDevice);
-                    return (r.Mask, r.Width, r.Height);
+                    var mask = _samSelector.CreateMask(
+                        input, capturedVersion, encoderPath, decoderPath,
+                        seedX, seedY, executionDevice);
+                    return (mask, input.Width, input.Height);
                 }
                 finally { input.Dispose(); }
             },
@@ -488,11 +528,64 @@ public partial class MainViewModel
     [RelayCommand]
     private void SetZoom100() { IsFitToScreen = false; }
 
+    private static bool ConfirmModelDownload(string modelName)
+    {
+        var message = LocalizationService.Format(
+            "Dialog.AIAutoMask.DownloadConfirm",
+            "The AI auto select model \"{0}\" is not installed.\nDownload it now?",
+            modelName);
+        var title = LocalizationService.GetString("App.Name", "VRCosme");
+        var result = MessageBox.Show(message, title, MessageBoxButton.YesNo, MessageBoxImage.Question);
+        return result == MessageBoxResult.Yes;
+    }
+
+    private async Task<(string? EncoderPath, string? DecoderPath)> EnsureSamModelPathsAsync(
+        SamModelDefinition model)
+    {
+        if (SamModelManager.IsModelInstalled(model))
+            return (SamModelManager.GetEncoderPath(model), SamModelManager.GetDecoderPath(model));
+
+        var modelLabel = LocalizationService.GetString(model.DisplayNameKey, model.EncoderFileName);
+        if (!ConfirmModelDownload(modelLabel))
+            return (null, null);
+
+        IsProcessing = true;
+        StatusMessage = LocalizationService.GetString("Status.DownloadingAutoMaskModel", "Downloading AI mask model...");
+
+        try
+        {
+            await SamModelManager.EnsureModelDownloadedAsync(model);
+            return (SamModelManager.GetEncoderPath(model), SamModelManager.GetDecoderPath(model));
+        }
+        catch (Exception ex)
+        {
+            LogService.Error("SAMモデルのダウンロードに失敗", ex);
+            MessageBox.Show(
+                LocalizationService.Format(
+                    "Dialog.AIAutoMask.DownloadFailed",
+                    "Failed to download AI auto mask model:\n{0}",
+                    ex.Message),
+                LocalizationService.GetString("Dialog.ErrorTitle", "Error"),
+                MessageBoxButton.OK,
+                MessageBoxImage.Error);
+            StatusMessage = LocalizationService.GetString("Status.AIAutoMaskError", "AI auto mask error");
+            return (null, null);
+        }
+        finally
+        {
+            IsProcessing = false;
+        }
+    }
+
     private async Task<string?> EnsureAutoMaskModelPathAsync(AutoMaskModelDefinition model)
     {
         var modelPath = AutoMaskModelManager.GetModelPath(model);
         if (AutoMaskModelManager.IsModelInstalled(model))
             return modelPath;
+
+        var modelLabel = LocalizationService.GetString(model.DisplayNameKey, model.FileName);
+        if (!ConfirmModelDownload(modelLabel))
+            return null;
 
         IsProcessing = true;
         StatusMessage = LocalizationService.GetString("Status.DownloadingAutoMaskModel", "Downloading AI mask model...");

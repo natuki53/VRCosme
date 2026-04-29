@@ -90,7 +90,7 @@ public partial class MainWindow
             return;
         }
 
-        // 中クリック → 常にパン
+// 中クリック → 常にパン
         if (e.ChangedButton == MouseButton.Middle && _dragMode == DragMode.None)
         {
             StartPan(e);

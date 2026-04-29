@@ -27,6 +27,8 @@ public partial class MainViewModel : ObservableObject
     private bool _flipVertical;
     private const int MaxPreviewDimension = 1920;
     private readonly AutoMaskSelectorService _autoMaskSelector = new();
+    private readonly SamSelectorService _samSelector = new();
+    private int _imageVersion;
 
     // ───────── 表示プロパティ ─────────
 
