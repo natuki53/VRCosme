@@ -27,16 +27,15 @@ PrivilegesRequired=lowest
 ArchitecturesAllowed=x64compatible
 ArchitecturesInstallIn64BitMode=x64compatible
 UninstallDisplayIcon={app}\{#MyAppExeName}
-LicenseFile=LICENSE.txt
 MinVersion=10.0
 CloseApplications=yes
 
 [Languages]
-Name: "english"; MessagesFile: "compiler:Default.isl"; LicenseFile: "LICENSE.en-US.txt"
-Name: "japanese"; MessagesFile: "compiler:Languages\Japanese.isl"; LicenseFile: "LICENSE.txt"
-Name: "korean"; MessagesFile: "compiler:Languages\Korean.isl"; LicenseFile: "LICENSE.ko-KR.txt"
-Name: "chinesesimplified"; MessagesFile: "compiler:Languages\ChineseSimplified.isl"; LicenseFile: "LICENSE.zh-CN.txt"
-Name: "chinesetraditional"; MessagesFile: "compiler:Languages\ChineseTraditional.isl"; LicenseFile: "LICENSE.zh-TW.txt"
+Name: "english"; MessagesFile: "compiler:Default.isl"
+Name: "japanese"; MessagesFile: "compiler:Languages\Japanese.isl"
+Name: "korean"; MessagesFile: "compiler:Languages\Korean.isl"
+Name: "chinesesimplified"; MessagesFile: "compiler:Languages\ChineseSimplified.isl"
+Name: "chinesetraditional"; MessagesFile: "compiler:Languages\ChineseTraditional.isl"
 
 [Tasks]
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"
@@ -45,6 +44,7 @@ Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{
 ; 自己完結型の単体 exe とデバッグシンボルを含める (.lib は除外)
 Source: "..\bin\Release\net10.0-windows\win-x64\publish\VRCosme.exe"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\bin\Release\net10.0-windows\win-x64\publish\VRCosme.pdb"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\LICENSE"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\THIRD-PARTY-NOTICES.txt"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\third_party_notices\*"; DestDir: "{app}\third_party_notices"; Flags: ignoreversion recursesubdirs createallsubdirs skipifsourcedoesntexist
 
@@ -61,11 +61,6 @@ Filename: "{app}\{#MyAppExeName}"; Description: "{cm:LaunchProgram,{#MyAppName}}
 Type: dirifempty; Name: "{app}"
 
 [Code]
-procedure InitializeWizard;
-begin
-  WizardForm.LicenseMemo.ReadOnly := True;
-end;
-
 function GetSelectedLanguageCode: string;
 begin
   if ActiveLanguage = 'english' then

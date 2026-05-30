@@ -54,15 +54,8 @@ iscc Installer/VRCosme.iss
 
 ## ライセンス
 
-本プロジェクトは [MIT License](LICENSE) の下で公開されています。
-
-インストーラー表示用の各言語版は以下を参照してください。
-
-- 日本語: `Installer/LICENSE.txt`
-- English: `Installer/LICENSE.en-US.txt`
-- 한국어: `Installer/LICENSE.ko-KR.txt`
-- 简体中文: `Installer/LICENSE.zh-CN.txt`
-- 繁體中文: `Installer/LICENSE.zh-TW.txt`
+本プロジェクトは [MIT License](LICENSE) の下で公開されています。  
+Windows インストーラーで配布するバイナリにも、同じ `LICENSE` が同梱されます。
 
 ## Third-party notices
 
