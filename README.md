@@ -52,9 +52,11 @@ iscc Installer/VRCosme.iss
 
 - プロジェクト同梱ドキュメント: `docs/index.html`
 
-## 利用規約
+## ライセンス
 
-本リポジトリの配布物に関する規約は以下を参照してください。
+本プロジェクトは [MIT License](LICENSE) の下で公開されています。
+
+インストーラー表示用の各言語版は以下を参照してください。
 
 - 日本語: `Installer/LICENSE.txt`
 - English: `Installer/LICENSE.en-US.txt`

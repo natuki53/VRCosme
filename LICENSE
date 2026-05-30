@@ -19,6 +19,3 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
-
-Third-party libraries:
-This Software uses open-source and third-party libraries obtained through NuGet and similar package managers. Copyright and licenses for those components belong to their respective owners, and their license terms apply. See the bundled "THIRD-PARTY-NOTICES" file for details.
