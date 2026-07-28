@@ -43,7 +43,7 @@ public partial class App : Application
             MessageBox.Show(
                 LocalizationService.Format("Error.Unexpected",
                     "An unexpected error occurred.\n\n{0}", args.Exception.Message),
-                LocalizationService.GetString("App.ErrorTitle", "VRCosme - Error"),
+                LocalizationService.GetString("App.ErrorTitle", "VRCosme Classic - Error"),
                 MessageBoxButton.OK,
                 MessageBoxImage.Error);
             args.Handled = true;

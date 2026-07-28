@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
@@ -185,6 +186,15 @@ public partial class MainWindow : Window
         new AboutDialog { Owner = this }.ShowDialog();
     }
 
+    private void OpenNewVRCosme_Click(object sender, RoutedEventArgs e)
+    {
+        Process.Start(new ProcessStartInfo
+        {
+            FileName = ProductLinks.NewVRCosmeUrl,
+            UseShellExecute = true
+        });
+    }
+
     private void ThirdPartyNotices_Click(object sender, RoutedEventArgs e)
     {
         ThirdPartyNoticesService.Open(this);
@@ -205,7 +215,7 @@ public partial class MainWindow : Window
             LogService.Info($"ログ書き出し: {dialog.FileName}");
             LogService.ExportLog(dialog.FileName);
             MessageBox.Show(LocalizationService.GetString("Dialog.LogExport.Success", "Log export completed successfully."),
-                LocalizationService.GetString("App.Name", "VRCosme"),
+                LocalizationService.GetString("App.Name", "VRCosme Classic"),
                 MessageBoxButton.OK, MessageBoxImage.Information);
         }
         catch (Exception ex)

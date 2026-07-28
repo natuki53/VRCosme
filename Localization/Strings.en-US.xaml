@@ -1,11 +1,16 @@
 <ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:sys="clr-namespace:System;assembly=mscorlib">
-    <sys:String x:Key="App.Name">VRCosme</sys:String>
-    <sys:String x:Key="App.ErrorTitle">VRCosme - Error</sys:String>
+    <sys:String x:Key="App.Name">VRCosme Classic</sys:String>
+    <sys:String x:Key="App.ErrorTitle">VRCosme Classic - Error</sys:String>
     <sys:String x:Key="Error.Unexpected">An unexpected error occurred.&#10;You can export logs from "Help &gt; Export Logs".&#10;&#10;{0}</sys:String>
 
-    <sys:String x:Key="Window.TitleWithFile">VRCosme - {0}</sys:String>
+    <sys:String x:Key="Window.TitleWithFile">VRCosme Classic - {0}</sys:String>
+    <sys:String x:Key="Migration.Banner.Title">VRCosme Classic is the legacy app</sys:String>
+    <sys:String x:Key="Migration.Banner.Description">The new VRCosme is now available for web and Windows. Move to the new app for future updates.</sys:String>
+    <sys:String x:Key="Migration.Action">Open the new VRCosme</sys:String>
+    <sys:String x:Key="Migration.About.Title">Move to the new VRCosme</sys:String>
+    <sys:String x:Key="Migration.About.Description">Use VRCosme in your browser or install the new Windows app.</sys:String>
     <sys:String x:Key="Status.Ready"></sys:String>
     <sys:String x:Key="Status.ReadyWithSize"></sys:String>
     <sys:String x:Key="Status.LoadingImage">Loading image...</sys:String>
@@ -37,7 +42,7 @@
     <sys:String x:Key="Dialog.LogExport.Title">Export Logs</sys:String>
     <sys:String x:Key="Dialog.LogExport.Success">Log export completed successfully.</sys:String>
     <sys:String x:Key="Dialog.LogExport.Failed">Failed to export logs:&#10;{0}</sys:String>
-    <sys:String x:Key="Update.Title">VRCosme - Update</sys:String>
+    <sys:String x:Key="Update.Title">VRCosme Classic - Update</sys:String>
     <sys:String x:Key="Update.Heading">A new version is available</sys:String>
     <sys:String x:Key="Update.CurrentVersionLabel">Current version</sys:String>
     <sys:String x:Key="Update.LatestVersionLabel">Latest version</sys:String>
@@ -50,7 +55,7 @@
     <sys:String x:Key="Update.Status.Downloading">Downloading...</sys:String>
     <sys:String x:Key="Update.NoDownload">Download is not available.</sys:String>
     <sys:String x:Key="Update.DownloadFailed">Download failed:&#10;{0}</sys:String>
-    <sys:String x:Key="Update.InstallConfirm">Start the installer now?&#10;VRCosme will close after launching.</sys:String>
+    <sys:String x:Key="Update.InstallConfirm">Start the installer now?&#10;VRCosme Classic will close after launching.</sys:String>
     <sys:String x:Key="Update.InstallTitle">Update confirmation</sys:String>
     <sys:String x:Key="ThirdPartyNotices.NotFound">Could not find "{0}" in the app folder.</sys:String>
     <sys:String x:Key="ThirdPartyNotices.OpenFailed">Failed to open "{0}".&#10;{1}</sys:String>
@@ -62,7 +67,7 @@
     <sys:String x:Key="Dialog.AIAutoMask.DeleteFailed">Failed to delete AI auto mask model:&#10;{0}</sys:String>
     <sys:String x:Key="Dialog.AIAutoMask.ModelFilter">ONNX Model|*.onnx|All Files|*.*</sys:String>
     <sys:String x:Key="Dialog.AIAutoMask.ModelTitle">Select an ONNX model for AI auto mask</sys:String>
-    <sys:String x:Key="Dialog.Session.Filter">VRCosme Session|*.vrcproj|All Files|*.*</sys:String>
+    <sys:String x:Key="Dialog.Session.Filter">VRCosme Classic Session|*.vrcproj|All Files|*.*</sys:String>
     <sys:String x:Key="Dialog.Session.OpenTitle">Open Session</sys:String>
     <sys:String x:Key="Dialog.Session.SaveTitle">Save Session</sys:String>
     <sys:String x:Key="Dialog.Session.SaveSuccess">Session saved successfully.</sys:String>
@@ -225,8 +230,8 @@
     <sys:String x:Key="Settings.Option.AutoUpdateEnabled">Enable update checks</sys:String>
     <sys:String x:Key="Settings.Option.AutoUpdateCheckOnStartup">Check for updates on startup</sys:String>
     <sys:String x:Key="Settings.Option.AutoUpdateIncludePrerelease">Include beta (pre-release) updates</sys:String>
-    <sys:String x:Key="Settings.RestartRequired">Restart VRCosme to apply the language change.</sys:String>
-    <sys:String x:Key="Settings.RestartTitle">VRCosme</sys:String>
+    <sys:String x:Key="Settings.RestartRequired">Restart VRCosme Classic to apply the language change.</sys:String>
+    <sys:String x:Key="Settings.RestartTitle">VRCosme Classic</sys:String>
 
     <sys:String x:Key="AutoMaskSettings.Title">AI Auto Select Settings</sys:String>
     <sys:String x:Key="AutoMaskSettings.Description">Switch models based on the target you want to select. You can download or delete each model from the list below.</sys:String>
@@ -272,7 +277,7 @@
     <sys:String x:Key="Language.Option.ChineseSimplified">Chinese (Simplified)</sys:String>
     <sys:String x:Key="Language.Option.ChineseTraditional">Chinese (Traditional)</sys:String>
 
-    <sys:String x:Key="About.Title">About VRCosme</sys:String>
+    <sys:String x:Key="About.Title">About VRCosme Classic</sys:String>
     <sys:String x:Key="About.Description">Retouching and editing tool for VRChat photos</sys:String>
     <sys:String x:Key="About.Author">Author: Ameichigo Natsuki</sys:String>
     <sys:String x:Key="About.Close">Close</sys:String>

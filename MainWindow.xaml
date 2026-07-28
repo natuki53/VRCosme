@@ -570,6 +570,37 @@
             </MenuItem>
         </Menu>
 
+        <!-- 後継版への移行案内 -->
+        <Border DockPanel.Dock="Top"
+                Background="{DynamicResource PanelBackgroundBrush}"
+                BorderBrush="{DynamicResource AccentBrush}"
+                BorderThickness="0,0,0,2"
+                Padding="14,9">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <StackPanel Grid.Column="0" Margin="0,0,16,0">
+                    <TextBlock Text="{DynamicResource Migration.Banner.Title}"
+                               FontSize="13" FontWeight="SemiBold"
+                               Foreground="{DynamicResource WindowForegroundBrush}"/>
+                    <TextBlock Text="{DynamicResource Migration.Banner.Description}"
+                               Margin="0,2,0,0" TextWrapping="Wrap"
+                               Foreground="{DynamicResource TextSecondaryBrush}"/>
+                </StackPanel>
+                <Button Grid.Column="1"
+                        Content="{DynamicResource Migration.Action}"
+                        Click="OpenNewVRCosme_Click"
+                        VerticalAlignment="Center"
+                        Padding="14,7"
+                        Cursor="Hand"
+                        Background="{DynamicResource AccentBrush}"
+                        Foreground="White"
+                        BorderThickness="0"/>
+            </Grid>
+        </Border>
+
         <!-- ╔════════════ ステータスバー ════════════╗ -->
         <Border DockPanel.Dock="Bottom" Background="{DynamicResource StatusBarBackgroundBrush}" BorderBrush="{DynamicResource StatusBarBorderBrush}" BorderThickness="0,1,0,0"
                 Padding="12,4">

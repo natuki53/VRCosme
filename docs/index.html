@@ -3,19 +3,16 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>VRCosme | VRChat向け写真レタッチツール</title>
-  <meta name="description" content="VRCosmeの公式ページです。機能紹介と、問い合わせ先・ログ案内をまとめています。">
+  <title>VRCosme Classic | 新しいVRCosmeへ移行しました</title>
+  <meta name="description" content="従来のWindowsアプリはVRCosme Classicへ名称を変更しました。新しいVRCosmeはWeb・Windows向けにvrcosme.comで公開しています。">
   <link rel="canonical" href="https://natuki53.github.io/VRCosme/">
   <meta property="og:type" content="website">
-  <meta property="og:title" content="VRCosme | VRChat向け写真レタッチツールの公式ページ">
-  <meta property="og:description" content="VRCosmeの公式ページです。機能紹介と、問い合わせ先・ログ案内をまとめています。">
+  <meta property="og:title" content="VRCosme Classic | 新しいVRCosmeへ">
+  <meta property="og:description" content="新しいVRCosmeはWeb・Windows向けにvrcosme.comで公開しています。">
   <meta property="og:url" content="https://natuki53.github.io/VRCosme/">
-  <meta property="og:site_name" content="VRCosme">
+  <meta property="og:site_name" content="VRCosme Classic">
   <meta property="og:locale" content="ja_JP">
   <meta property="og:image" content="https://natuki53.github.io/VRCosme/assets/images/ogp.png">
-  <meta property="og:image:secure_url" content="https://natuki53.github.io/VRCosme/assets/images/ogp.png">
-  <meta property="og:image:type" content="image/png">
-  <meta property="og:image:alt" content="VRCosmeのOGP画像">
   <meta name="twitter:card" content="summary_large_image">
   <link rel="icon" href="./assets/icons/VRCosme_Icon.ico">
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -24,182 +21,219 @@
   <link rel="stylesheet" href="./css/style.css">
 </head>
 <body>
-  <div class="bg-ornaments" aria-hidden="true">
-    <span class="orb orb-a"></span>
-    <span class="orb orb-b"></span>
-    <span class="orb orb-c"></span>
-  </div>
+  <div class="page-glow page-glow-a" aria-hidden="true"></div>
+  <div class="page-glow page-glow-b" aria-hidden="true"></div>
 
   <header class="topbar">
     <div class="wrap topbar-inner">
-      <a class="brand" href="#download" aria-label="VRCosme ホーム">
-        <img src="./assets/icons/VRCosme_Icon.svg" alt="" class="brand-icon">
-        <span class="brand-text">VRCosme</span>
+      <a class="brand" href="#migration" aria-label="VRCosme Classic ホーム">
+        <span class="brand-icon-wrap">
+          <img src="./assets/icons/VRCosme_Icon.svg" alt="" class="brand-icon">
+        </span>
+        <span class="brand-name">VRCosme <strong>Classic</strong></span>
+        <span class="legacy-badge">旧版</span>
       </a>
-      <div class="topbar-actions">
-        <nav class="topnav" aria-label="ページ内ナビゲーション">
-          <a href="#download">ダウンロード</a>
-          <a href="#features">機能</a>
-          <a href="#tips">サポート</a>
-        </nav>
-        <a class="top-cta" href="https://github.com/natuki53/VRCosme/releases/latest/download/VRCosme_Setup.exe">ダウンロード</a>
-      </div>
+      <nav class="topnav" aria-label="ページ内ナビゲーション">
+        <a href="#migration">移行のご案内</a>
+        <a href="#classic">旧版について</a>
+        <a href="#support">サポート</a>
+      </nav>
+      <a class="button button-small button-primary" href="https://vrcosme.com/" data-new-vrcosme-link>
+        新しいVRCosmeへ
+        <span aria-hidden="true">↗</span>
+      </a>
     </div>
   </header>
 
   <main>
-    <section class="hero" id="download">
+    <section class="hero" id="migration">
       <div class="wrap hero-grid">
         <div class="hero-copy reveal-up">
-          <p class="eyebrow">VRCHAT PHOTO RETOUCH TOOL</p>
-          <h1>かんたんに。<br>VRCosmeでレタッチ</h1>
+          <p class="eyebrow"><span></span> VRCOSME HAS MOVED</p>
+          <p class="announcement">後継版を公開しました</p>
+          <h1>これからの<br><em>VRCosme</em> は、<br>新しい場所へ。</h1>
           <p class="lead">
-            画像を開いて、明るさや色味をちょっと整えるだけ。
-            補正前後を見比べながら、SNSに投稿する前の写真を仕上げられます。
+            従来のWindowsアプリは <strong>VRCosme Classic</strong> へ名称を変更しました。
+            新しいVRCosmeは、ブラウザでもWindowsアプリでも利用できます。
           </p>
-          <div class="cta-row">
-            <a class="btn btn-primary" href="https://github.com/natuki53/VRCosme/releases/latest/download/VRCosme_Setup.exe">最新版をダウンロード</a>
-            <a class="btn btn-subtle" href="https://mofumagic.booth.pm/items/8035872">
-              <img src="./assets/icons/icon_booth.ico" alt="" class="inline-icon">BOOTH
+          <div class="hero-actions">
+            <a class="button button-primary button-large" href="https://vrcosme.com/" data-new-vrcosme-link>
+              新しいVRCosmeを開く
+              <span aria-hidden="true">↗</span>
             </a>
-            <a class="btn btn-subtle" href="https://github.com/natuki53/VRCosme">
-              <img src="./assets/icons/icon_github.svg" alt="" class="inline-icon">GitHub
-            </a>
+            <a class="button button-ghost button-large" href="#how-to-move">移行方法を見る</a>
           </div>
-          <ul class="hero-badges" aria-label="製品情報">
-            <li>Windows 10 / 11</li>
-            <li>PNG / JPG / WEBP 入力</li>
-            <li>PNG / JPEG 出力</li>
-          </ul>
+          <p class="hero-note">ブックマークは <strong>vrcosme.com</strong> へ変更をお願いします。</p>
         </div>
 
-        <div class="hero-visual reveal-up">
-          <figure class="main-shot">
-            <video autoplay loop muted playsinline preload="auto" aria-label="VRCosmeの編集画面デモ動画">
-              <source src="./assets/movie/hero-loop.mp4" type="video/mp4">
-            </video>
-          </figure>
-          <div class="hero-metrics">
-            <article>
-              <strong>かんたん4ステップ</strong>
-              <span>開く → 整える → 比べる → 保存</span>
-            </article>
-            <article>
-              <strong>見比べがラク</strong>
-              <span>補正前・補正後・分割をすぐ切り替え</span>
-            </article>
-            <article class="download-metric" data-release-downloads data-owner="natuki53" data-repo="VRCosme" data-manual-extra="2651">
-              <strong>ダウンロード数</strong>
-              <span><span class="download-count" data-download-count aria-live="polite">計測中…</span></span>
-            </article>
+        <div class="migration-visual reveal-up" aria-label="VRCosme Classicから新しいVRCosmeへの移行">
+          <div class="portal-grid" aria-hidden="true"></div>
+          <div class="portal-ring portal-ring-outer" aria-hidden="true"></div>
+          <div class="portal-ring portal-ring-inner" aria-hidden="true"></div>
+          <span class="floating-chip floating-chip-web" aria-hidden="true">WEB</span>
+          <span class="floating-chip floating-chip-win" aria-hidden="true">WINDOWS</span>
+          <span class="floating-spark floating-spark-a" aria-hidden="true">✦</span>
+          <span class="floating-spark floating-spark-b" aria-hidden="true">✦</span>
+
+          <div class="product-card product-card-old">
+            <div class="product-card-heading">
+              <span class="product-kicker">これまで</span>
+              <span class="legacy-status">LEGACY</span>
+            </div>
+            <div class="product-name-row">
+              <img src="./assets/icons/VRCosme_Icon.svg" alt="">
+              <div>
+                <strong>VRCosme Classic</strong>
+                <span>従来のWindowsアプリ</span>
+              </div>
+            </div>
+            <div class="classic-app-line">
+              <span aria-hidden="true"></span>
+              <p>インストール型デスクトップアプリ</p>
+            </div>
+          </div>
+
+          <div class="journey-path" aria-hidden="true">
+            <span class="journey-dot journey-dot-a"></span>
+            <span class="journey-dot journey-dot-b"></span>
+            <div class="move-arrow">
+              <span>MOVE</span>
+              <strong>↘</strong>
+            </div>
+          </div>
+
+          <div class="product-card product-card-new">
+            <div class="browser-chrome">
+              <div class="browser-dots" aria-hidden="true"><span></span><span></span><span></span></div>
+              <span class="browser-address"><i aria-hidden="true"></i>vrcosme.com</span>
+              <span class="new-status">NEW</span>
+            </div>
+            <div class="new-card-content">
+              <span class="product-kicker">これから</span>
+              <div class="product-name-row">
+                <img class="new-brand-icon" src="https://vrcosme.com/static/brand/vrcosme-icon.svg" alt="">
+                <div>
+                  <strong>VRCosme</strong>
+                  <span>好きなスタイルですぐに使える</span>
+                </div>
+              </div>
+              <div class="platform-grid">
+                <div class="platform-card">
+                  <span class="platform-icon" aria-hidden="true">◎</span>
+                  <div><strong>Web</strong><span>ブラウザですぐ起動</span></div>
+                </div>
+                <div class="platform-card">
+                  <span class="platform-icon" aria-hidden="true">▦</span>
+                  <div><strong>Windows</strong><span>新しいデスクトップ版</span></div>
+                </div>
+              </div>
+              <a class="new-site-link" href="https://vrcosme.com/" data-new-vrcosme-link>
+                <span>新しいVRCosmeへ</span>
+                <strong aria-hidden="true">→</strong>
+              </a>
+            </div>
           </div>
         </div>
       </div>
     </section>
 
-    <section class="highlight-strip">
-      <div class="wrap highlight-grid reveal-up">
-        <article>
-          <h2>簡単に調整ができる</h2>
-          <p>明るさ、コントラスト、ガンマ、露出まで、よく使う項目をまとめて調整。</p>
-        </article>
-        <article>
-          <h2>見比べながら安心して調整</h2>
-          <p>補正前後をすぐ確認できるので、やりすぎず自然に仕上げられます。</p>
-        </article>
-        <article>
-          <h2>素早くレタッチできる</h2>
-          <p>PNG/JPEG出力に対応。最後の書き出しまで素早く行うことができます。</p>
-        </article>
-      </div>
-    </section>
-
-    <section class="section" id="features">
+    <section class="move-section" id="how-to-move">
       <div class="wrap">
-        <div class="section-head reveal-up">
-          <p class="eyebrow">FEATURES</p>
-          <h2>主な機能</h2>
-          <p>はじめてでも触りやすい、写真仕上げ向けの機能を集めました。</p>
+        <div class="section-heading reveal-up">
+          <p class="eyebrow"><span></span> HOW TO MOVE</p>
+          <h2>新しいVRCosmeをはじめる</h2>
+          <p>まずは新しい公式サイトを開き、Web版またはWindows版を選んでください。</p>
         </div>
-
-        <div class="feature-grid">
-          <article class="feature-card reveal-up">
-            <img src="./assets/images/base.png" alt="基本補正機能のイメージ">
-            <div>
-              <h3>基本補正</h3>
-              <p>明るさ、コントラスト、ガンマ、露出を素早く最適化。</p>
-            </div>
-          </article>
-          <article class="feature-card reveal-up">
-            <img src="./assets/images/advance.png" alt="詳細補正機能のイメージ">
-            <div>
-              <h3>詳細補正</h3>
-              <p>シャドウ、ハイライト、明瞭度、シャープで質感を調整。</p>
-            </div>
-          </article>
-          <article class="feature-card reveal-up">
-            <img src="./assets/images/trimming.png" alt="トリミング機能のイメージ">
-            <div>
-              <h3>トリミング</h3>
-              <p>アスペクト比固定や回転で、構図をテンポよく決定。</p>
-            </div>
-          </article>
-          <article class="feature-card reveal-up">
-            <img src="./assets/images/before-after.png" alt="比較表示機能のイメージ">
-            <div>
-              <h3>比較表示</h3>
-              <p>補正前後・分割表示を切り替えて差分を明確化。</p>
-            </div>
-          </article>
-          <article class="feature-card reveal-up">
-            <img src="./assets/images/undo-redo.png" alt="作業支援機能のイメージ">
-            <div>
-              <h3>作業支援</h3>
-              <p>Undo/Redo、ルーラー、グリッドで作業精度を安定。</p>
-            </div>
-          </article>
-          <article class="feature-card reveal-up">
-            <img src="./assets/images/encode.png" alt="書き出し機能のイメージ">
-            <div>
-              <h3>書き出し</h3>
-              <p>PNG/JPEGを選択して保存。JPEGは品質を細かく指定可能。</p>
-            </div>
-          </article>
+        <ol class="steps">
+          <li class="step-card reveal-up">
+            <span class="step-number">01</span>
+            <h3>新しいサイトを開く</h3>
+            <p><a href="https://vrcosme.com/" data-new-vrcosme-link>vrcosme.com</a> が新しいVRCosmeの公式サイトです。</p>
+          </li>
+          <li class="step-card reveal-up">
+            <span class="step-number">02</span>
+            <h3>使い方を選ぶ</h3>
+            <p>すぐに使えるWeb版、または新しいWindowsアプリを選べます。</p>
+          </li>
+          <li class="step-card reveal-up">
+            <span class="step-number">03</span>
+            <h3>ブックマークを更新</h3>
+            <p>今後のお知らせやアップデートは新しいサイトでご案内します。</p>
+          </li>
+        </ol>
+        <div class="reassurance reveal-up">
+          <span class="reassurance-icon" aria-hidden="true">✓</span>
+          <p>
+            <strong>VRCosme Classicをすぐに削除する必要はありません。</strong>
+            旧版と後継版の作業ファイル（.vrcproj）には互換性がありません。進行中の作業はClassicで画像に書き出してから、新しいVRCosmeへ切り替えてください。
+          </p>
         </div>
       </div>
     </section>
 
-    <section class="section" id="tips">
-      <div class="wrap support-grid">
-        <article class="support-card reveal-up">
-          <h2>サポート</h2>
-          <p>お問い合わせはGitHub Issues、またはXのDMからお願いします。ログがあると状況を把握しやすいのでとても助かります。</p>
-          <ul class="support-list">
-            <li><code>ヘルプ &gt; ログの書き出し...</code> からログをZIP保存</li>
-            <li>Issue / DM には再現手順とスクリーンショットを添付</li>
-            <li>可能であればログファイルも一緒に送ってください</li>
-          </ul>
-          <p class="support-links">
-            <a href="https://github.com/natuki53/VRCosme/issues">GitHub Issues</a>
-            <span> / </span>
-            <a href="https://x.com/mu_natuki">X（Twitter）</a>
+    <section class="classic-section" id="classic">
+      <div class="wrap classic-grid">
+        <div class="classic-copy reveal-up">
+          <p class="eyebrow"><span></span> ABOUT CLASSIC</p>
+          <h2>従来版は<br>VRCosme Classicへ</h2>
+          <p>
+            これまで「VRCosme」として配布していた写真レタッチ用Windowsアプリです。
+            後継版との区別を分かりやすくするため、名称を変更しました。
           </p>
-        </article>
+          <dl class="classic-facts">
+            <div>
+              <dt>新しい名称</dt>
+              <dd>VRCosme Classic</dd>
+            </div>
+            <div>
+              <dt>対象</dt>
+              <dd>従来のWindowsデスクトップ版</dd>
+            </div>
+            <div>
+              <dt>後継</dt>
+              <dd><a href="https://vrcosme.com/" data-new-vrcosme-link>VRCosme（Web / Windows）</a></dd>
+            </div>
+          </dl>
+          <a class="classic-download" href="https://github.com/natuki53/VRCosme/releases/latest/download/VRCosme_Setup.exe">
+            VRCosme Classicを再ダウンロード
+          </a>
+        </div>
+        <figure class="classic-preview reveal-up">
+          <div class="preview-bar">
+            <span></span><span></span><span></span>
+            <strong>VRCosme Classic</strong>
+          </div>
+          <video autoplay loop muted playsinline preload="metadata" aria-label="VRCosme Classicの編集画面">
+            <source src="./assets/movie/hero-loop.mp4" type="video/mp4">
+          </video>
+          <figcaption>従来のWindowsアプリ画面</figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <section class="support-section" id="support">
+      <div class="wrap support-card reveal-up">
+        <div>
+          <p class="eyebrow"><span></span> SUPPORT</p>
+          <h2>お困りですか？</h2>
+          <p>新しいVRCosmeに関するお問い合わせは、公式サイトのフォームからお送りください。</p>
+        </div>
+        <a class="button button-primary button-large" href="https://vrcosme.com/contact">
+          お問い合わせ
+          <span aria-hidden="true">↗</span>
+        </a>
       </div>
     </section>
   </main>
 
   <footer class="footer">
-    <div class="wrap footer-row">
+    <div class="wrap footer-inner">
+      <div class="footer-brand">
+        <img src="./assets/icons/VRCosme_Icon.svg" alt="">
+        <span>VRCosme Classic</span>
+      </div>
+      <p>新しいVRCosmeは <a href="https://vrcosme.com/" data-new-vrcosme-link>vrcosme.com</a> へ。</p>
       <span>© VRCosme</span>
-      <span class="social-links">
-        <a href="https://github.com/natuki53/VRCosme" aria-label="GitHub">
-          <img src="./assets/icons/icon_github.svg" alt="">
-        </a>
-        <a href="https://x.com/mu_natuki" aria-label="X">
-          <img src="./assets/icons/icon_x.svg" alt="">
-        </a>
-      </span>
     </div>
   </footer>
 

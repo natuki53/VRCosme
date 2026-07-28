@@ -21,7 +21,7 @@ public static class LogService
             Directory.CreateDirectory(LogDir);
             _directoryEnsured = true;
             var version = Assembly.GetEntryAssembly()?.GetName().Version?.ToString() ?? "unknown";
-            Info($"VRCosme {version} 起動 ({Environment.OSVersion}, .NET {Environment.Version})");
+            Info($"VRCosme Classic {version} 起動 ({Environment.OSVersion}, .NET {Environment.Version})");
             CleanupOldLogs();
         }
         catch
