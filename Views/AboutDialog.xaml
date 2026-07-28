@@ -3,7 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:svgc="http://sharpvectors.codeplex.com/svgc/"
         Title="{DynamicResource About.Title}"
-        Width="500" Height="360"
+        Width="520" Height="480"
         ResizeMode="NoResize"
         WindowStartupLocation="CenterOwner"
         ShowInTaskbar="False"
@@ -13,6 +13,7 @@
 
     <Grid Margin="28,24">
         <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
@@ -29,7 +30,7 @@
                RenderOptions.BitmapScalingMode="HighQuality"/>
 
         <!-- アプリ名 -->
-        <TextBlock Grid.Row="1" Text="VRCosme" FontSize="20" FontWeight="SemiBold"
+        <TextBlock Grid.Row="1" Text="{DynamicResource App.Name}" FontSize="20" FontWeight="SemiBold"
                    HorizontalAlignment="Center" Foreground="{DynamicResource WindowForegroundBrush}"/>
 
         <!-- バージョン -->
@@ -42,7 +43,39 @@
                    FontSize="11.5" HorizontalAlignment="Center" Margin="0,12,0,0"
                    Foreground="{DynamicResource LabelForegroundBrush}"/>
 
-        <Button Grid.Row="4"
+        <!-- 後継版への移行案内 -->
+        <Border Grid.Row="4" Margin="0,16,0,0" Padding="14,12"
+                Background="{DynamicResource WindowBackgroundBrush}"
+                BorderBrush="{DynamicResource AccentBrush}"
+                BorderThickness="1"
+                CornerRadius="6">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <StackPanel Grid.Column="0" Margin="0,0,14,0">
+                    <TextBlock Text="{DynamicResource Migration.About.Title}"
+                               FontWeight="SemiBold"
+                               Foreground="{DynamicResource WindowForegroundBrush}"/>
+                    <TextBlock Text="{DynamicResource Migration.About.Description}"
+                               Margin="0,4,0,0"
+                               TextWrapping="Wrap"
+                               Foreground="{DynamicResource LabelForegroundBrush}"/>
+                </StackPanel>
+                <Button Grid.Column="1"
+                        Content="{DynamicResource Migration.Action}"
+                        Click="OpenNewVRCosme_Click"
+                        VerticalAlignment="Center"
+                        Padding="12,6"
+                        Cursor="Hand"
+                        Background="{DynamicResource AccentBrush}"
+                        Foreground="White"
+                        BorderThickness="0"/>
+            </Grid>
+        </Border>
+
+        <Button Grid.Row="5"
                 Content="{DynamicResource About.ThirdPartyNotices}"
                 MinWidth="220"
                 HorizontalAlignment="Center"
@@ -69,10 +102,10 @@
         </Button>
 
         <!-- 区切り線 -->
-        <Separator Grid.Row="5" Margin="0,16,0,0" Background="{DynamicResource LabelForegroundBrush}" Opacity="0.3"/>
+        <Separator Grid.Row="6" Margin="0,16,0,0" Background="{DynamicResource LabelForegroundBrush}" Opacity="0.3"/>
 
         <!-- 作者 + SNS アイコンボタン -->
-        <StackPanel Grid.Row="6" Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,10,0,0">
+        <StackPanel Grid.Row="7" Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,10,0,0">
             <TextBlock Text="{DynamicResource About.Author}" FontSize="11" VerticalAlignment="Center"
                        Foreground="{DynamicResource LabelForegroundBrush}"/>
             <Button Width="32" Height="32" Margin="8,0,0,0" Padding="4" Cursor="Hand" BorderThickness="0"
@@ -126,7 +159,7 @@
         </StackPanel>
 
         <!-- 閉じるボタン -->
-        <Button Grid.Row="7" Content="{DynamicResource About.Close}" Width="80" HorizontalAlignment="Center"
+        <Button Grid.Row="8" Content="{DynamicResource About.Close}" Width="80" HorizontalAlignment="Center"
                 Margin="0,16,0,0"
                 Click="Close_Click" IsDefault="True" IsCancel="True"
                 Background="{DynamicResource ButtonBackgroundBrush}"

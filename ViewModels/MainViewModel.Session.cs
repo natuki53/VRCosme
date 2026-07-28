@@ -24,7 +24,7 @@ public partial class MainViewModel
         {
             Filter = LocalizationService.GetString(
                 "Dialog.Session.Filter",
-                "VRCosme Session|*.vrcproj|All Files|*.*"),
+                "VRCosme Classic Session|*.vrcproj|All Files|*.*"),
             DefaultExt = SessionFileExtension,
             Title = LocalizationService.GetString("Dialog.Session.OpenTitle", "Open Session")
         };
@@ -107,7 +107,7 @@ public partial class MainViewModel
             {
                 MessageBox.Show(
                     LocalizationService.GetString("Dialog.Session.SaveSuccess", "Session saved successfully."),
-                    LocalizationService.GetString("App.Name", "VRCosme"),
+                    LocalizationService.GetString("App.Name", "VRCosme Classic"),
                     MessageBoxButton.OK,
                     MessageBoxImage.Information);
             }
@@ -188,7 +188,7 @@ public partial class MainViewModel
         {
             Filter = LocalizationService.GetString(
                 "Dialog.Session.Filter",
-                "VRCosme Session|*.vrcproj|All Files|*.*"),
+                "VRCosme Classic Session|*.vrcproj|All Files|*.*"),
             DefaultExt = SessionFileExtension,
             AddExtension = true,
             Title = LocalizationService.GetString("Dialog.Session.SaveTitle", "Save Session")

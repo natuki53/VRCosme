@@ -116,7 +116,7 @@ public partial class MainViewModel
             LogService.Info($"書き出し完了: {path}");
             StatusMessage = LocalizationService.GetString("Status.ExportComplete", "Export complete");
             MessageBox.Show(LocalizationService.GetString("Dialog.Export.Success", "Export completed successfully."),
-                LocalizationService.GetString("App.Name", "VRCosme"),
+                LocalizationService.GetString("App.Name", "VRCosme Classic"),
                 MessageBoxButton.OK, MessageBoxImage.Information);
         }
         catch (Exception ex)
@@ -534,7 +534,7 @@ public partial class MainViewModel
             "Dialog.AIAutoMask.DownloadConfirm",
             "The AI auto select model \"{0}\" is not installed.\nDownload it now?",
             modelName);
-        var title = LocalizationService.GetString("App.Name", "VRCosme");
+        var title = LocalizationService.GetString("App.Name", "VRCosme Classic");
         var result = MessageBox.Show(message, title, MessageBoxButton.YesNo, MessageBoxImage.Question);
         return result == MessageBoxResult.Yes;
     }

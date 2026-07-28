@@ -1,6 +1,11 @@
-# VRCosme
+# VRCosme Classic
 
-VRCosme は、VRChat 向けの写真レタッチに特化した Windows アプリです。  
+> [!IMPORTANT]
+> このアプリは旧版となり、ユーザー向け名称を **VRCosme Classic** に変更しました。
+> 後継の **VRCosme** は Web・Windows 向けに <https://vrcosme.com/> で公開しています。
+
+VRCosme Classic は、VRChat 向けの写真レタッチに特化した従来の Windows アプリです。
+
 読み込み、補正、比較、書き出しまでを 1 画面で完結できます。
 
 ## 主な機能
@@ -20,8 +25,11 @@ VRCosme は、VRChat 向けの写真レタッチに特化した Windows アプ�
 
 ## ダウンロード
 
-- 最新版: <https://github.com/natuki53/VRCosme/releases/latest/download/VRCosme_Setup.exe>
-- リリース一覧: <https://github.com/natuki53/VRCosme/releases>
+- 後継版 VRCosme: <https://vrcosme.com/>
+- VRCosme Classic 最新版: <https://github.com/natuki53/VRCosme/releases/latest/download/VRCosme_Setup.exe>
+- VRCosme Classic リリース一覧: <https://github.com/natuki53/VRCosme/releases>
+
+新しく利用を始める場合は、後継版 VRCosme をおすすめします。
 
 ## 開発手順
 

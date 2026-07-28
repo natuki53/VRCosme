@@ -1,11 +1,16 @@
 <ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:sys="clr-namespace:System;assembly=mscorlib">
-    <sys:String x:Key="App.Name">VRCosme</sys:String>
-    <sys:String x:Key="App.ErrorTitle">VRCosme - 오류</sys:String>
+    <sys:String x:Key="App.Name">VRCosme Classic</sys:String>
+    <sys:String x:Key="App.ErrorTitle">VRCosme Classic - 오류</sys:String>
     <sys:String x:Key="Error.Unexpected">예기치 않은 오류가 발생했습니다.&#10;"도움말 &gt; 로그 내보내기"에서 로그를 저장할 수 있습니다.&#10;&#10;{0}</sys:String>
 
-    <sys:String x:Key="Window.TitleWithFile">VRCosme - {0}</sys:String>
+    <sys:String x:Key="Window.TitleWithFile">VRCosme Classic - {0}</sys:String>
+    <sys:String x:Key="Migration.Banner.Title">VRCosme Classic은 이전 버전입니다</sys:String>
+    <sys:String x:Key="Migration.Banner.Description">새로운 VRCosme가 웹과 Windows용으로 출시되었습니다. 앞으로는 새로운 VRCosme를 이용해 주세요.</sys:String>
+    <sys:String x:Key="Migration.Action">새 VRCosme 열기</sys:String>
+    <sys:String x:Key="Migration.About.Title">새로운 VRCosme로 이전</sys:String>
+    <sys:String x:Key="Migration.About.Description">브라우저 버전을 사용하거나 새로운 Windows 앱을 설치할 수 있습니다.</sys:String>
     <sys:String x:Key="Status.Ready"></sys:String>
     <sys:String x:Key="Status.ReadyWithSize"></sys:String>
     <sys:String x:Key="Status.LoadingImage">이미지 불러오는 중...</sys:String>
@@ -37,7 +42,7 @@
     <sys:String x:Key="Dialog.LogExport.Title">로그 내보내기</sys:String>
     <sys:String x:Key="Dialog.LogExport.Success">로그 내보내기가 완료되었습니다.</sys:String>
     <sys:String x:Key="Dialog.LogExport.Failed">로그 내보내기에 실패했습니다:&#10;{0}</sys:String>
-    <sys:String x:Key="Update.Title">VRCosme - 업데이트</sys:String>
+    <sys:String x:Key="Update.Title">VRCosme Classic - 업데이트</sys:String>
     <sys:String x:Key="Update.Heading">새 버전이 있습니다</sys:String>
     <sys:String x:Key="Update.CurrentVersionLabel">현재 버전</sys:String>
     <sys:String x:Key="Update.LatestVersionLabel">최신 버전</sys:String>
@@ -50,7 +55,7 @@
     <sys:String x:Key="Update.Status.Downloading">다운로드 중...</sys:String>
     <sys:String x:Key="Update.NoDownload">다운로드를 사용할 수 없습니다.</sys:String>
     <sys:String x:Key="Update.DownloadFailed">다운로드에 실패했습니다:&#10;{0}</sys:String>
-    <sys:String x:Key="Update.InstallConfirm">설치 프로그램을 지금 실행할까요?&#10;실행 후 VRCosme가 종료됩니다.</sys:String>
+    <sys:String x:Key="Update.InstallConfirm">설치 프로그램을 지금 실행할까요?&#10;실행 후 VRCosme Classic이 종료됩니다.</sys:String>
     <sys:String x:Key="Update.InstallTitle">업데이트 확인</sys:String>
     <sys:String x:Key="ThirdPartyNotices.NotFound">앱 폴더에서 "{0}" 파일을 찾을 수 없습니다.</sys:String>
     <sys:String x:Key="ThirdPartyNotices.OpenFailed">"{0}" 파일을 열지 못했습니다.&#10;{1}</sys:String>
@@ -62,7 +67,7 @@
     <sys:String x:Key="Dialog.AIAutoMask.DeleteFailed">AI 자동 마스크 모델 삭제에 실패했습니다:&#10;{0}</sys:String>
     <sys:String x:Key="Dialog.AIAutoMask.ModelFilter">ONNX 모델|*.onnx|모든 파일|*.*</sys:String>
     <sys:String x:Key="Dialog.AIAutoMask.ModelTitle">AI 자동 마스크용 ONNX 모델 선택</sys:String>
-    <sys:String x:Key="Dialog.Session.Filter">VRCosme 작업 파일|*.vrcproj|모든 파일|*.*</sys:String>
+    <sys:String x:Key="Dialog.Session.Filter">VRCosme Classic 작업 파일|*.vrcproj|모든 파일|*.*</sys:String>
     <sys:String x:Key="Dialog.Session.OpenTitle">작업 상태 열기</sys:String>
     <sys:String x:Key="Dialog.Session.SaveTitle">작업 상태 저장</sys:String>
     <sys:String x:Key="Dialog.Session.SaveSuccess">작업 상태를 저장했습니다.</sys:String>
@@ -225,8 +230,8 @@
     <sys:String x:Key="Settings.Option.AutoUpdateEnabled">업데이트 기능 사용</sys:String>
     <sys:String x:Key="Settings.Option.AutoUpdateCheckOnStartup">시작 시 업데이트 확인</sys:String>
     <sys:String x:Key="Settings.Option.AutoUpdateIncludePrerelease">베타(프리릴리스) 업데이트도 포함</sys:String>
-    <sys:String x:Key="Settings.RestartRequired">언어 변경을 적용하려면 VRCosme를 다시 시작하세요.</sys:String>
-    <sys:String x:Key="Settings.RestartTitle">VRCosme</sys:String>
+    <sys:String x:Key="Settings.RestartRequired">언어 변경을 적용하려면 VRCosme Classic을 다시 시작하세요.</sys:String>
+    <sys:String x:Key="Settings.RestartTitle">VRCosme Classic</sys:String>
 
     <sys:String x:Key="AutoMaskSettings.Title">AI 자동 선택 설정</sys:String>
     <sys:String x:Key="AutoMaskSettings.Description">선택 대상에 맞춰 사용할 모델을 전환합니다. 아래 목록에서 각 모델을 다운로드/삭제할 수 있습니다.</sys:String>
@@ -272,7 +277,7 @@
     <sys:String x:Key="Language.Option.ChineseSimplified">중국어(간체)</sys:String>
     <sys:String x:Key="Language.Option.ChineseTraditional">중국어(번체)</sys:String>
 
-    <sys:String x:Key="About.Title">VRCosme 정보</sys:String>
+    <sys:String x:Key="About.Title">VRCosme Classic 정보</sys:String>
     <sys:String x:Key="About.Description">VRChat 사진 보정 및 편집 도구</sys:String>
     <sys:String x:Key="About.Author">제작자: 雨苺なつき</sys:String>
     <sys:String x:Key="About.Close">닫기</sys:String>

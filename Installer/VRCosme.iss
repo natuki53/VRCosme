@@ -1,9 +1,9 @@
-; VRCosme Inno Setup Script
+; VRCosme Classic Inno Setup Script
 ; 自己完結型の単体 exe をインストーラーで配布する
 
-#define MyAppName "VRCosme"
-#define MyAppVersion "1.3.0"
-#define MyAppPublisher "VRCosme"
+#define MyAppName "VRCosme Classic"
+#define MyAppVersion "1.3.1"
+#define MyAppPublisher "VRCosme Classic"
 #define MyAppExeName "VRCosme.exe"
 
 [Setup]
@@ -11,7 +11,8 @@ AppId={{B3F7A2D1-9C4E-4A8B-B5D6-7E1F3C2A9D04}
 AppName={#MyAppName}
 AppVersion={#MyAppVersion}
 AppPublisher={#MyAppPublisher}
-DefaultDirName={autopf}\{#MyAppName}
+; 既存インストール・更新との互換性のため、フォルダー名は維持する
+DefaultDirName={autopf}\VRCosme
 DefaultGroupName={#MyAppName}
 DisableDirPage=no
 DisableProgramGroupPage=yes
@@ -81,6 +82,7 @@ var
   SettingsPath: string;
   SettingsJson: string;
 begin
+  { 旧版の設定・セッションとの互換性のため、データ保存先は維持する }
   DataDir := ExpandConstant('{localappdata}\VRCosme');
   SettingsPath := DataDir + '\settings.json';
   if FileExists(SettingsPath) then

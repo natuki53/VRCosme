@@ -48,7 +48,7 @@ public partial class UpdateDialog : Window
 
             var confirm = MessageBox.Show(
                 LocalizationService.GetString("Update.InstallConfirm",
-                    "Start the installer now? VRCosme will close after launching."),
+                    "Start the installer now? VRCosme Classic will close after launching."),
                 LocalizationService.GetString("Update.InstallTitle", "Update"),
                 MessageBoxButton.YesNo,
                 MessageBoxImage.Question);

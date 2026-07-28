@@ -170,7 +170,7 @@ public partial class MainViewModel : ObservableObject
         CropRatios = BuildCropRatios();
         _selectedCropRatio = CropRatios[0];
         _statusMessage = "";
-        _windowTitle = LocalizationService.GetString("App.Name", "VRCosme");
+        _windowTitle = LocalizationService.GetString("App.Name", "VRCosme Classic");
         _showRuleOfThirdsGrid = ThemeService.GetShowRuleOfThirdsGrid();
         _showRuler = ThemeService.GetShowRuler();
         _selectedExportFormat = ThemeService.GetDefaultExportFormat();
@@ -192,9 +192,9 @@ public partial class MainViewModel : ObservableObject
     {
         string title;
         if (string.IsNullOrWhiteSpace(filePath))
-            title = LocalizationService.GetString("App.Name", "VRCosme");
+            title = LocalizationService.GetString("App.Name", "VRCosme Classic");
         else
-            title = LocalizationService.Format("Window.TitleWithFile", "VRCosme - {0}",
+            title = LocalizationService.Format("Window.TitleWithFile", "VRCosme Classic - {0}",
                 Path.GetFileName(filePath));
 
         return IsDirty ? $"{title} *" : title;

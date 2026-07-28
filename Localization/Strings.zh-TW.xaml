@@ -1,11 +1,16 @@
 <ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:sys="clr-namespace:System;assembly=mscorlib">
-    <sys:String x:Key="App.Name">VRCosme</sys:String>
-    <sys:String x:Key="App.ErrorTitle">VRCosme - 錯誤</sys:String>
+    <sys:String x:Key="App.Name">VRCosme Classic</sys:String>
+    <sys:String x:Key="App.ErrorTitle">VRCosme Classic - 錯誤</sys:String>
     <sys:String x:Key="Error.Unexpected">發生未預期的錯誤。&#10;可從「說明 &gt; 匯出日誌」匯出日誌。&#10;&#10;{0}</sys:String>
 
-    <sys:String x:Key="Window.TitleWithFile">VRCosme - {0}</sys:String>
+    <sys:String x:Key="Window.TitleWithFile">VRCosme Classic - {0}</sys:String>
+    <sys:String x:Key="Migration.Banner.Title">VRCosme Classic 是舊版應用程式</sys:String>
+    <sys:String x:Key="Migration.Banner.Description">新版「VRCosme」現已推出 Web 與 Windows 版本。今後請使用新版 VRCosme。</sys:String>
+    <sys:String x:Key="Migration.Action">開啟新版 VRCosme</sys:String>
+    <sys:String x:Key="Migration.About.Title">移轉至新版 VRCosme</sys:String>
+    <sys:String x:Key="Migration.About.Description">您可以使用瀏覽器版本或安裝新版 Windows 應用程式。</sys:String>
     <sys:String x:Key="Status.Ready"></sys:String>
     <sys:String x:Key="Status.ReadyWithSize"></sys:String>
     <sys:String x:Key="Status.LoadingImage">正在載入影像...</sys:String>
@@ -37,7 +42,7 @@
     <sys:String x:Key="Dialog.LogExport.Title">匯出日誌</sys:String>
     <sys:String x:Key="Dialog.LogExport.Success">日誌匯出已完成。</sys:String>
     <sys:String x:Key="Dialog.LogExport.Failed">匯出日誌失敗：&#10;{0}</sys:String>
-    <sys:String x:Key="Update.Title">VRCosme - 更新</sys:String>
+    <sys:String x:Key="Update.Title">VRCosme Classic - 更新</sys:String>
     <sys:String x:Key="Update.Heading">有新版本可用</sys:String>
     <sys:String x:Key="Update.CurrentVersionLabel">目前版本</sys:String>
     <sys:String x:Key="Update.LatestVersionLabel">最新版本</sys:String>
@@ -50,7 +55,7 @@
     <sys:String x:Key="Update.Status.Downloading">下載中...</sys:String>
     <sys:String x:Key="Update.NoDownload">無法下載。</sys:String>
     <sys:String x:Key="Update.DownloadFailed">下載失敗：&#10;{0}</sys:String>
-    <sys:String x:Key="Update.InstallConfirm">要現在啟動安裝程式嗎？&#10;啟動後 VRCosme 會結束。</sys:String>
+    <sys:String x:Key="Update.InstallConfirm">要現在啟動安裝程式嗎？&#10;啟動後 VRCosme Classic 會結束。</sys:String>
     <sys:String x:Key="Update.InstallTitle">更新確認</sys:String>
     <sys:String x:Key="ThirdPartyNotices.NotFound">在應用程式資料夾中找不到「{0}」。</sys:String>
     <sys:String x:Key="ThirdPartyNotices.OpenFailed">無法開啟「{0}」。&#10;{1}</sys:String>
@@ -62,7 +67,7 @@
     <sys:String x:Key="Dialog.AIAutoMask.DeleteFailed">刪除 AI 自動遮罩模型失敗：&#10;{0}</sys:String>
     <sys:String x:Key="Dialog.AIAutoMask.ModelFilter">ONNX 模型|*.onnx|所有檔案|*.*</sys:String>
     <sys:String x:Key="Dialog.AIAutoMask.ModelTitle">選擇用於 AI 自動遮罩的 ONNX 模型</sys:String>
-    <sys:String x:Key="Dialog.Session.Filter">VRCosme 專案檔|*.vrcproj|所有檔案|*.*</sys:String>
+    <sys:String x:Key="Dialog.Session.Filter">VRCosme Classic 專案檔|*.vrcproj|所有檔案|*.*</sys:String>
     <sys:String x:Key="Dialog.Session.OpenTitle">開啟編輯狀態</sys:String>
     <sys:String x:Key="Dialog.Session.SaveTitle">儲存編輯狀態</sys:String>
     <sys:String x:Key="Dialog.Session.SaveSuccess">編輯狀態已儲存。</sys:String>
@@ -225,8 +230,8 @@
     <sys:String x:Key="Settings.Option.AutoUpdateEnabled">啟用更新功能</sys:String>
     <sys:String x:Key="Settings.Option.AutoUpdateCheckOnStartup">啟動時檢查更新</sys:String>
     <sys:String x:Key="Settings.Option.AutoUpdateIncludePrerelease">包含測試版（預發布）更新</sys:String>
-    <sys:String x:Key="Settings.RestartRequired">請重新啟動 VRCosme 以套用語言變更。</sys:String>
-    <sys:String x:Key="Settings.RestartTitle">VRCosme</sys:String>
+    <sys:String x:Key="Settings.RestartRequired">請重新啟動 VRCosme Classic 以套用語言變更。</sys:String>
+    <sys:String x:Key="Settings.RestartTitle">VRCosme Classic</sys:String>
 
     <sys:String x:Key="AutoMaskSettings.Title">AI 自動選取設定</sys:String>
     <sys:String x:Key="AutoMaskSettings.Description">可依要選取的目標切換模型。可在下方清單下載或刪除各模型。</sys:String>
@@ -272,7 +277,7 @@
     <sys:String x:Key="Language.Option.ChineseSimplified">简体中文</sys:String>
     <sys:String x:Key="Language.Option.ChineseTraditional">繁體中文</sys:String>
 
-    <sys:String x:Key="About.Title">關於 VRCosme</sys:String>
+    <sys:String x:Key="About.Title">關於 VRCosme Classic</sys:String>
     <sys:String x:Key="About.Description">VRChat 照片修圖與編輯工具</sys:String>
     <sys:String x:Key="About.Author">作者: 雨苺なつき</sys:String>
     <sys:String x:Key="About.Close">關閉</sys:String>
